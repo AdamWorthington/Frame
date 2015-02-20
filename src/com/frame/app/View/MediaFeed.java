@@ -1,4 +1,4 @@
-package com.frame.app;
+package com.frame.app.View;
 
 import com.frame.app.R;
 import com.frame.app.R.id;

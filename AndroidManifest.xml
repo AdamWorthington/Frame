@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.frame.app.MediaFeed"
+            android:name="com.frame.app.View.MediaFeed"
             android:label="@string/title_activity_media_feed" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
