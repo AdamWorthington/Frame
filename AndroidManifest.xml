@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.frame"
+    package="com.frame.app"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -21,6 +21,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="View.MediaFeed_View"
+            android:label="@string/title_activity_media_feed__view" >
         </activity>
     </application>
 
