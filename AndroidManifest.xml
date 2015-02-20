@@ -14,17 +14,13 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:name="com.frame.app.MediaFeed"
+            android:label="@string/title_activity_media_feed" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name="View.MediaFeed_View"
-            android:label="@string/title_activity_media_feed__view" >
         </activity>
     </application>
 
