@@ -6,12 +6,14 @@ import com.frame.app.R.layout;
 import com.frame.app.R.menu;
 import com.frame.app.R.string;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
+import come.frame.app.Core.TabsListener;
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,8 +23,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class MediaFeed extends ActionBarActivity implements
-		ActionBar.OnNavigationListener {
+@SuppressWarnings("deprecation")
+public class MediaFeed extends ActionBarActivity
+{
 
 	/**
 	 * The serialization (saved instance state) Bundle key representing the
@@ -35,66 +38,31 @@ public class MediaFeed extends ActionBarActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_media_feed);
 
-		// Set up the action bar to show a dropdown list.
+		// Set up the action bar to show a tabbed list.
 		final ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayShowTitleEnabled(false);
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		
+		ActionBar.Tab homeTab = actionBar.newTab().setText(R.string.title_Home);
+		OtherFragment frag1 = new OtherFragment();
+		homeTab.setTabListener(new TabsListener(frag1));
 
-		// Set up the dropdown list navigation in the action bar.
-		actionBar.setListNavigationCallbacks(
-		// Specify a SpinnerAdapter to populate the dropdown list.
-				new ArrayAdapter<String>(actionBar.getThemedContext(),
-						android.R.layout.simple_list_item_1,
-						android.R.id.text1, new String[] {
-								getString(R.string.title_section1),
-								getString(R.string.title_section2),
-								getString(R.string.title_section3), }), this);
-	}
-
-	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		// Restore the previously serialized current dropdown position.
-		if (savedInstanceState.containsKey(STATE_SELECTED_NAVIGATION_ITEM)) {
-			getSupportActionBar().setSelectedNavigationItem(
-					savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
-		}
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		// Serialize the current dropdown position.
-		outState.putInt(STATE_SELECTED_NAVIGATION_ITEM, getSupportActionBar()
-				.getSelectedNavigationIndex());
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.media_feed, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public boolean onNavigationItemSelected(int position, long id) {
-		// When the given dropdown item is selected, show its contents in the
-		// container view.
-		getSupportFragmentManager()
-				.beginTransaction()
-				.replace(R.id.container,
-						PlaceholderFragment.newInstance(position + 1)).commit();
-		return true;
+		ActionBar.Tab searchTab = actionBar.newTab().setText(R.string.title_Search);
+		OtherFragment frag2 = new OtherFragment();
+		searchTab.setTabListener(new TabsListener(frag2));
+		
+		ActionBar.Tab otherTab = actionBar.newTab().setText(R.string.title_Other);
+		OtherFragment frag3 = new OtherFragment();
+		otherTab.setTabListener(new TabsListener(frag3));
+		
+		ActionBar.Tab postTab = actionBar.newTab().setText(R.string.title_Post);
+		OtherFragment frag4 = new OtherFragment();
+		postTab.setTabListener(new TabsListener(frag4));
+		
+		actionBar.addTab(homeTab);
+		actionBar.addTab(searchTab);
+		actionBar.addTab(otherTab);
+		actionBar.addTab(postTab);
 	}
 
 	/**
