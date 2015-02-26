@@ -16,15 +16,6 @@ public class TabsListener implements ActionBar.TabListener {
         this.fragment = fragment;
     }
 
-    public void onTabSelected(Tab tab, FragmentTransaction ft) {
-        ft.add(R.id.fragment_container, fragment, null);
-    }
-
-    public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-        // some people needed this line as well to make it work: 
-        ft.remove(fragment);
-    }
-
 	@Override
 	public void onTabReselected(Tab arg0,
 			android.support.v4.app.FragmentTransaction arg1) {

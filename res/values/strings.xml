@@ -9,6 +9,6 @@
     <string name="title_Search">Search</string>
     <string name="title_Other">Other</string>
     <string name="title_Post">Post</string>
-    <string name="title_activity_media_feed">MediaFeed</string>
+    <string name="title_activity_main_page">MediaFeed</string>
 
 </resources>
