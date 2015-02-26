@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:background="@android:color/holo_blue_light">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.14"
+        android:autoText="true"
+        android:editable="true"
+        android:hint="Enter Post..."
+        android:background="@android:color/holo_blue_light" />
+
+    <Button
+        android:layout_width="86dp"
+        android:layout_height="wrap_content"
+        android:text="Post"
+        android:id="@+id/button4"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/holo_red_light" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="86dp"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:id="@+id/button5"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/holo_orange_light" />
+</LinearLayout>
