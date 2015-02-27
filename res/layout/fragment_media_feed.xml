@@ -5,11 +5,11 @@
     android:orientation="vertical"
     tools:context="com.frame.app.MediaFeed$PlaceholderFragment" >
 
-    <ExpandableListView
+    <ListView
         android:id="@+id/mediaFeedListView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent" >
 
-    </ExpandableListView>
+    </ListView>
 
 </LinearLayout>

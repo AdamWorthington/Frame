@@ -1,15 +1,15 @@
-package come.frame.app.Core;
+/*package come.frame.app.Core;
 
 import com.frame.app.View.MediaFeed;
 
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 public class FrameFragmentPagerAdapter extends FragmentPagerAdapter 
 {
-	private static final int NUM_PAGES = 5;
+	private static final int NUM_PAGES = 4;
 	
 	public FrameFragmentPagerAdapter(FragmentManager fm)
 	{
@@ -17,9 +17,27 @@ public class FrameFragmentPagerAdapter extends FragmentPagerAdapter
 	}
 
 	@Override
-	public Fragment getItem(int arg0) 
+	public Fragment getItem(int index) 
 	{ 
-		return null;
+		Fragment thisFragment = null;
+		
+		switch(index)
+		{
+			case 0:
+				thisFragment = new MediaFeed();
+				break;
+			case 1:
+				thisFragment = new MediaFeed();
+				break;
+			case 2:
+				thisFragment = new MediaFeed();
+				break;
+			case 3:
+				thisFragment = new MediaFeed();
+				break;
+		}
+		
+		return (Fragment)thisFragment;
 	}
 
 	@Override
@@ -29,4 +47,4 @@ public class FrameFragmentPagerAdapter extends FragmentPagerAdapter
 		return NUM_PAGES;
 	}
 
-}
+}*/
