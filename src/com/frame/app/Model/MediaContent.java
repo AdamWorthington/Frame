@@ -16,6 +16,8 @@ public class MediaContent
 	private Location locationStamp;
 	private Date timestamp;
 	
+	private int databaseId;
+	
 	public MediaContent(boolean fileType, String fileId, 
 			Location locationStamp, Date timestamp)
 	{
@@ -26,6 +28,7 @@ public class MediaContent
 		
 		this.rating = 0;
 		this.flagCount = 0;
+		this.databaseId = 0;
 		comments = new ArrayList<Comment>();
 	}
 	
@@ -33,6 +36,11 @@ public class MediaContent
 	public boolean getFileType()
 	{
 		return fileType;
+	}
+	
+	public int getDatabaseId()
+	{
+		return databaseId;
 	}
 	
 	public Location getLocation()

@@ -1,15 +1,16 @@
-/*package come.frame.app.Core;
+package come.frame.app.Core;
 
 import com.frame.app.View.MediaFeed;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 public class FrameFragmentPagerAdapter extends FragmentPagerAdapter 
 {
-	private static final int NUM_PAGES = 4;
+	private static final int NUM_PAGES = 3;
 	
 	public FrameFragmentPagerAdapter(FragmentManager fm)
 	{
@@ -47,4 +48,4 @@ public class FrameFragmentPagerAdapter extends FragmentPagerAdapter
 		return NUM_PAGES;
 	}
 
-}*/
+}

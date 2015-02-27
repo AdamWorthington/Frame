@@ -9,6 +9,7 @@
     <string name="title_Search">Search</string>
     <string name="title_Other">Other</string>
     <string name="title_Post">Post</string>
-    <string name="title_activity_main_page">MediaFeed</string>
+    <string name="title_activity_main_page">Frame For Android</string>
+    <string name="action_search">search</string>
 
 </resources>

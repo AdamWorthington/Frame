@@ -3,7 +3,9 @@ package com.frame.app.View;
 import java.util.ArrayList;
 
 import com.frame.app.R;
+import com.frame.app.Model.MediaContent;
 
+import come.frame.app.Core.MediaArrayAdapter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -26,13 +28,14 @@ public class MediaFeed extends Fragment
 		        "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
 		        "Android", "iPhone", "WindowsMobile" };
 		
-		final ArrayList<String> list = new ArrayList<String>();
+		final ArrayList<MediaContent> list = new ArrayList<MediaContent>();
 		for (int i = 0; i < testVals.length; ++i) 
 		{
-		      list.add(testVals[i]);
+			MediaContent c = new MediaContent(false,testVals[i], null, null);
+		      list.add(c);
 		}
 
-		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_list_item_1, list);
+		final MediaArrayAdapter adapter = new MediaArrayAdapter(this.getActivity(), android.R.layout.simple_list_item_1, list);
 		listview.setAdapter(adapter);
 		
 		return root;

@@ -20,11 +20,9 @@ public class PeekFeed extends Fragment
 		View root = inflater.inflate(R.layout.fragment_media_feed, container, false);
 
 		final ListView listview = (ListView) root.findViewById(R.id.mediaFeedListView);
-		String[] testVals = new String[] { "Android", "iPhone", "WindowsMobile",
-		        "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-		        "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-		        "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-		        "Android", "iPhone", "WindowsMobile" };
+		String[] testVals = new String[] { "Ferrari", "Lamborghini", "Toyota", "Nissan",
+				"Honda", "Ford", "Chevy", "GM", "Fiat", "Bugatti",
+				"Infiniti", "Lexus", "BMW", "Lincoln", "Acura"};
 		
 		final ArrayList<String> list = new ArrayList<String>();
 		for (int i = 0; i < testVals.length; ++i) 
