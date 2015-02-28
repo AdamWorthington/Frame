@@ -43,6 +43,11 @@ public class MediaContent
 		return databaseId;
 	}
 	
+	public String getFileId()
+	{
+		return fileId;
+	}
+	
 	public Location getLocation()
 	{
 		return locationStamp;
