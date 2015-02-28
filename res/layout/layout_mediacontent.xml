@@ -36,8 +36,9 @@
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/icon"
+        android:layout_alignRight="@+id/contentImage"
+        android:layout_below="@+id/contentImage"
+        android:layout_marginTop="14dp"
         android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
 
 </RelativeLayout> 

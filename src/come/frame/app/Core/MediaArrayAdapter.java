@@ -37,11 +37,13 @@ public class MediaArrayAdapter extends ArrayAdapter<MediaContent>
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView = inflater.inflate(R.layout.layout_mediacontent, parent, false);
 		
-	    TextView timestampView = (TextView) rowView.findViewById(R.id.timestamp);
 	    ImageView imageView = (ImageView) rowView.findViewById(R.id.contentImage);
+	    imageView.setImageResource(R.drawable.standin);
+
+	    TextView timestampView = (TextView) rowView.findViewById(R.id.timestamp);
 	    String convertedStamp = convertTimestamp(values.get(position).getTimestamp());
 	    timestampView.setText(convertedStamp);
-	    imageView.setImageResource(R.drawable.standin);
+	    
 	    TextView nameView = (TextView) rowView.findViewById(R.id.nameOfView);
 	    nameView.setText(values.get(position).getFileId());
 
@@ -67,11 +69,11 @@ public class MediaArrayAdapter extends ArrayAdapter<MediaContent>
 		
 		
 		if(timeInHours > 0)
-			return Integer.toString(timeInHours) + " hours";
+			return Integer.toString(timeInHours) + " hours ago";
 		else if(timeInMinutes > 0)
-			return Integer.toString(timeInMinutes) + " minutes";
+			return Integer.toString(timeInMinutes) + " minutes ago";
 		else
-			return Integer.toString(timeInSeconds) + " seconds";
+			return Integer.toString(timeInSeconds) + " seconds ago";
 		
 	}
 
