@@ -1,9 +1,9 @@
-package come.frame.app.Core;
+package com.frame.app.Core;
 
 import com.frame.app.R;
+import com.frame.app.Core.FrameFragmentPagerAdapter;
+import com.frame.app.Core.TabsListener;
 
-import come.frame.app.Core.FrameFragmentPagerAdapter;
-import come.frame.app.Core.TabsListener;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
