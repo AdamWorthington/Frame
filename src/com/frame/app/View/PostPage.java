@@ -1,7 +1,5 @@
 package com.frame.app.View;
 
-import java.util.ArrayList;
-
 import com.frame.app.R;
 
 import android.os.Bundle;
@@ -9,8 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.content.Intent;
 
 public class PostPage extends Fragment
 {
@@ -21,4 +18,12 @@ public class PostPage extends Fragment
 		
 		return root;
 	}
+
+    /** Text button called */
+    public void changePage(View view){
+        Intent intent;
+        intent = new Intent(getActivity(),Text_post.class);
+        getActivity().startActivity(intent);
+
+    }
 }

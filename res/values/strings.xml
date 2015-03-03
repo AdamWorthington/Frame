@@ -11,5 +11,8 @@
     <string name="title_Post">Post</string>
     <string name="title_activity_main_page">Frame For Android</string>
     <string name="action_search">search</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send</string>
+    <string name="title_activity_text_post">Text_post</string>
 
 </resources>

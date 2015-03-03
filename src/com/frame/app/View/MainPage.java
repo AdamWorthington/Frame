@@ -5,6 +5,8 @@ import com.frame.app.Core.FrameFragmentPagerAdapter;
 import com.frame.app.Core.TabsListener;
 
 import android.app.Activity;
+import android.content.Intent;
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
@@ -13,6 +15,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
 import android.view.Window;
 
 @SuppressWarnings("deprecation")
@@ -84,5 +87,12 @@ public class MainPage extends ActionBarActivity
 	    inflater.inflate(R.menu.main, menu);
 	    return super.onCreateOptionsMenu(menu);
 	}
+
+    public void changePage(View view){
+        Intent intent;
+        intent = new Intent(this,Text_post.class);
+        this.startActivity(intent);
+
+    }
 
 }
