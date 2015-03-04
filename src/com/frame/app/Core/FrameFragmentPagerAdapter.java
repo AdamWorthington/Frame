@@ -1,4 +1,4 @@
-package come.frame.app.Core;
+package com.frame.app.Core;
 
 import com.frame.app.View.MediaFeed;
 

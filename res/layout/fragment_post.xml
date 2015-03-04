@@ -31,7 +31,8 @@
             android:layout_centerHorizontal="true"
             android:layout_weight="0.28"
             android:autoText="false"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:onClick = "changePage" />
 
         <Button
             android:layout_width="84dp"
