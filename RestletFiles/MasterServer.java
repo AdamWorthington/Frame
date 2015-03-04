@@ -5,7 +5,9 @@ import org.restlet.Restlet;
 import org.restlet.routing.Router;
 
 public class MasterServer extends Application {
-
+	public MasterServer(){
+		super();
+	}
     /**
      * Creates a root Restlet that will receive all incoming calls.
      */
@@ -16,7 +18,7 @@ public class MasterServer extends Application {
         Router router = new Router(getContext());
 
         // Defines only one route
-        router.attach("/hoopla", SimpleServlet.class);
+        router.attach("/Simple", SimpleServlet.class);
 
         return router;
     }
