@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-
 import com.frame.app.R;
 
 
@@ -44,7 +43,7 @@ public class Text_post extends ActionBarActivity {
     }
 
     public void changeToMain(View view){
-        IIntent intent;
+        Intent intent;
         intent = new Intent(this,MainPage.class);
         EditText editText =(EditText) findViewById(R.id.editText);
         String message = editText.getText().toString();
