@@ -1,5 +1,7 @@
 package com.frame.app.View;
 
+import java.io.IOException;
+
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -10,9 +12,13 @@ import android.widget.EditText;
 
 import com.frame.app.R;
 
-import java.io.ByteArrayOutputStream;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 
 public class Text_post extends ActionBarActivity {
 
@@ -52,24 +58,32 @@ public class Text_post extends ActionBarActivity {
 
     }
 
-    public void changeToMainAfterPosting(View view){
-        Intent intent;
-        intent = new Intent(this,MainPage.class);
+    public void changeToMainAfterPosting(View view)
+    {
+    	//Grab the text field
         EditText editText =(EditText) findViewById(R.id.editText);
         String message = editText.getText().toString();
         System.out.print(message + "\n");
-        /*JSONObject json = TextToJson(message,null,null,null,null,null);
+        
+        //Make a client resource.
+		ClientResource res = new ClientResource("http://1-dot-august-clover-86805.appspot.com/Simple");
+		res.setMethod(Method.POST);
+        JSONObject json = TextToJson(message, 500.43, 235.12, "Adam", "10/10/2015", null);
         StringRepresentation stringRep = new StringRepresentation(
-                obj.toString());
+        		json.toString());
         stringRep.setMediaType(MediaType.APPLICATION_JSON);
 
         try {
             res.post(stringRep).write(System.out);
-        } catch (ResourceException | IOException e) {
-            // TODO Auto-generated catch block
+        } catch (ResourceException e) {
             e.printStackTrace();
-        }*/
-
+        } catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+        //GO back to main page
+        Intent intent;
+        intent = new Intent(this,MainPage.class);
         this.startActivity(intent);
 
     }
