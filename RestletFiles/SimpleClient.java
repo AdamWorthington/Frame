@@ -12,7 +12,7 @@ import org.restlet.resource.ResourceException;
 
 public class SimpleClient {
 	public static void main(String[] args) {
-		postText();
+		getText();
 	}
 	
 	public static void getText(){

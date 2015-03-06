@@ -75,7 +75,7 @@ public class Text_post extends ActionBarActivity {
 		JSONObject o = null;
 		
 		new PostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", message);
-		new GetTask(MainPage.class).execute("http://1-dot-august-clover-86805.appspot.com/Get", message, o);
+		new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", message, o);
 
 		Intent intent;
 		intent = new Intent(this, MainPage.class);
@@ -93,13 +93,6 @@ public class Text_post extends ActionBarActivity {
 	
 	private class GetTask extends AsyncTask<Object, Void, JSONObject> 
 	{
-		private Activity parent;
-		
-		public GetTask(Activity parentActivity)
-		{
-			parent = parentActivity;
-		}
-		
 		@Override
 		protected JSONObject doInBackground(Object... params) 
 		{		
@@ -111,14 +104,22 @@ public class Text_post extends ActionBarActivity {
 			stringRep.setMediaType(MediaType.APPLICATION_JSON);
 			JSONObject o = null;
 			try {
-				Representation r = res.post(stringRep);
+				Representation r = res.get();
 				o = new JSONObject(r.getText());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return o;
 		}
+		
+		@Override
+	    protected void onPostExecute(JSONObject result) 
+		{
+			String s =  result.toString();
+			CharSequence cs = s;
+			Toast.makeText(Text_post.this, cs, 1).show();
+	    }
 		
 		private JSONObject textToJson(String text, Double lat, Double lon,
 				String user, String date, String[] tags) {
