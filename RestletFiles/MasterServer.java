@@ -18,8 +18,8 @@ public class MasterServer extends Application {
         Router router = new Router(getContext());
 
         // Defines only one route
-        router.attach("/Simple", SimpleServlet.class);
-
+        router.attach("/Post", ServerletPost.class);
+        router.attach("/Get", ServerletGet.class);
         return router;
     }
 }
