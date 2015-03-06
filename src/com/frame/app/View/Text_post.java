@@ -1,40 +1,34 @@
 package com.frame.app.View;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Request.Method;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.Response.ErrorListener;
-import com.android.volley.Response.Listener;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.frame.app.R;
-import com.frame.app.Core.CustomRequest;
+import com.frame.app.Core.PostTask;
 
 public class Text_post extends ActionBarActivity {
 
 	protected static final String ERROR_TAG = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,115 +63,79 @@ public class Text_post extends ActionBarActivity {
 		this.startActivity(intent);
 
 	}
+
 	String message = "";
+
 	public void changeToMainAfterPosting(View view)
 			throws ClientProtocolException, IOException {
 		// Grab the text field
 		EditText editText = (EditText) findViewById(R.id.editText);
 		message = editText.getText().toString();
-    
 		
+		JSONObject o = null;
 		
-		
-	    RequestQueue queue = Volley.newRequestQueue(this);
-	    
-		
-		
-		  Map<String, String> params = new HashMap<String, String>();
-		  params.put("Text", message); 
-		  params.put("Lat", "0");
-		  params.put("Lon", "0"); 
-		  params.put("User", "Craig");
-		  params.put("Date", "1"); 
-		  params.put("Tags", "1");
-		  
-		  CustomRequest jsObjRequest = new CustomRequest(Method.POST,
-		  "http://1-dot-august-clover-86805.appspot.com/Post", params,
-		  this.createRequestSuccessListener(),
-		  this.createRequestErrorListener()); queue.add(jsObjRequest);
-		  queue.add(jsObjRequest);
-		 /* 
-		 * 
-		 * // -----------------------THIS SUBMITS THE TEXT //
-		 * POSTS!-----------------------------//
-		 * 
-		 * String url1 = "http://1-dot-august-clover-86805.appspot.com/Post"; //
-		 * Request a string response from the provided URL. StringRequest
-		 * stringRequest = new StringRequest(Request.Method.POST, url1, null,
-		 * null){
-		 * 
-		 * @Override protected Map<String, String> getParams() { Map<String,
-		 * String> params = new HashMap<String, String>(); params.put("Text",
-		 * message); params.put("Lat", "0"); params.put("Lon", "0");
-		 * params.put("User", "Craig"); params.put("Date", null);
-		 * params.put("Tags", null);
-		 * 
-		 * return params; } }; // Add the request to the RequestQueue.
-		 * queue.add(stringRequest);
-		 * 
-		 * // -----------------------END SUMBITS TEXT //
-		 * POSTS!--------------------------------------// //
-		 * -----------------------THIS GETS THE TOP 10 TEXT //
-		 * POSTS!-----------------------------// // Instantiate the
-		 * RequestQueue.
-		 * 
-		 * String url2 = "http://1-dot-august-clover-86805.appspot.com/Get"; //
-		 * Request a string response from the provided URL. StringRequest
-		 * stringRequest2 = new StringRequest(Request.Method.GET, url2, new
-		 * Response.Listener<String>() {
-		 * 
-		 * @Override public void onResponse(String response) { // Display the
-		 * first 500 characters of the response // string.
-		 * System.out.println(response); } }, new Response.ErrorListener() {
-		 * 
-		 * @Override public void onErrorResponse(VolleyError error) {
-		 * 
-		 * } }); // Add the request to the RequestQueue.
-		 * queue.add(stringRequest2); // -----------------------END TOP 10 TEXT
-		 * // POSTS!--------------------------------------//
-		 */
-		// GO back to main page
+		new PostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", message);
+		new GetTask(MainPage.class).execute("http://1-dot-august-clover-86805.appspot.com/Get", message, o);
+
 		Intent intent;
 		intent = new Intent(this, MainPage.class);
 		this.startActivity(intent);
 
 	}
-
-	private ErrorListener createMyReqErrorListener() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public void setReturnJSON(JSONObject o)
+	{
+		EditText editText = (EditText) findViewById(R.id.editText);
+		String s =  o.toString();
+		CharSequence cs = s;
+		Toast.makeText(this, cs, 1).show();
 	}
-
-	private Listener<String> createMyReqSuccessListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private ErrorListener createRequestErrorListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private Listener<JSONObject> createRequestSuccessListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static JSONObject TextToJson(String text, Double lat, Double lon,
-			String user, String date, String[] tags) {
-		JSONObject jo = new JSONObject();
-
-		try {
-			jo.put("Text", text);
-			jo.put("Lat", lat);
-			jo.put("Lon", lon);
-			jo.put("User", user);
-			jo.put("Date", date);
-			jo.put("Tags", tags);
-		} catch (JSONException e) {
-			e.printStackTrace();
+	
+	private class GetTask extends AsyncTask<Object, Void, JSONObject> 
+	{
+		private Activity parent;
+		
+		public GetTask(Activity parentActivity)
+		{
+			parent = parentActivity;
 		}
+		
+		@Override
+		protected JSONObject doInBackground(Object... params) 
+		{		
+			ClientResource res = new ClientResource(params[0].toString());
+			res.setMethod(Method.GET);
+			JSONObject obj = textToJson("", 0.0, 0.0, "", "", new String[]{""});
+			StringRepresentation stringRep = new StringRepresentation(
+					obj.toString());
+			stringRep.setMediaType(MediaType.APPLICATION_JSON);
+			JSONObject o = null;
+			try {
+				Representation r = res.post(stringRep);
+				o = new JSONObject(r.getText());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+		private JSONObject textToJson(String text, Double lat, Double lon,
+				String user, String date, String[] tags) {
+			JSONObject jo = new JSONObject();
 
-		return jo;
+			try {
+				jo.put("Text", text);
+				jo.put("Lat", lat);
+				jo.put("Lon", lon);
+				jo.put("User", user);
+				jo.put("Date", date);
+				jo.put("Tags", tags);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
+			return jo;
+		}
 	}
 }

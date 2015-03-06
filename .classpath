@@ -9,7 +9,8 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="C:/Users/Craig/Documents/GitHub/Frame/libs/org.restlet.ext.httpclient.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Craig/Documents/GitHub/Frame/libs/org.restlet.ext.httpclient.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Craig/Documents/GitHub/volley"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Craig/Documents/GitHub/Frame/libs/org.restlet.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

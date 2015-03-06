@@ -94,5 +94,9 @@ public class MainPage extends ActionBarActivity
         this.startActivity(intent);
 
     }
+    
+    public void getReturnJSON()
+    {
+    }
 
 }
