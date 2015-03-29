@@ -224,13 +224,6 @@ public class MediaContentPost extends ActionBarActivity
 	
 	    return mediaFile;
 	}
-
-	public void changeToMain(View view) {
-		Intent intent;
-		intent = new Intent(this, MainPage.class);
-		this.startActivity(intent);
-
-	}
 	
 	/*
 	 * This function changes between edit and preview modes after taking a picture.
@@ -281,7 +274,7 @@ public class MediaContentPost extends ActionBarActivity
 		int camId = (frontFacing) ? 1 : 0;
 		camera = getCameraInstance(camId);
 		preview = new CameraPreview(this, camera);
-		fPreview.addView(preview, fPreview.getChildCount() - 1);
+		fPreview.addView(preview);
 	}
 	
 	public void takePicture(View view)
@@ -291,6 +284,9 @@ public class MediaContentPost extends ActionBarActivity
 		changeModes(true);
 	}
 	
+	/*
+	 * Called when the user clicks the capture button
+	 */
 	public void capture(View view)
 	{
 		takePicture(view);
@@ -320,17 +316,37 @@ public class MediaContentPost extends ActionBarActivity
 		}
 	}
 	
+	/*
+	 * Called when the user wants to send the media content to the server.
+	 * After doing this, we release relevant resources and return to the main media feed.
+	 */
 	public void sendMediaContent(View view)
 	{
+		//Calling this method will release camera and media recorder resources.
+		onPause();
 		
+		//Launch the intent to return to the main page
+        Intent intent = new Intent(this, MainPage.class);
+        this.startActivity(intent);
+		
+		//Removes the activity from the back-stack.
+		finish();
 	}
 	
 	/*
 	 * Method that is called when the user cancels when in edit/review mode.
-	 * Returns the preview mode.
+	 * Returns to preview mode.
 	 */
 	public void cancelPostPreview(View view)
 	{
+		FrameLayout fPreview = (FrameLayout) findViewById(R.id.camera_preview);
+		fPreview.removeView(preview);
+		releaseCamera();
+		int camId = (frontFacing) ? 1 : 0;
+		camera = getCameraInstance(camId);
+		preview = new CameraPreview(this, camera);
+		fPreview.addView(preview);
+		
 		changeModes(false);
 	}
 }
