@@ -18,8 +18,7 @@
 	    android:layout_alignParentBottom="true"
 	    android:layout_alignParentRight="true"
 	    android:onClick="capture"
-	    android:text="Capture" />
-
+	    android:text="Capture"/>
     <Button
         android:id="@+id/button_changeCam"
         android:layout_width="wrap_content"
@@ -27,6 +26,25 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:onClick="changeCamera"
-        android:text="Change Camera" />
+        android:text="Change Camera"/>
+    
+    <Button
+        android:id="@+id/button_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:onClick="sendMediaContent"
+        android:text="Send"
+        android:visibility="invisible" />
+    <Button
+	    android:id="@+id/button_cancel"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_alignParentRight="true"
+	    android:onClick="cancelPostPreview"
+	    android:text="Cancel"
+	    android:visibility="invisible"/>
     
 </RelativeLayout>

@@ -233,6 +233,41 @@ public class MediaContentPost extends ActionBarActivity
 	}
 	
 	/*
+	 * This function changes between edit and preview modes after taking a picture.
+	 */
+	private void changeModes(boolean edit)
+	{
+		if(edit)
+		{
+			//Hide the preview buttons
+			Button button_changeCam = (Button) findViewById(R.id.button_changeCam);
+			button_changeCam.setVisibility(View.GONE);
+			Button button_capture = (Button) findViewById(R.id.button_capture);
+			button_capture.setVisibility(View.GONE);
+			
+			//Show the edit buttons
+			Button button_send = (Button) findViewById(R.id.button_send);
+			button_send.setVisibility(View.VISIBLE);
+			Button button_cancel = (Button) findViewById(R.id.button_cancel);
+			button_cancel.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			//Hide the edit buttons
+			Button button_send = (Button) findViewById(R.id.button_send);
+			button_send.setVisibility(View.GONE);
+			Button button_cancel = (Button) findViewById(R.id.button_cancel);
+			button_cancel.setVisibility(View.GONE);
+			
+			//Show the preview buttons
+			Button button_changeCam = (Button) findViewById(R.id.button_changeCam);
+			button_changeCam.setVisibility(View.VISIBLE);
+			Button button_capture = (Button) findViewById(R.id.button_capture);
+			button_capture.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	/*
 	 * Called when a user clickers the change camera mode button. 
 	 * When the camera is on front-facing mode, it changes to back.
 	 * And when the camera is on back-facing mode, it changes to front.
@@ -252,6 +287,8 @@ public class MediaContentPost extends ActionBarActivity
 	public void takePicture(View view)
 	{
 		camera.takePicture(null, null, mPicture);
+		
+		changeModes(true);
 	}
 	
 	public void capture(View view)
@@ -282,4 +319,19 @@ public class MediaContentPost extends ActionBarActivity
 			}
 		}
 	}
+	
+	public void sendMediaContent(View view)
+	{
+		
+	}
+	
+	/*
+	 * Method that is called when the user cancels when in edit/review mode.
+	 * Returns the preview mode.
+	 */
+	public void cancelPostPreview(View view)
+	{
+		changeModes(false);
+	}
 }
+
