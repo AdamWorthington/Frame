@@ -26,4 +26,11 @@ public class PostPage extends Fragment
         getActivity().startActivity(intent);
 
     }
+    
+    public void takeMediaContent(View view){
+        Intent intent;
+        intent = new Intent(getActivity(), MediaContentPost.class);
+        getActivity().startActivity(intent);
+
+    }
 }

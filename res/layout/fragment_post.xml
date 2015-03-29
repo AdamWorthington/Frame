@@ -20,8 +20,9 @@
             android:text="Camera"
             android:id="@+id/button2"
             android:layout_weight="0.28"
-            android:layout_gravity="center_horizontal" />
-
+            android:layout_gravity="center_horizontal"
+			android:onClick = "takeMediaContent" />
+        
         <Button
             android:layout_width="288dp"
             android:layout_height="wrap_content"

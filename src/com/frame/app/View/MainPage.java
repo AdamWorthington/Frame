@@ -6,7 +6,6 @@ import com.frame.app.Core.TabsListener;
 
 import android.app.Activity;
 import android.content.Intent;
-
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
@@ -93,6 +92,12 @@ public class MainPage extends ActionBarActivity
         intent = new Intent(this,Text_post.class);
         this.startActivity(intent);
 
+    }
+    
+    public void takeMediaContent(View view){
+        Intent intent;
+        intent = new Intent(this, MediaContentPost.class);
+        this.startActivity(intent);
     }
     
     public void getReturnJSON()

@@ -16,6 +16,8 @@
     <android:uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -33,6 +35,10 @@
         </activity>
         <activity
             android:name=".View.Text_post"
+            android:label="@string/title_activity_text_post" >
+        </activity>
+                <activity
+            android:name=".View.MediaContentPost"
             android:label="@string/title_activity_text_post" >
         </activity>
     </application>
