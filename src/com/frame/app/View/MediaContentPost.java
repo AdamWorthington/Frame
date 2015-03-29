@@ -25,9 +25,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.ImageFormat;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.Size;
+import android.media.CamcorderProfile;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
@@ -39,11 +41,15 @@ import android.os.HandlerThread;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.SparseIntArray;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -52,12 +58,11 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.frame.app.R;
-import com.frame.app.Core.PostTask;
 import com.frame.app.Model.CameraPreview;
 import com.frame.app.R.id;
 
 @SuppressWarnings("deprecation")
-public class MediaContentPost extends ActionBarActivity 
+public class MediaContentPost extends ActionBarActivity
 {
 	private Camera camera;
 	private MediaRecorder mediaRecorder;
@@ -65,6 +70,21 @@ public class MediaContentPost extends ActionBarActivity
 	
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;
+	private boolean frontFacing = false;
+	private boolean isRecording;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) 
+	{
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_camera_preview);
+		
+		camera = getCameraInstance(0);
+		preview = new CameraPreview(this, camera);
+		FrameLayout fPreview = (FrameLayout) findViewById(R.id.camera_preview);
+		fPreview.addView(preview, fPreview.getChildCount() - 1);
+	}
 	
 	private PictureCallback mPicture = new PictureCallback()
 	{
@@ -89,36 +109,46 @@ public class MediaContentPost extends ActionBarActivity
 	    }
 	};
 	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) 
+	private boolean prepareVideoRecorder()
 	{
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_camera_preview);
-
-		camera = getCameraInstance();
-		preview = new CameraPreview(this, camera);
-		FrameLayout fPreview = (FrameLayout) findViewById(R.id.camera_preview);
-		fPreview.addView(preview);
+		camera = getCameraInstance(0);
+		mediaRecorder = new MediaRecorder();
 		
-		Button captureButton = (Button) findViewById(id.button_capture);
-		captureButton.setOnClickListener(new View.OnClickListener() 
+		camera.unlock();
+		mediaRecorder.setCamera(camera);
+		mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+		mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+		mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+		mediaRecorder.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
+		mediaRecorder.setPreviewDisplay(preview.getHolder().getSurface());
+		
+		try
 		{
-			@Override
-			public void onClick(View v) 
-			{				
-				camera.takePicture(null, null, mPicture);
-			}
-		});
+			mediaRecorder.prepare();
+		}
+		catch(IllegalStateException e)
+		{
+			e.printStackTrace();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+			releaseMediaRecorder();
+			return false;
+		}
 		
+		return true;
 	}
 	
-	private static Camera getCameraInstance()
+	/*
+	 * Returns the camera instance where id indicates front-facing or back facing. 0 is back, 1 is front.
+	 */
+	private static Camera getCameraInstance(int id)
 	{
 		Camera c = null;
 		try
 		{
-			c = Camera.open();
+			c = Camera.open(id);
 			Camera.Parameters params = c.getParameters();
 			params.set("orientation", "portrait");
 			c.setParameters(params);
@@ -159,7 +189,6 @@ public class MediaContentPost extends ActionBarActivity
 			camera = null;
 		}
 	}
-	
 
 	/** Create a File for saving an image or video */
 	private static File getOutputMediaFile(int type)
@@ -195,28 +224,6 @@ public class MediaContentPost extends ActionBarActivity
 	
 	    return mediaFile;
 	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.menu_text_post, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-
-		// noinspection SimplifiableIfStatement
-		if (id == R.id.action_settings) {
-			return true;
-		}
-
-		return super.onOptionsItemSelected(item);
-	}
 
 	public void changeToMain(View view) {
 		Intent intent;
@@ -224,86 +231,55 @@ public class MediaContentPost extends ActionBarActivity
 		this.startActivity(intent);
 
 	}
-
-	String message = "";
-
-	public void changeToMainAfterPosting(View view)
-			throws ClientProtocolException, IOException {
-		// Grab the text field
-		EditText editText = (EditText) findViewById(R.id.editText);
-		message = editText.getText().toString();
-		
-		JSONObject o = null;
-		
-		new PostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", message);
-		new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", message, o);
-
-		Intent intent;
-		intent = new Intent(this, MainPage.class);
-		this.startActivity(intent);
-
+	
+	/*
+	 * Called when a user clickers the change camera mode button. 
+	 * When the camera is on front-facing mode, it changes to back.
+	 * And when the camera is on back-facing mode, it changes to front.
+	 */
+	public void changeCamera(View view)
+	{
+		FrameLayout fPreview = (FrameLayout) findViewById(R.id.camera_preview);
+		fPreview.removeView(preview);
+		releaseCamera();
+		frontFacing = !frontFacing;
+		int camId = (frontFacing) ? 1 : 0;
+		camera = getCameraInstance(camId);
+		preview = new CameraPreview(this, camera);
+		fPreview.addView(preview, fPreview.getChildCount() - 1);
 	}
 	
-	/*public void changeCamera(View view)
+	public void takePicture(View view)
 	{
-		camera = getCameraInstance();
-		camera.
-	}*/
-	
-	public void setReturnJSON(JSONObject o)
-	{
-		EditText editText = (EditText) findViewById(R.id.editText);
-		String s =  o.toString();
-		CharSequence cs = s;
-		Toast.makeText(this, cs, 1).show();
+		camera.takePicture(null, null, mPicture);
 	}
 	
-	private class GetTask extends AsyncTask<Object, Void, JSONObject> 
+	public void capture(View view)
 	{
-		@Override
-		protected JSONObject doInBackground(Object... params) 
-		{		
-			ClientResource res = new ClientResource(params[0].toString());
-			res.setMethod(Method.GET);
-			JSONObject obj = textToJson("", 0.0, 0.0, "", "", new String[]{""});
-			StringRepresentation stringRep = new StringRepresentation(
-					obj.toString());
-			stringRep.setMediaType(MediaType.APPLICATION_JSON);
-			JSONObject o = null;
-			try {
-				Representation r = res.get();
-				o = new JSONObject(r.getText());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return o;
-		}
-		
-		@Override
-	    protected void onPostExecute(JSONObject result) 
+		takePicture(view);
+	}
+	
+	public void takeVideo(View view)
+	{
+		if(isRecording)
 		{
-			String s =  result.toString();
-			CharSequence cs = s;
-			Toast.makeText(MediaContentPost.this, cs, 1).show();
-	    }
-		
-		private JSONObject textToJson(String text, Double lat, Double lon,
-				String user, String date, String[] tags) {
-			JSONObject jo = new JSONObject();
-
-			try {
-				jo.put("Text", text);
-				jo.put("Lat", lat);
-				jo.put("Lon", lon);
-				jo.put("User", user);
-				jo.put("Date", date);
-				jo.put("Tags", tags);
-			} catch (JSONException e) {
-				e.printStackTrace();
+			mediaRecorder.stop();
+			releaseMediaRecorder();
+			camera.lock();
+			
+			isRecording = false;
+		}
+		else
+		{
+			if(prepareVideoRecorder())
+			{
+				mediaRecorder.start();
+				isRecording = true;
 			}
-
-			return jo;
+			else
+			{
+				releaseMediaRecorder();
+			}
 		}
 	}
 }
