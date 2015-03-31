@@ -1,12 +1,9 @@
-/*package JSON;
+package JSON;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.imageio.ImageIO;
 
 public class JSONMessage {
 	
@@ -298,4 +295,4 @@ public class JSONMessage {
 		
 		return jo;
 	}
-}*/
+}
