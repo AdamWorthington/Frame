@@ -9,7 +9,7 @@ import org.restlet.resource.ClientResource;
 
 import android.os.AsyncTask;
 
-public class PostTask extends AsyncTask<Object, Void, Void> 
+public class PostPictureTask extends AsyncTask<Object, Void, Void> 
 {
 
 	@Override

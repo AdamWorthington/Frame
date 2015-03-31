@@ -1,4 +1,5 @@
-/*package com.frame.app.Model;
+package com.frame.app.Core;
+
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,12 +15,17 @@ public class JSONMessage {
 	public static JSONObject clientPictureToJson(Object pic, Double lat, Double lon, String user, String[] tags)
 	{
 		JSONObject jo = new JSONObject();
-		
-		jo.put("Picture", pic);
-		jo.put("Lat",lat);
-		jo.put("Lon",lon);
-		jo.put("User", user);
-		jo.put("Tags", tags);
+		try
+		{
+			jo.put("Picture", pic);
+			jo.put("Lat",lat);
+			jo.put("Lon",lon);
+			jo.put("User", user);
+			jo.put("Tags", tags);
+		}
+		catch (JSONException e) {
+			e.printStackTrace();
+		}
 		
 		return jo;
 	}
@@ -28,12 +34,19 @@ public class JSONMessage {
 	{
 		JSONObject jo = new JSONObject();
 		
-		jo.put("Text", text);
-		jo.put("Lat",lat);
-		jo.put("Lon",lon);
-		jo.put("User", user);
-		jo.put("Tags", tags);
-		
+		try
+		{
+			jo.put("Text", text);
+			jo.put("Lat",lat);
+			jo.put("Lon",lon);
+			jo.put("User", user);
+			jo.put("Tags", tags);
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
+	
 		return jo;
 	}
 	
@@ -41,22 +54,36 @@ public class JSONMessage {
 	{
 		JSONObject jo = new JSONObject();
 		
-		jo.put("Video", vid);
-		jo.put("Lat",lat);
-		jo.put("Lon",lon);
-		jo.put("User", user);
-		jo.put("Tags", tags);
-		
+		try
+		{
+			jo.put("Video", vid);
+			jo.put("Lat",lat);
+			jo.put("Lon",lon);
+			jo.put("User", user);
+			jo.put("Tags", tags);
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
+	
 		return jo;
 	}
 	public static JSONObject clientComment(String text, String user, int id)
 	{
 		JSONObject jo = new JSONObject();
 		
-		jo.put("Comment", text);
-		jo.put("User", user);
-		jo.put("ID", id);
-		
+		try
+		{
+			jo.put("Comment", text);
+			jo.put("User", user);
+			jo.put("ID", id);
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
+	
 		return jo;
 	}
 	//create json media messages to be sent to client
@@ -64,12 +91,19 @@ public class JSONMessage {
 	{
 		JSONObject jo = new JSONObject();
 		
-		jo.put("Picture", pic);
-		jo.put("Date", date);
-		jo.put("ID", id);
-		jo.put("Rating", rating);
-		jo.put("Tags", tags);
-		
+		try
+		{
+			jo.put("Picture", pic);
+			jo.put("Date", date);
+			jo.put("ID", id);
+			jo.put("Rating", rating);
+			jo.put("Tags", tags);
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
+	
 		return jo;
 	}
 	
@@ -77,79 +111,177 @@ public class JSONMessage {
 	{
 		JSONObject jo = new JSONObject();
 		
-		jo.put("Video", vid);
-		jo.put("Date", date);
-		jo.put("ID", id);
-		jo.put("Rating", rating);
-		jo.put("Tags", tags);
-		
+		try
+		{
+			jo.put("Video", vid);
+			jo.put("Date", date);
+			jo.put("ID", id);
+			jo.put("Rating", rating);
+			jo.put("Tags", tags);
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
+	
 		return jo;
 	}
 	public static JSONObject serverComments(String[] text, int id)
 	{
 		JSONObject jo = new JSONObject();
 		
-		jo.put("Comment", text);
-		jo.put("ID", id);
-		
+		try
+		{
+			jo.put("Comment", text);
+			jo.put("ID", id);
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
+	
 		return jo;
 	}
 	//getter methods
 	public static Object getImage(JSONObject jo)
 	{
-		return jo.get("Picture");
+		try {
+			return jo.get("Picture");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	public static Object getVideo(JSONObject jo)
 	{
-		return jo.get("Video");
+		try {
+			return jo.get("Video");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	public static int getID(JSONObject jo)
 	{
-		return jo.getInt("ID");
+		try {
+			return jo.getInt("ID");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
 	}
 	public static String getDate(JSONObject jo)
 	{
-		return (String) jo.get("Date");
+		try {
+			return (String) jo.get("Date");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	public static String[] getTags(JSONObject jo)
 	{
-		return (String[]) jo.get("Tags");
+		try {
+			return (String[]) jo.get("Tags");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	public static int getRating(JSONObject jo)
 	{
-		return jo.getInt("Rating");
+		try {
+			return jo.getInt("Rating");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
 	}
 	public static String getText(JSONObject jo)
 	{	
-		return (String) jo.get("Text");
+		try {
+			return (String) jo.get("Text");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	public static Double getLon(JSONObject jo)
 	{	
-		return jo.getDouble("Lon");
+		try {
+			return jo.getDouble("Lon");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	public static Double getLat(JSONObject jo)
 	{	
-		return  jo.getDouble("Lat");
+		try {
+			return  jo.getDouble("Lat");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	public static String getComment(JSONObject jo)
 	{	
-		return (String) jo.get("Comment");
+		try {
+			return (String) jo.get("Comment");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	public static String[] getComments(JSONObject jo)
 	{	
-		return (String[]) jo.get("Comment");
+		try {
+			return (String[]) jo.get("Comment");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	public static int getVote(JSONObject jo)
 	{
-		return jo.getInt("Vote");
+		try {
+			return jo.getInt("Vote");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
 	}
 	public static int getPreviousVote(JSONObject jo)
 	{
-		return jo.getInt("Prev");
+		try {
+			return jo.getInt("Prev");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
 	}
 	public static String getFilter(JSONObject jo)
 	{
-		return (String) jo.get("Fliter");
+		try {
+			return (String) jo.get("Fliter");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	//boolean
 	public static boolean isPic(JSONObject jo)
@@ -248,10 +380,17 @@ public class JSONMessage {
 	{
 		JSONObject jo = new JSONObject();
 		
-		jo.put("Vote", vote);
-		jo.put("ID", id);
-		jo.put("Prev", prev);
-		jo.put("User", User);
+		try
+		{
+			jo.put("Vote", vote);
+			jo.put("ID", id);
+			jo.put("Prev", prev);
+			jo.put("User", User);
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
 		
 		return jo;
 	}
@@ -259,10 +398,17 @@ public class JSONMessage {
 	{
 		JSONObject jo = new JSONObject();
 		
-		jo.put("UnVote", "");
-		jo.put("ID", id);
-		jo.put("Prev", prev);
-		jo.put("User", User);
+		try
+		{
+			jo.put("UnVote", "");
+			jo.put("ID", id);
+			jo.put("Prev", prev);
+			jo.put("User", User);
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
 		
 		return jo;
 	}
@@ -270,9 +416,16 @@ public class JSONMessage {
 	{
 		JSONObject jo = new JSONObject();
 		
-		jo.put("Flag", "");
-		jo.put("ID", id);
-		jo.put("User", User);
+		try
+		{
+			jo.put("Flag", "");
+			jo.put("ID", id);
+			jo.put("User", User);
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
 		
 		return jo;
 	}
@@ -280,9 +433,16 @@ public class JSONMessage {
 	{
 		JSONObject jo = new JSONObject();
 		
-		jo.put("UnFlag", "");
-		jo.put("ID", id);
-		jo.put("User", User);
+		try
+		{
+			jo.put("UnFlag", "");
+			jo.put("ID", id);
+			jo.put("User", User);
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
 		
 		return jo;
 	}
@@ -291,11 +451,18 @@ public class JSONMessage {
 	{
 		JSONObject jo = new JSONObject();
 		
-		jo.put("Bottom", bottomId);
-		jo.put("Lat",lat);
-		jo.put("Lon",lon);
-		jo.put("Filter", filter);
+		try
+		{
+			jo.put("Bottom", bottomId);
+			jo.put("Lat",lat);
+			jo.put("Lon",lon);
+			jo.put("Filter", filter);
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
 		
 		return jo;
 	}
-}*/
+}

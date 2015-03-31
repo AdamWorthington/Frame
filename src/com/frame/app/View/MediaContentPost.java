@@ -58,6 +58,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.frame.app.R;
+import com.frame.app.Core.PostTask;
 import com.frame.app.Model.CameraPreview;
 import com.frame.app.R.id;
 
@@ -324,6 +325,8 @@ public class MediaContentPost extends ActionBarActivity
 	{
 		//Calling this method will release camera and media recorder resources.
 		onPause();
+		
+		//new PostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", message);
 		
 		//Launch the intent to return to the main page
         Intent intent = new Intent(this, MainPage.class);
