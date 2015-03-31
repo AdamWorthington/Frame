@@ -1,9 +1,12 @@
-package JSON;
+/*package com.frame.app.Model;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class JSONMessage {
 	
@@ -295,4 +298,4 @@ public class JSONMessage {
 		
 		return jo;
 	}
-}
+}*/
