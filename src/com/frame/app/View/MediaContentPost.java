@@ -4,63 +4,27 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.ClientResource;
-
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.ImageFormat;
-import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
-import android.hardware.Camera.Size;
 import android.media.CamcorderProfile;
-import android.media.Image;
-import android.media.ImageReader;
 import android.media.MediaRecorder;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.support.v7.app.ActionBarActivity;
+import android.text.format.Time;
 import android.util.Log;
-import android.util.SparseIntArray;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.TextureView;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.frame.app.R;
-import com.frame.app.Core.PostTask;
+import com.frame.app.Core.PostPictureTask;
 import com.frame.app.Model.CameraPreview;
-import com.frame.app.R.id;
 
 @SuppressWarnings("deprecation")
 public class MediaContentPost extends ActionBarActivity
@@ -326,7 +290,15 @@ public class MediaContentPost extends ActionBarActivity
 		//Calling this method will release camera and media recorder resources.
 		onPause();
 		
-		//new PostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", message);
+		Time now = new Time();
+		now.setToNow();
+		String date = now.toString();
+		Integer id = Integer.valueOf(0); //The id tied to the phone goes here! <---- need to implement
+		String[] tags = {""};
+		Integer rating = Integer.valueOf(0);
+		
+		new PostPictureTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
+				mPicture, date, id, tags, rating);
 		
 		//Launch the intent to return to the main page
         Intent intent = new Intent(this, MainPage.class);

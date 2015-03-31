@@ -7,6 +7,8 @@ import org.restlet.data.Method;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 
+import com.frame.app.Core.JSONMessage;
+
 import android.os.AsyncTask;
 
 public class PostPictureTask extends AsyncTask<Object, Void, Void> 
@@ -18,9 +20,14 @@ public class PostPictureTask extends AsyncTask<Object, Void, Void>
 		ClientResource res = new ClientResource(
 				params[0].toString());
 		res.setMethod(Method.POST);
+		
+		
+		String date = (String) params[2];
+		int id = (Integer) params[3];
+		String[] args = (String[]) params[4];
+		int count = (Integer) params[5];
 
-		JSONObject obj = textToJson(params[1].toString(), 500.43, 235.12, "Adam",
-				"10/10/2015", new String[]{ "1"});
+		JSONObject obj = JSONMessage.serverPictureToJson(params[1], date, id, args, count);
 		StringRepresentation stringRep = new StringRepresentation(
 				obj.toString());
 		stringRep.setMediaType(MediaType.APPLICATION_JSON);
@@ -28,29 +35,9 @@ public class PostPictureTask extends AsyncTask<Object, Void, Void>
 		try {
 			res.post(stringRep).write(System.out);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.err.println("----------------" + e.toString()
-					+ "----------------");
 			e.printStackTrace();
 		}
+		
 		return null;
 	} 
-	
-	private static JSONObject textToJson(String text, Double lat, Double lon,
-			String user, String date, String[] tags) {
-		JSONObject jo = new JSONObject();
-
-		try {
-			jo.put("Text", text);
-			jo.put("Lat", lat);
-			jo.put("Lon", lon);
-			jo.put("User", user);
-			jo.put("Date", date);
-			jo.put("Tags", tags);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		return jo;
-	}
 }
