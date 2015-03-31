@@ -27,7 +27,7 @@ public class PostPictureTask extends AsyncTask<Object, Void, Void>
 		String[] args = (String[]) params[4];
 		int count = (Integer) params[5];
 
-		JSONObject obj = JSONMessage.serverPictureToJson(params[1], date, id, args, count);
+		JSONObject obj = JSONMessage.clientPictureToJson(params[1], 1.0, 1.0, "Craig", null);
 		StringRepresentation stringRep = new StringRepresentation(
 				obj.toString());
 		stringRep.setMediaType(MediaType.APPLICATION_JSON);
