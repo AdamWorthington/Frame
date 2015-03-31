@@ -9,6 +9,8 @@ import com.frame.app.Model.MediaContent;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +24,20 @@ public class MediaFeed extends Fragment
 {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{
+	{				
 		View root = inflater.inflate(R.layout.fragment_media_feed, container, false);
+		final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) root.findViewById(R.id.swipeMediaFeed);
+		swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			
+			@Override
+			public void onRefresh() 
+			{
+				Log.d("swipeView", "REFRESH");
+				//Put refresh code here!
+				swipeView.setRefreshing(false);
+			}
+		});
+		
 		populateListView(root);
 		
 		return root;
