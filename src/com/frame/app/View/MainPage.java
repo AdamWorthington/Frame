@@ -100,6 +100,22 @@ public class MainPage extends ActionBarActivity
         this.startActivity(intent);
     }
     
+    public void sendFlag(View view)
+    {
+    	int i = 0;
+    	i-=1;
+    }
+    
+    public void sendUpvote(View view)
+    {
+    	
+    }
+    
+    public void sendDownvote(View view)
+    {
+    	
+    }
+    
     public void getReturnJSON()
     {
     }

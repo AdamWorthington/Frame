@@ -23,7 +23,7 @@
         android:padding="6dip"
         android:textSize="16sp" />
     
-        <ImageView
+    <ImageView
         android:id="@+id/contentImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,13 +32,33 @@
         android:contentDescription="TODO"
         android:src="@drawable/standin" />
 
-    <ImageView
-        android:id="@+id/imageView1"
+    <ImageButton
+        android:id="@+id/downvote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/contentImage"
+        android:layout_alignTop="@+id/upvote"
+        android:onClick="sendUpvote"
+        android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
+
+    <ImageButton
+        android:id="@+id/upvote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/contentImage"
-        android:layout_marginTop="14dp"
+        android:layout_marginRight="18dp"
+        android:layout_marginTop="15dp"
+        android:layout_toLeftOf="@+id/downvote"
+        android:onClick="sendDownvote"
+        android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
+
+    <ImageButton
+        android:id="@+id/flag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/contentImage"
+        android:layout_alignTop="@+id/upvote"
+        android:onClick="sendFlag"
         android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
 
 </RelativeLayout> 

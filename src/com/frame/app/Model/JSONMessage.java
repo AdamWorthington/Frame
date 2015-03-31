@@ -1,12 +1,12 @@
-/*package JSON;
+/*package com.frame.app.Model;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.imageio.ImageIO;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class JSONMessage {
 	
