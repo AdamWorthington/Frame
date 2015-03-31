@@ -1,23 +1,39 @@
 package com.frame.app.Core;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+
 public class JSONMessage {
 	
+	
+	public static String encodeTobase64(Bitmap image)
+	{
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();  
+	    image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+	    byte[] b = baos.toByteArray();
+	    return Base64.encodeToString(b,Base64.DEFAULT);
+
+	}
+	public static Bitmap decodeBase64(String input) 
+	{
+	    byte[] decodedByte = Base64.decode(input, 0);
+	    return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length); 
+	}
+	
 	//create json media messages to be sent to client
-	public static JSONObject clientPictureToJson(Object pic, Double lat, Double lon, String user, String[] tags)
+	public static JSONObject clientPictureToJson(Bitmap pic, Double lat, Double lon, String user, String[] tags)
 	{
 		JSONObject jo = new JSONObject();
 		try
 		{
-			jo.put("Picture", pic);
+			String picS = encodeTobase64(pic);
+			jo.put("Picture", picS);
 			jo.put("Lat",lat);
 			jo.put("Lon",lon);
 			jo.put("User", user);
