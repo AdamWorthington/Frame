@@ -13,14 +13,17 @@ import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.frame.app.R;
 import com.frame.app.Core.PostPictureTask;
@@ -32,7 +35,8 @@ public class MediaContentPost extends ActionBarActivity
 	private Camera camera;
 	private MediaRecorder mediaRecorder;
 	private CameraPreview preview;
-	
+
+    private File picture;
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;
 	private boolean frontFacing = false;
@@ -49,6 +53,25 @@ public class MediaContentPost extends ActionBarActivity
 		preview = new CameraPreview(this, camera);
 		FrameLayout fPreview = (FrameLayout) findViewById(R.id.camera_preview);
 		fPreview.addView(preview, fPreview.getChildCount() - 1);
+
+        Button button = (Button) findViewById(R.id.button_capture);
+        button.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // TODO Auto-generated method stub
+                //videoCapture(v);
+                return true;
+            }
+        });
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                takePicture(v);
+                }
+
+            });
+
 	}
 	
 	private PictureCallback mPicture = new PictureCallback()
@@ -66,6 +89,7 @@ public class MediaContentPost extends ActionBarActivity
 	            FileOutputStream fos = new FileOutputStream(pictureFile);
 	            fos.write(data);
 	            fos.close();
+                picture = pictureFile;
 	        } catch (FileNotFoundException e) {
 	            Log.d("File Create", "File not found: " + e.getMessage());
 	        } catch (IOException e) {
@@ -245,7 +269,6 @@ public class MediaContentPost extends ActionBarActivity
 	public void takePicture(View view)
 	{
 		camera.takePicture(null, null, mPicture);
-		
 		changeModes(true);
 	}
 	
@@ -254,10 +277,26 @@ public class MediaContentPost extends ActionBarActivity
 	 */
 	public void capture(View view)
 	{
-		takePicture(view);
-	}
-	
-	public void takeVideo(View view)
+            takePicture(view);
+    }
+    private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
+    private Uri fileUri;
+
+    private static Uri getOutputMediaFileUri(int type){
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+    public void videoCapture(View view){
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);  // create a file to save the video
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);  // set the image file name
+
+        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1); // set the video image quality to high
+
+        // start the Video Capture Intent
+        startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
+    }
+
+    public void takeVideo(View view)
 	{
 		if(isRecording)
 		{
@@ -298,7 +337,7 @@ public class MediaContentPost extends ActionBarActivity
 		Integer rating = Integer.valueOf(0);
 		
 		new PostPictureTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
-				mPicture, date, id, tags, rating);
+				picture, date, id, tags, rating);
 		
 		//Launch the intent to return to the main page
         Intent intent = new Intent(this, MainPage.class);
