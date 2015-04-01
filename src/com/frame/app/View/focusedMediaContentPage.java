@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.frame.app.R;
+import com.frame.app.Core.FlagPostTask;
 import com.frame.app.Core.FrameFragmentPagerAdapter;
 import com.frame.app.Core.MediaArrayAdapter;
 import com.frame.app.Core.TabsListener;
+import com.frame.app.Core.VotePostTask;
 import com.frame.app.Model.MediaContent;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
@@ -22,7 +25,10 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 @SuppressWarnings("deprecation")
 public class focusedMediaContentPage extends ActionBarActivity
@@ -40,50 +46,70 @@ public class focusedMediaContentPage extends ActionBarActivity
 		
 		final ListView listview = (ListView) findViewById(R.id.comment_listview);
 		
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[]{li1, li2, "Good Morning", "Hey there!"});
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, 
+				new String[]{li1, li2, "Good Morning", "Hey there!", "Buenos Dias", "Hola", "Chao"});
 		listview.setAdapter(adapter);
 	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) 
-	{
-	    // Inflate the menu items for use in the action bar
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.main, menu);
-	    return super.onCreateOptionsMenu(menu);
-	}
-
-    public void changePage(View view){
-        Intent intent;
-        intent = new Intent(this,Text_post.class);
-        this.startActivity(intent);
-
-    }
-    
-    public void takeMediaContent(View view){
-        Intent intent;
-        intent = new Intent(this, MediaContentPost.class);
-        this.startActivity(intent);
-    }
     
     public void sendFlag(View view)
     {
-    	int i = 0;
-    	i-=1;
+    	//Disable the button
+    	view.setEnabled(false);
+    	
+    	String user = "Craig";
+    	Integer id = Integer.valueOf(0);
+    	
+		new FlagPostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
+				user, id);
     }
     
     public void sendUpvote(View view)
     {
+    	//Disable the button
+    	view.setEnabled(false);
+    	RelativeLayout rl = (RelativeLayout)view.getParent();
+    	ImageButton downvote = (ImageButton)rl.findViewById(R.id.downvote);
+       	downvote.setEnabled(false);
+       	
+       	TextView contentRating = (TextView)rl.findViewById(R.id.rating);
+       	String val = (String) contentRating.getText();
+       	int intVal = Integer.parseInt(val);
+       	intVal += 1;
+       	String newVal = String.valueOf(intVal);
+       	contentRating.setText(newVal);
+       	if(intVal >= 0)
+       		contentRating.setTextColor(Color.GREEN);
+       	
+		String user = "Craig";
+		Integer Id = Integer.valueOf(0);
+		Integer vote = Integer.valueOf(1);
     	
+		new VotePostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
+				user, Id, vote);
     }
     
     public void sendDownvote(View view)
     {
+    	//Disable the button
+    	view.setEnabled(false);
+    	RelativeLayout rl = (RelativeLayout)view.getParent();
+    	ImageButton upvote = (ImageButton)rl.findViewById(R.id.upvote);
+    	upvote.setEnabled(false);
     	
+       	TextView contentRating = (TextView)rl.findViewById(R.id.rating);
+       	String val = (String) contentRating.getText();
+       	int intVal = Integer.parseInt(val);
+       	intVal -= 1;
+       	String newVal = String.valueOf(intVal);
+       	contentRating.setText(newVal);
+       	if(intVal < 0)
+       		contentRating.setTextColor(Color.RED);
+    	
+		String user = "Craig";
+		Integer Id = Integer.valueOf(0);
+		Integer vote = Integer.valueOf(-1);
+    	
+		new VotePostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
+				user, Id, vote);
     }
-    
-    public void getReturnJSON()
-    {
-    }
-
 }

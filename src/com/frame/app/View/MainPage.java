@@ -1,11 +1,15 @@
 package com.frame.app.View;
 
 import com.frame.app.R;
+import com.frame.app.Core.FlagPostTask;
 import com.frame.app.Core.FrameFragmentPagerAdapter;
+import com.frame.app.Core.PostPictureTask;
 import com.frame.app.Core.TabsListener;
+import com.frame.app.Core.VotePostTask;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
@@ -16,6 +20,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 @SuppressWarnings("deprecation")
 public class MainPage extends ActionBarActivity
@@ -102,18 +111,64 @@ public class MainPage extends ActionBarActivity
     
     public void sendFlag(View view)
     {
-    	int i = 0;
-    	i-=1;
+    	//Disable the button
+    	view.setEnabled(false);
+    	
+    	String user = "Craig";
+    	Integer id = Integer.valueOf(0);
+    	
+		new FlagPostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
+				user, id);
     }
     
     public void sendUpvote(View view)
     {
+    	//Disable the button
+    	view.setEnabled(false);
+    	RelativeLayout rl = (RelativeLayout)view.getParent();
+    	ImageButton downvote = (ImageButton)rl.findViewById(R.id.downvote);
+       	downvote.setEnabled(false);
+       	
+       	TextView contentRating = (TextView)rl.findViewById(R.id.rating);
+       	String val = (String) contentRating.getText();
+       	int intVal = Integer.parseInt(val);
+       	intVal += 1;
+       	String newVal = String.valueOf(intVal);
+       	contentRating.setText(newVal);
+       	if(intVal >= 0)
+       		contentRating.setTextColor(Color.GREEN);
+       	
+		String user = "Craig";
+		Integer Id = Integer.valueOf(0);
+		Integer vote = Integer.valueOf(1);
     	
+		new VotePostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
+				user, Id, vote);
     }
     
     public void sendDownvote(View view)
     {
+    	//Disable the button
+    	view.setEnabled(false);
+    	RelativeLayout rl = (RelativeLayout)view.getParent();
+    	ImageButton upvote = (ImageButton)rl.findViewById(R.id.upvote);
+    	upvote.setEnabled(false);
     	
+       	TextView contentRating = (TextView)rl.findViewById(R.id.rating);
+       	String val = (String) contentRating.getText();
+       	int intVal = Integer.parseInt(val);
+       	intVal -= 1;
+       	String newVal = String.valueOf(intVal);
+       	contentRating.setText(newVal);
+       	if(intVal < 0)
+       		contentRating.setTextColor(Color.RED);
+    	
+		String user = "Craig";
+		Integer Id = Integer.valueOf(0);
+		Integer vote = Integer.valueOf(-1);
+    	
+		new VotePostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
+				user, Id, vote);
     }
     
     public void getReturnJSON()

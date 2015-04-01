@@ -52,12 +52,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/contentImage"
-        android:layout_toLeftOf="@+id/textView1"
+        android:layout_toLeftOf="@+id/rating"
         android:onClick="sendUpvote"
         android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/downvote"
@@ -65,7 +65,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_toLeftOf="@+id/downvote"
-        android:text="25"
+        android:text="0"
         android:gravity="center"
         android:textSize="25sp" />
 
