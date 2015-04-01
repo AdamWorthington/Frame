@@ -39,8 +39,12 @@
             android:name=".View.Text_post"
             android:label="@string/title_activity_text_post" >
         </activity>
-                <activity
+        <activity
             android:name=".View.MediaContentPost"
+            android:label="@string/title_activity_text_post" >
+        </activity>
+        <activity
+            android:name=".View.focusedMediaContentPage"
             android:label="@string/title_activity_text_post" >
         </activity>
     </application>
