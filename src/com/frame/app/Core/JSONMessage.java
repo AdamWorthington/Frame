@@ -52,7 +52,9 @@ public class JSONMessage {
 		
 		try
 		{
-			jo.put("Text", text);
+			Bitmap bmp = ImageConverter.textToImage(text);
+			String picS = encodeTobase64(bmp);
+			jo.put("Picture", picS);
 			jo.put("Lat",lat);
 			jo.put("Lon",lon);
 			jo.put("User", user);
@@ -103,7 +105,7 @@ public class JSONMessage {
 		return jo;
 	}
 	//create json media messages to be sent to client
-	public static JSONObject serverPictureToJson(Object pic, String date, int id, String[] tags, int rating)
+	public static JSONObject serverPictureToJson(String[] pic, String[] date, int[] id, String[][] tags, int[] rating)
 	{
 		JSONObject jo = new JSONObject();
 		
@@ -123,7 +125,7 @@ public class JSONMessage {
 		return jo;
 	}
 	
-	public static JSONObject serverVideoToJson(Object vid,String date, int id, int rating, String[] tags)
+	public static JSONObject serverVideoToJson(Object[] vid,String[] date, int[] id, int[] rating, String[][] tags)
 	{
 		JSONObject jo = new JSONObject();
 		
@@ -159,6 +161,19 @@ public class JSONMessage {
 		return jo;
 	}
 	//getter methods
+	public static Bitmap clientGetImage(JSONObject jo)
+	{
+		try {
+			String picS = (String) jo.get("Picture");
+			Bitmap bmp = decodeBase64(picS);
+			return bmp;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	public static Object getImage(JSONObject jo)
 	{
 		try {
@@ -169,6 +184,7 @@ public class JSONMessage {
 		
 		return null;
 	}
+	
 	public static Object getVideo(JSONObject jo)
 	{
 		try {
