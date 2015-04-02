@@ -35,13 +35,6 @@
             android:layout_gravity="center_horizontal"
             android:onClick = "changePage" />
 
-        <Button
-            android:layout_width="84dp"
-            android:layout_height="57dp"
-            android:text="Cancel"
-            android:id="@+id/button3"
-            android:layout_gravity="center_horizontal" />
-
     </LinearLayout>
 
 </RelativeLayout>

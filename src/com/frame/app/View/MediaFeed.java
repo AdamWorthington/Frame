@@ -7,6 +7,7 @@ import com.frame.app.R;
 import com.frame.app.Core.MediaArrayAdapter;
 import com.frame.app.Model.MediaContent;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -69,7 +70,14 @@ public class MediaFeed extends Fragment
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) 
 			{
-				Toast.makeText(getActivity(), "clicked!", 1).show();
+		        Intent intent;
+		        intent = new Intent(getActivity(), focusedMediaContentPage.class);
+		        
+		        //Load the data that this page will be displaying
+		        intent.putExtra("ListItem1", "Hello");
+		        intent.putExtra("ListItem2", "Goodbye");
+		        
+		        getActivity().startActivity(intent);
 			}
 		};
 		

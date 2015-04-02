@@ -426,6 +426,8 @@ public class JSONMessage {
 		
 		return jo;
 	}
+	
+	/*Not in use. We do not let the user unvote
 	public static JSONObject unVote(String User, int id, int prev)
 	{
 		JSONObject jo = new JSONObject();
@@ -443,7 +445,8 @@ public class JSONMessage {
 		}
 		
 		return jo;
-	}
+	}*/
+	
 	public static JSONObject flag(String User, int id)
 	{
 		JSONObject jo = new JSONObject();
@@ -461,6 +464,8 @@ public class JSONMessage {
 		
 		return jo;
 	}
+	
+	/* Not in use. We do not let the user unflag media content
 	public static JSONObject unFlag(String User, int id)
 	{
 		JSONObject jo = new JSONObject();
@@ -477,7 +482,8 @@ public class JSONMessage {
 		}
 		
 		return jo;
-	}
+	}*/
+	
 	//requests
 	public static JSONObject getPosts(int bottomId, String filter, Double lat, Double lon)
 	{
