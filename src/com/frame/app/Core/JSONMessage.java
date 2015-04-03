@@ -162,12 +162,10 @@ public class JSONMessage {
 		return jo;
 	}
 	//getter methods
-	public static Bitmap clientGetImage(JSONObject jo)
+	public static String[] clientGetImage(JSONObject jo)
 	{
 		try {
-			String picS = (String) jo.get("Picture");
-			Bitmap bmp = decodeBase64(picS);
-			return bmp;
+			return (String[]) jo.get("Picture");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -185,11 +183,40 @@ public class JSONMessage {
 		
 		return null;
 	}
-	
+	public static String getUser(JSONObject jo)
+	{
+		try {
+			return (String)jo.get("User");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static String[] clientGetUser(JSONObject jo)
+	{
+		try {
+			return (String[])jo.get("User");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	public static Object getVideo(JSONObject jo)
 	{
 		try {
 			return jo.get("Video");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static Object[] clientGetVideo(JSONObject jo)
+	{
+		try {
+			return (Object[])jo.get("Video");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -206,10 +233,30 @@ public class JSONMessage {
 		
 		return 0;
 	}
+	public static int[] clientGetID(JSONObject jo)
+	{
+		try {
+			return (int[]) jo.get("ID");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	public static String getDate(JSONObject jo)
 	{
 		try {
 			return (String) jo.get("Date");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static String[] clientGetDate(JSONObject jo)
+	{
+		try {
+			return (String[]) jo.get("Date");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -226,6 +273,16 @@ public class JSONMessage {
 		
 		return null;
 	}
+	public static String[][] clientGetTags(JSONObject jo)
+	{
+		try {
+			return (String[][]) jo.get("Tags");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	public static int getRating(JSONObject jo)
 	{
 		try {
@@ -235,6 +292,16 @@ public class JSONMessage {
 		}
 		
 		return 0;
+	}
+	public static int[] clientGetRating(JSONObject jo)
+	{
+		try {
+			return (int[])jo.get("Rating");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	public static String getText(JSONObject jo)
 	{	
@@ -256,10 +323,30 @@ public class JSONMessage {
 		
 		return null;
 	}
+	public static Double[] clientGetLon(JSONObject jo)
+	{	
+		try {
+			return (Double[])jo.get("Lon");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	public static Double getLat(JSONObject jo)
 	{	
 		try {
 			return  jo.getDouble("Lat");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static Double[] clientGetLat(JSONObject jo)
+	{	
+		try {
+			return (Double[])jo.get("Lat");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
