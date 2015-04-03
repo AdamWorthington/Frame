@@ -335,12 +335,7 @@ public class MediaContentPost extends ActionBarActivity
 		//Calling this method will release camera and media recorder resources.
 		onPause();
 		
-		Time now = new Time();
-		now.setToNow();
-		String date = now.toString();
-		Integer id = Integer.valueOf(0); //The id tied to the phone goes here! <---- need to implement
 		String[] tags = {""};
-		Integer rating = Integer.valueOf(0);
 		
 		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE); 
 		Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -353,7 +348,7 @@ public class MediaContentPost extends ActionBarActivity
 		Double latitude = new Double(location.getLatitude());
 		
 		new PostPictureTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
-				picture, latitude, longitude, "Craig", new String[] {""});
+				picture, latitude, longitude, "Craig", tags);
 		
 		//Launch the intent to return to the main page
         Intent intent = new Intent(this, MainPage.class);
