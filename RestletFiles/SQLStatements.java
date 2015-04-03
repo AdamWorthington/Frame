@@ -569,7 +569,7 @@ public class SQLStatements {
 		 *  -Remove Comment  :   13		:	sqlPOST	:	int commentID, String user
 		 */
 		if (JSONMessage.isPic(jo)) {
-			String picture = JSONMessage.getImage(jo);		//TODO: Change to String (for base 64)	NEED UPDATED JSON API
+			String picture = (String) JSONMessage.getImage(jo);
 			String user    = JSONMessage.getUser(jo);
 			double lat     = JSONMessage.getLat (jo);
 			double lon     = JSONMessage.getLon (jo);
@@ -577,7 +577,7 @@ public class SQLStatements {
 			query = postPicture(conn, picture, user, lat, lon);
 		}
 		else if (JSONMessage.isVid(jo)) {
-			String video  = JSONMessage.getVideo(jo);		//TODO: Change to String (for base 64)	NEED UPDATED JSON API
+			String video  = (String) JSONMessage.getVideo(jo);
 			String user   = JSONMessage.getUser(jo);
 			double lat    = JSONMessage.getLat (jo);
 			double lon    = JSONMessage.getLon (jo);

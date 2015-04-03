@@ -1,8 +1,8 @@
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Blob;
 import java.sql.SQLException;
-
 import java.io.File;
 import java.sql.ResultSet;
 
@@ -29,7 +29,8 @@ public class DatabaseReturnManager {
 	 */
 	public static JSONObject postsToJSON(ResultSet rs) {
 		int i = 0;
-		File[] media = new File[10];
+		int type = 0;	//0 for picture, 1 for video
+		String[] media = new String[10];
 		String[] users = new String[10];
 		int[] postID = new int[10];
 		int[] votes = new int[10];
@@ -37,9 +38,16 @@ public class DatabaseReturnManager {
 		try {
 			while (rs.next() && i < 10) {
 
-				media[i] = (File) rs.getBlob("Picture");
-				if (media[i] == null) {
-					media[i] = (File) rs.getBlob("Video");
+				Blob blob = rs.getBlob("Picture");
+				if (blob != null) {
+					byte[] bdata = blob.getBytes(1,  (int) blob.length());
+					media[i] = new String(bdata);
+				}
+				else {	
+					blob = rs.getBlob("Video");
+					byte[] bdata = blob.getBytes(1,  (int) blob.length());
+					media[i] = new String(bdata);
+					type = 1;
 				}
 				postID[i] = rs.getInt("ID");
 				users[i]  = rs.getString("User");
@@ -55,7 +63,13 @@ public class DatabaseReturnManager {
 		}
 		
 		//TODO: Need json methods that return posts to client to take arrays of things, not individual ones
-		JSONObject returnVal = new JSONObject();
+		JSONObject returnVal;
+		if (type == 0) {
+			returnVal = serverPictureToJson(media, String[] date, postID, String[][] tags, votes);
+		}
+		else {
+			returnVal = serverVideoToJson(media, String[] date, postID, votes, String[][] tags);
+		}
 		
 		
 		
