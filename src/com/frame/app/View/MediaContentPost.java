@@ -7,16 +7,22 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Time;
 import android.util.Log;
@@ -26,8 +32,8 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.frame.app.R;
-import com.frame.app.Core.PostPictureTask;
 import com.frame.app.Model.CameraPreview;
+import com.frame.app.tasks.PostPictureTask;
 
 @SuppressWarnings("deprecation")
 public class MediaContentPost extends ActionBarActivity
@@ -36,7 +42,7 @@ public class MediaContentPost extends ActionBarActivity
 	private MediaRecorder mediaRecorder;
 	private CameraPreview preview;
 
-    private File picture;
+    private Bitmap picture;
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;
 	private boolean frontFacing = false;
@@ -89,7 +95,7 @@ public class MediaContentPost extends ActionBarActivity
 	            FileOutputStream fos = new FileOutputStream(pictureFile);
 	            fos.write(data);
 	            fos.close();
-                picture = pictureFile;
+                picture = BitmapFactory.decodeByteArray(data, 0, data.length);
 	        } catch (FileNotFoundException e) {
 	            Log.d("File Create", "File not found: " + e.getMessage());
 	        } catch (IOException e) {
@@ -336,8 +342,18 @@ public class MediaContentPost extends ActionBarActivity
 		String[] tags = {""};
 		Integer rating = Integer.valueOf(0);
 		
+		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE); 
+		Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		
+		//Location returns null if no position is currently available. In this case, cancel the request.
+		if(location == null)
+			return;
+		
+		Double longitude = new Double(location.getLongitude());
+		Double latitude = new Double(location.getLatitude());
+		
 		new PostPictureTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
-				picture, date, id, tags, rating);
+				picture, latitude, longitude, "Craig", new String[] {""});
 		
 		//Launch the intent to return to the main page
         Intent intent = new Intent(this, MainPage.class);

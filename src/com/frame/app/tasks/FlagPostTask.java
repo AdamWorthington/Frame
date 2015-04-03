@@ -1,4 +1,4 @@
-package com.frame.app.Core;
+package com.frame.app.tasks;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,7 +11,7 @@ import com.frame.app.Core.JSONMessage;
 
 import android.os.AsyncTask;
 
-public class PostPictureTask extends AsyncTask<Object, Void, Void> 
+public class FlagPostTask extends AsyncTask<Object, Void, Void> 
 {
 
 	@Override
@@ -20,14 +20,13 @@ public class PostPictureTask extends AsyncTask<Object, Void, Void>
 		ClientResource res = new ClientResource(
 				params[0].toString());
 		res.setMethod(Method.POST);
-		
-		
-		String date = (String) params[2];
-		int id = (Integer) params[3];
-		String[] args = (String[]) params[4];
-		int count = (Integer) params[5];
 
-		JSONObject obj = JSONMessage.clientPictureToJson(params[1], 1.0, 1.0, "Craig", null);
+		
+		String user = (String)params[1]; //This is the user
+		Integer Id = (Integer)params[2]; //This is the id
+		
+		JSONObject obj = JSONMessage.flag(user, Id.intValue());
+		
 		StringRepresentation stringRep = new StringRepresentation(
 				obj.toString());
 		stringRep.setMediaType(MediaType.APPLICATION_JSON);
@@ -37,7 +36,6 @@ public class PostPictureTask extends AsyncTask<Object, Void, Void>
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 		return null;
 	} 
 }

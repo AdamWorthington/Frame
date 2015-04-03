@@ -15,9 +15,10 @@ public class JSONMessage {
 	public static String encodeTobase64(Bitmap image)
 	{
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream();  
-	    image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+	    image.compress(Bitmap.CompressFormat.JPEG, 50, baos);
 	    byte[] b = baos.toByteArray();
-	    return Base64.encodeToString(b,Base64.DEFAULT);
+	    String toReturn = Base64.encodeToString(b,Base64.DEFAULT);
+	    return toReturn;
 
 	}
 	public static Bitmap decodeBase64(String input) 
@@ -52,8 +53,8 @@ public class JSONMessage {
 		
 		try
 		{
-			Bitmap bmp = ImageConverter.textToImage(text);
-			String picS = encodeTobase64(bmp);
+			//Bitmap bmp = ImageConverter.textToImage(text);
+			String picS = ""; //encodeTobase64(bmp);
 			jo.put("Picture", picS);
 			jo.put("Lat",lat);
 			jo.put("Lon",lon);

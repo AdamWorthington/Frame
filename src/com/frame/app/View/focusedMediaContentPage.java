@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.frame.app.R;
-import com.frame.app.Core.FlagPostTask;
 import com.frame.app.Core.FrameFragmentPagerAdapter;
 import com.frame.app.Core.MediaArrayAdapter;
 import com.frame.app.Core.TabsListener;
-import com.frame.app.Core.VotePostTask;
 import com.frame.app.Model.MediaContent;
+import com.frame.app.tasks.FlagPostTask;
+import com.frame.app.tasks.VotePostTask;
 
 import android.app.Activity;
 import android.content.Intent;

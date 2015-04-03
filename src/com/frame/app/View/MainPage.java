@@ -1,11 +1,11 @@
 package com.frame.app.View;
 
 import com.frame.app.R;
-import com.frame.app.Core.FlagPostTask;
 import com.frame.app.Core.FrameFragmentPagerAdapter;
-import com.frame.app.Core.PostPictureTask;
 import com.frame.app.Core.TabsListener;
-import com.frame.app.Core.VotePostTask;
+import com.frame.app.tasks.FlagPostTask;
+import com.frame.app.tasks.PostPictureTask;
+import com.frame.app.tasks.VotePostTask;
 
 import android.app.Activity;
 import android.content.Intent;

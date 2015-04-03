@@ -23,7 +23,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.frame.app.R;
-import com.frame.app.Core.PostTask;
+import com.frame.app.tasks.PostTask;
 
 public class Text_post extends ActionBarActivity {
 

@@ -1,4 +1,4 @@
-package com.frame.app.Core;
+package com.frame.app.tasks;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,9 +7,12 @@ import org.restlet.data.Method;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 
+import com.frame.app.Core.JSONMessage;
+
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
-public class VotePostTask extends AsyncTask<Object, Void, Void> 
+public class PostPictureTask extends AsyncTask<Object, Void, Void> 
 {
 
 	@Override
@@ -18,14 +21,14 @@ public class VotePostTask extends AsyncTask<Object, Void, Void>
 		ClientResource res = new ClientResource(
 				params[0].toString());
 		res.setMethod(Method.POST);
+		
+		Bitmap picture = (Bitmap) params[1];
+		Double latitude = (Double) params[2];
+		Double longitude = (Double) params[3];
+		String user = (String) params[4];
+		String[] tags = (String[]) params[5];
 
-		
-		String user = (String)params[1]; //This is the user
-		Integer Id = (Integer)params[2]; //This is the id
-		Integer vote = (Integer) params[3]; //This is the value of the vote +1 = upvote, -1 = downvote
-		
-		JSONObject obj = JSONMessage.vote(user, Id.intValue(), 0, vote.intValue());
-		
+		JSONObject obj = JSONMessage.clientPictureToJson(picture, latitude.doubleValue(), longitude.doubleValue(), "Craig", tags);
 		StringRepresentation stringRep = new StringRepresentation(
 				obj.toString());
 		stringRep.setMediaType(MediaType.APPLICATION_JSON);
@@ -35,6 +38,7 @@ public class VotePostTask extends AsyncTask<Object, Void, Void>
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		return null;
 	} 
 }
