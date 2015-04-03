@@ -1,9 +1,14 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import org.json.JSONObject;
+
+import com.frame.app.Core.JSONMessage;
 
 /*
  * USAGE: Depending on integer received from front end, call one of these two methods
@@ -50,7 +55,7 @@ public class SQLStatements {
 	 * To display on phone: picture, video, text, upvote, downvote, flags, comments
 	 * upvote, downvote, flags can be returned as integers with the requested media/pictures
 	 * 
-	 * TODO: Make all strings passed in safe (need to find SQL or other methods to do so)
+	 * Make all strings passed in safe (need to find SQL or other methods to do so)
 	 *      -Use of Prepared Statements (Parameterized Queries)
 	 *      -Use of Stored Procedures
 	 *      -Escaping all User Supplied Input
@@ -59,7 +64,7 @@ public class SQLStatements {
 	 *      -See https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet
 	 *      
 	 *      Possibilities:
-	 *       -Have SimpleServlet pass in a Connection, and this code returns a prepared statement (BEST) TODO
+	 *       -Have SimpleServlet pass in a Connection, and this code returns a prepared statement (BEST)
 	 *       -Modify SimpleServlet to use prepared statements (GOOD)
 	 *       -Still return a string, and have the SimpleServlet do the combining of the actual values with the SQL string (NOT SO GOOD)
 	 * 
@@ -97,11 +102,39 @@ public class SQLStatements {
 	/*
 	 * Master method for GET
 	 */
-	public PreparedStatement sqlGET(Connection conn, int methodID, int postID, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
+	public static PreparedStatement sqlGET(Connection conn, JSONObject jo) {
+			//int methodID, int postID, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
 
 		PreparedStatement query = null;
 
-		switch(methodID) {
+		
+		/*
+		 * 		Action			ID #		Method		Parameters (See below for parameter descriptions):
+		 *  -Get Picture     :   1		:	sqlGET	:	int lastPost, double lat, double lon, String tag, String timestamp, int sort
+		 *  -Get Video       :   2		:	sqlGET	:	int lastPost, double lat, double lon, String tag, String timestamp, int sort
+		 *  -Get Text        :   3		:	sqlGET	:	int lastPost, double lat, double lon, String tag, String timestamp, int sort
+		 *  -Get Comments    :   4		:	sqlGET	:	int postID
+		 */
+		
+		if (JSONMessage.isPostRequest(jo)) {
+			int lastPost = 0;
+			double lat = JSONMessage.getLat(jo);
+			double lon = JSONMessage.getLon(jo);
+			String tag = JSONMessage.getFilter(jo);
+			
+			query = getPosts(conn, lastPost, lat, lon, tag);
+		}
+		/*else if() {
+			//Need json method for isCommentRequest
+		}*/
+		else {
+			System.err.println("Error in sqlGET, unknown request");
+			System.err.println(jo);
+		}
+		
+		
+		
+		/*switch(methodID) {
 
 		case 1:
 			query = getPicture(conn, lastPost, lat, lon, tag, timestamp, sort);
@@ -123,16 +156,90 @@ public class SQLStatements {
 			System.err.printf("Incorrect methodID in sqlGET (Should be 1-4, was %d)\n", methodID);
 			break;
 
-		}
+		}*/
 
 		return query;
 	}
 
 
+	private static PreparedStatement getPosts(Connection conn, int lastPost, double lat, double lon, String tag) {
+		
+		PreparedStatement stmt = null;
+
+		//Check parameters for correctness
+		if (lastPost < 0) {
+			System.err.println("Incorrect parameters to obtain posts, lastPost < 0");
+			return null;
+		}
+
+		String query = null;
+
+		//If the tag is not null then that takes priority over all other parameters
+		if (tag != null && tag != "") {
+			query = "SELECT TOP 10 Picture, Video, ID, User, Votes, Flags "
+				  + "FROM Media_and_Tags "
+				  + "WHERE Latitude  < ? + 1.5 AND "	//1
+				  + "Latitude  > ? - 1.5 AND "			//2
+				  + "Longitude < ? + 1.5 AND "			//3
+				  + "Longitude > ? - 1.5 AND "			//4
+				  //+ "ID >  ? AND "					//5
+				  //+ "ID < (? + 10) AND "				//6
+				  + "Tag = \"?\";";
+			
+			try {
+				stmt = conn.prepareStatement(query);
+				stmt.setDouble(1, lat);
+				stmt.setDouble(2, lat);
+				stmt.setDouble(3, lon);
+				stmt.setDouble(4, lon);
+				//stmt.setInt(5, lastPost);
+				//stmt.setInt(6, lastPost);
+				stmt.setString(5, tag);
+				
+			}
+			catch (SQLException e) {
+				System.err.println("Error creating PreparedStatement in getPosts");
+				return null;
+			}
+
+			return stmt;
+		}
+
+		//Only make it here if tag is NULL, need to search database based on other parameters
+		query = "SELECT TOP 10 Picture, Video, ID, User, Votes, Flags "
+				  + "FROM Media_and_Tags "
+				  + "WHERE Latitude  < ? + 1.5 AND "	//1
+				  + "Latitude  > ? - 1.5 AND "			//2
+				  + "Longitude < ? + 1.5 AND "			//3
+				  + "Longitude > ? - 1.5;";				//4
+				  //+ "ID >  ? AND "					//5
+				  //+ "ID < (? + 10) AND "				//6
+
+
+		try {
+			stmt = conn.prepareStatement(query);
+			stmt.setDouble(1, lat);
+			stmt.setDouble(2, lat);
+			stmt.setDouble(3, lon);
+			stmt.setDouble(4, lon);
+			//stmt.setInt(5, lastPost);
+			//stmt.setInt(6, lastPost);
+			
+		}
+		catch (SQLException e) {
+			System.err.println("Error creating PreparedStatement in getPosts");
+			return null;
+		}
+
+		return stmt;
+		
+	}
+	
+	
 	/*
 	 * 	1
 	 */
-	private PreparedStatement getPicture(Connection conn, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
+	private static PreparedStatement getPicture(Connection conn, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
 		
 		PreparedStatement stmt = null;;
 
@@ -153,7 +260,7 @@ public class SQLStatements {
 				  + "Longitude < ? + 1.5 AND "			//3
 				  + "Longitude > ? - 1.5 AND "			//4
 				  + "ID >  ? AND "						//5
-				  + "ID < (? + 10 + 1) AND "			//6
+				  + "ID < (? + 10) AND "			//6
 				  + "Date > \"?\" AND "					//7
 				  + "Tag = \"?\" AND "					//8
 				  + "Media_Type = 0;";
@@ -186,7 +293,7 @@ public class SQLStatements {
 				  + "Longitude < ? + 1.5 AND "			//3
 				  + "Longitude > ? - 1.5 AND "			//4
 				  + "ID >  ? AND "						//5
-				  + "ID < (? + 10 + 1) AND "			//6
+				  + "ID < (? + 10) AND "			//6
 				  + "Date > \"?\" AND "					//7
 				  + "Media_Type = 0;";
 
@@ -214,7 +321,7 @@ public class SQLStatements {
 	/*
 	 * 	2
 	 */
-	private PreparedStatement getVideo(Connection conn, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
+	private static PreparedStatement getVideo(Connection conn, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
 		
 		PreparedStatement stmt = null;
 
@@ -296,7 +403,7 @@ public class SQLStatements {
 	/*
 	 * 	3
 	 */
-	private PreparedStatement getText(Connection conn, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
+	private static PreparedStatement getText(Connection conn, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
 		
 		PreparedStatement stmt = null;
 
@@ -311,15 +418,15 @@ public class SQLStatements {
 
 		//If the tag is not null then that takes priority over all other parameters
 		if (tag != null) {
-			query = "SELECT Text_String, ID, User, Votes, Flags "
+			query = "SELECT TOP 10 Text_String, ID, User, Votes, Flags "
 					+ "FROM Text_and_Tags "
 					+ "WHERE Latitude  < ? + 1.5 AND "		//1
 					+ "Latitude  > ? - 1.5 AND "			//2
 					+ "Longitude < ? + 1.5 AND "			//3
 					+ "Longitude > ? - 1.5 AND "			//4
-					+ "ID >  ? AND "						//5
-					+ "ID < (? + 10 + 1) AND "				//6
-					+ "Date > \"?\" AND "					//7
+					//+ "ID >  ? AND "						//5
+					//+ "ID < (? + 10 + 1) AND "				//6
+					//+ "Date > \"?\" AND "					//7
 					+ "Tag = \"?\" AND "					//8
 					+ "Media_Type = 2;";
 
@@ -344,15 +451,15 @@ public class SQLStatements {
 		}
 
 		//Only make it here if tag is NULL, need to search database based on other parameters
-		query = "SELECT Text_String, ID, User, Votes, Flags "
+		query = "SELECT TOP 10 Text_String, ID, User, Votes, Flags "
 				+ "FROM Text "
 				+ "WHERE Latitude  < ? + 1.5 AND "	//1
 				+ "Latitude  > ? - 1.5 AND "		//2
 				+ "Longitude < ? + 1.5 AND "		//3
 				+ "Longitude > ? - 1.5 AND "		//4
-				+ "ID >  ? AND "					//5
-				+ "ID < (? + 10 + 1) AND "			//6
-				+ "Date > \"?\" AND "				//7
+				//+ "ID >  ? AND "					//5
+				//+ "ID < (? + 10 + 1) AND "			//6
+				//+ "Date > \"?\" AND "				//7
 				+ "Media_Type = 2;";
 
 
@@ -378,7 +485,7 @@ public class SQLStatements {
 	/*
 	 * 	4
 	 */
-	private PreparedStatement getComments(Connection conn, int postID) {
+	private static PreparedStatement getComments(Connection conn, int postID) {
 		
 		PreparedStatement stmt = null;
 		
@@ -443,51 +550,80 @@ public class SQLStatements {
 
 
 	
-	public PreparedStatement sqlPOST(Connection conn, int methodID, int postID, int vote, String user, double lat, double lon, 
-						  			 String text_or_comment, String date, File picture, File video) {
+	public static PreparedStatement sqlPOST(Connection conn, JSONObject jo) {
+			//int methodID, int postID, int vote, String user, double lat, double lon, String text_or_comment, String date, File picture, File video) {
 		
 		PreparedStatement query = null;
 		
-		switch(methodID) {
-			case 5:
-				query = postPicture(conn, picture, user, lat, lon, date);
-				break;
-				
-			case 6:
-				query = postVideo(conn, video, user, lat, lon, date);
-				break;
-				
-			case 7:
-				query = postText(conn, user, text_or_comment, lat, lon, date);
-				break;
-				
-			case 8:
-				query = setVote(conn, postID, vote);
-				break;
-				
-			case 9:
-				query = flag(conn, postID);
-				break;
-				
-			case 10:
-				query = unFlag(conn, postID);
-				break;
-				
-			case 11:
-				query = postComment(conn, postID, text_or_comment, user);
-				break;
-				
-			case 12:
-				query = removeMedia(conn, postID, user);
-				break;
-				
-			case 13:
-				query = removeComment(conn, postID, user);
-				break;
-				
-			default:
-				System.err.printf("Incorrect methodID in sqlPOST (Should be 5-13, was %d)\n", methodID);
-				break;
+		/*
+			Post information: sqlPOST (return value is String):
+		 * 		Action			ID #		Method		Parameters (See below for parameter descriptions):
+		 *  -Post Picture    :   5		:	sqlPOST	:	File picture, String user, double lat, double lon, String date
+		 *  -Post Video      :   6		:	sqlPOST	:	File video,   String user, double lat, double lon, String date
+		 *  -Post Text       :   7		:	sqlPOST	:	String text,  String user, double lat, double lon, String date
+		 *  -Vote			 :	 8		:	sqlPOST :	int postID, int vote
+		 *  -Flag            :   9		:	sqlPOST	:	int postID
+		 *  -UnFlag          :   10		:	sqlPOST	:	int postID
+		 *  -Commenting      :   11		:	sqlPOST	:	String user, int postID, String comment
+		 *  -Remove Media    :   12		:	sqlPOST	:	int postID, String user
+		 *  -Remove Comment  :   13		:	sqlPOST	:	int commentID, String user
+		 */
+		if (JSONMessage.isPic(jo)) {
+			String picture = JSONMessage.getImage(jo);		//TODO: Change to String (for base 64)	NEED UPDATED JSON API
+			String user    = JSONMessage.getUser(jo);
+			double lat     = JSONMessage.getLat (jo);
+			double lon     = JSONMessage.getLon (jo);
+			
+			query = postPicture(conn, picture, user, lat, lon);
+		}
+		else if (JSONMessage.isVid(jo)) {
+			String video  = JSONMessage.getVideo(jo);		//TODO: Change to String (for base 64)	NEED UPDATED JSON API
+			String user   = JSONMessage.getUser(jo);
+			double lat    = JSONMessage.getLat (jo);
+			double lon    = JSONMessage.getLon (jo);
+			
+			query = postVideo(conn, video, user, lat, lon);
+		}
+		else if (JSONMessage.isText(jo)) {
+			String text = JSONMessage.getText(jo);
+			String user = JSONMessage.getUser(jo);
+			double lat  = JSONMessage.getLat (jo);
+			double lon  = JSONMessage.getLon (jo);
+			String date = JSONMessage.getDate(jo);
+			
+			query = postText(conn, text, user, lat, lon, date);
+		}
+		else if (JSONMessage.isVote(jo)) {
+			int postID = JSONMessage.getID  (jo);
+			int vote   = JSONMessage.getVote(jo);
+			query = setVote(conn, postID, vote);
+		}
+		else if (JSONMessage.isFlag(jo)) {
+			int postID = JSONMessage.getID(jo);
+			
+			query = flag(conn, postID);
+		}
+		else if (JSONMessage.isUnFlag(jo)) {
+			int postID = JSONMessage.getID(jo);
+			
+			query = unFlag(conn, postID);
+		}
+		else if (JSONMessage.isComment(jo)) {
+			int postID 			   = JSONMessage.getID	   (jo);
+			String text_or_comment = JSONMessage.getComment(jo);
+			String user 		   = JSONMessage.getUser   (jo);
+			
+			query = postComment(conn, postID, text_or_comment, user);
+		}
+		/*else if (JSONMessage) {			//For removal of media	TODO
+			
+		}
+		else if (JSONMessage) {				//For removal of comments	TODO
+			
+		}*/
+		else{
+			System.err.println("Error in sqlPOST, unrecognized JSON packet");
+			System.err.println(jo);
 		}
 		
 		return query;
@@ -497,30 +633,22 @@ public class SQLStatements {
 	/*
 	 * 	5
 	 */
-	private PreparedStatement postPicture(Connection conn, File picture, String user, double lat, double lon, String date) {
+	private static PreparedStatement postPicture(Connection conn, String picture, String user, double lat, double lon) {
 		
 		PreparedStatement stmt = null;
 
 		String query = "INSERT INTO MEDIA (ID, User, Latitude, Longitude, Picture, Video, Media_Type, Date, Votes, Flags)"
-							   + " VALUES (null, \"?\", ?, ?, ?, NULL, 0, \"?\", 0, 0);";
-		
-		FileInputStream pictureStream;
-		
-		try {
-			pictureStream = new FileInputStream(picture);
-		}
-		catch (FileNotFoundException e) {
-			System.err.println("Error creating FileInputStream in postPicture");
-			return null;
-		}
+							   + " VALUES (null, \"?\", ?, ?, ?, NULL, 0, NULL, 0, 0);";
 		
 		try {
 			stmt = conn.prepareStatement(query);
 			stmt.setString(1, user);
 			stmt.setDouble(2, lat);
 			stmt.setDouble(3, lat);
-			stmt.setBlob(4, pictureStream);
-			stmt.setString(5, date);
+			
+			Blob blob = conn.createBlob();
+			blob.setBytes(1,  picture.getBytes());
+			stmt.setBlob(4, blob);
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in postPicture");
@@ -534,30 +662,22 @@ public class SQLStatements {
 	/*
 	 * 	6
 	 */
-	private PreparedStatement postVideo(Connection conn, File video, String user, double lat, double lon, String date) {
+	private static PreparedStatement postVideo(Connection conn, String video, String user, double lat, double lon) {
 		
 		PreparedStatement stmt = null;
 
 		String query = "INSERT INTO MEDIA (ID, User, Latitude, Longitude, Picture, Video, Media_Type, Date, Votes, Flags)"
-							   + " VALUES (null, \"?\", ?, ?, NULL, ?, 1, \"?\", 0, 0);";
-		
-		FileInputStream videoStream;
-		
-		try {
-			videoStream = new FileInputStream(video);
-		}
-		catch (FileNotFoundException e) {
-			System.err.println("Error creating FileInputStream in postVideo");
-			return null;
-		}
+							   + " VALUES (null, \"?\", ?, ?, NULL, ?, 1, NULL, 0, 0);";
 		
 		try {
 			stmt = conn.prepareStatement(query);
 			stmt.setString(1, user);
 			stmt.setDouble(2, lat);
 			stmt.setDouble(3, lat);
-			stmt.setBlob(4, videoStream);
-			stmt.setString(5, date);
+			
+			Blob blob = conn.createBlob();
+			blob.setBytes(1,  video.getBytes());
+			stmt.setBlob(4, blob);
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in postVideo");
@@ -571,7 +691,7 @@ public class SQLStatements {
 	/*
 	 * 	7
 	 */
-	private PreparedStatement postText(Connection conn, String text, String user, double lat, double lon, String date) {
+	private static PreparedStatement postText(Connection conn, String text, String user, double lat, double lon, String date) {
 		
 		PreparedStatement stmt = null;
 
@@ -603,7 +723,7 @@ public class SQLStatements {
 	/*
 	 * 8
 	 */
-	private PreparedStatement setVote(Connection conn, int postID, int vote) {
+	private static PreparedStatement setVote(Connection conn, int postID, int vote) {
 		
 		PreparedStatement stmt = null;
 		
@@ -628,7 +748,7 @@ public class SQLStatements {
 	/*
 	 * 	9
 	 */
-	private PreparedStatement flag(Connection conn, int postID) {
+	private static PreparedStatement flag(Connection conn, int postID) {
 
 		PreparedStatement stmt = null;
 		
@@ -652,7 +772,7 @@ public class SQLStatements {
 	/*
 	 * 	10
 	 */
-	private PreparedStatement unFlag(Connection conn, int postID) {
+	private static PreparedStatement unFlag(Connection conn, int postID) {
 
 		PreparedStatement stmt = null;
 		
@@ -676,7 +796,7 @@ public class SQLStatements {
 	/*
 	 * 	11
 	 */
-	private PreparedStatement postComment(Connection conn, int postID, String comment, String user) {
+	private static PreparedStatement postComment(Connection conn, int postID, String comment, String user) {
 		
 		if (user == null || user == "" || comment == null || comment == "") {
 			System.err.println("Parameter error in postComment");
@@ -706,7 +826,7 @@ public class SQLStatements {
 	/*
 	 * 	12
 	 */
-	private PreparedStatement removeMedia(Connection conn, int postID, String user) {
+	private static PreparedStatement removeMedia(Connection conn, int postID, String user) {
 		
 		PreparedStatement stmt = null;
 
@@ -745,7 +865,7 @@ public class SQLStatements {
 	/*
 	 * 13
 	 */
-	private PreparedStatement removeComment(Connection conn, int commentID, String user) {
+	private static PreparedStatement removeComment(Connection conn, int commentID, String user) {
 		
 		PreparedStatement stmt = null;
 
