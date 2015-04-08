@@ -1,4 +1,4 @@
-package com.frame.app.Core;
+package com.frame.app.tasks;
 
 import java.io.IOException;
 
@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 
 public class GetTask extends AsyncTask<Object, Void, JSONObject> 
 {
-
 	@Override
 	protected JSONObject doInBackground(Object... params) 
 	{		

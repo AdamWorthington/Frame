@@ -7,24 +7,33 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.frame.app.R;
-import com.frame.app.Core.PostPictureTask;
 import com.frame.app.Model.CameraPreview;
+import com.frame.app.tasks.PostPictureTask;
 
 @SuppressWarnings("deprecation")
 public class MediaContentPost extends ActionBarActivity
@@ -32,7 +41,8 @@ public class MediaContentPost extends ActionBarActivity
 	private Camera camera;
 	private MediaRecorder mediaRecorder;
 	private CameraPreview preview;
-	
+
+    private Bitmap picture;
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;
 	private boolean frontFacing = false;
@@ -49,6 +59,25 @@ public class MediaContentPost extends ActionBarActivity
 		preview = new CameraPreview(this, camera);
 		FrameLayout fPreview = (FrameLayout) findViewById(R.id.camera_preview);
 		fPreview.addView(preview, fPreview.getChildCount() - 1);
+
+        Button button = (Button) findViewById(R.id.button_capture);
+        button.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // TODO Auto-generated method stub
+                //videoCapture(v);
+                return true;
+            }
+        });
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                takePicture(v);
+                }
+
+            });
+
 	}
 	
 	private PictureCallback mPicture = new PictureCallback()
@@ -66,6 +95,7 @@ public class MediaContentPost extends ActionBarActivity
 	            FileOutputStream fos = new FileOutputStream(pictureFile);
 	            fos.write(data);
 	            fos.close();
+                picture = BitmapFactory.decodeByteArray(data, 0, data.length);
 	        } catch (FileNotFoundException e) {
 	            Log.d("File Create", "File not found: " + e.getMessage());
 	        } catch (IOException e) {
@@ -245,7 +275,6 @@ public class MediaContentPost extends ActionBarActivity
 	public void takePicture(View view)
 	{
 		camera.takePicture(null, null, mPicture);
-		
 		changeModes(true);
 	}
 	
@@ -254,10 +283,26 @@ public class MediaContentPost extends ActionBarActivity
 	 */
 	public void capture(View view)
 	{
-		takePicture(view);
-	}
-	
-	public void takeVideo(View view)
+            takePicture(view);
+    }
+    private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
+    private Uri fileUri;
+
+    private static Uri getOutputMediaFileUri(int type){
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+    public void videoCapture(View view){
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);  // create a file to save the video
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);  // set the image file name
+
+        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1); // set the video image quality to high
+
+        // start the Video Capture Intent
+        startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
+    }
+
+    public void takeVideo(View view)
 	{
 		if(isRecording)
 		{
@@ -290,15 +335,20 @@ public class MediaContentPost extends ActionBarActivity
 		//Calling this method will release camera and media recorder resources.
 		onPause();
 		
-		Time now = new Time();
-		now.setToNow();
-		String date = now.toString();
-		Integer id = Integer.valueOf(0); //The id tied to the phone goes here! <---- need to implement
 		String[] tags = {""};
-		Integer rating = Integer.valueOf(0);
+		
+		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE); 
+		Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		
+		//Location returns null if no position is currently available. In this case, cancel the request.
+		if(location == null)
+			return;
+		
+		Double longitude = new Double(location.getLongitude());
+		Double latitude = new Double(location.getLatitude());
 		
 		new PostPictureTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
-				mPicture, date, id, tags, rating);
+				picture, latitude, longitude, "Craig", tags);
 		
 		//Launch the intent to return to the main page
         Intent intent = new Intent(this, MainPage.class);

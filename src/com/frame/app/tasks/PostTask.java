@@ -1,4 +1,4 @@
-package com.frame.app.Core;
+package com.frame.app.tasks;
 
 import org.json.JSONException;
 import org.json.JSONObject;

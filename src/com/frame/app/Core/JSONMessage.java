@@ -1,23 +1,40 @@
 package com.frame.app.Core;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+
 public class JSONMessage {
 	
+	
+	public static String encodeTobase64(Bitmap image)
+	{
+	    ByteArrayOutputStream baos = new ByteArrayOutputStream();  
+	    image.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+	    byte[] b = baos.toByteArray();
+	    String toReturn = Base64.encodeToString(b,Base64.DEFAULT);
+	    return toReturn;
+
+	}
+	public static Bitmap decodeBase64(String input) 
+	{
+	    byte[] decodedByte = Base64.decode(input, 0);
+	    return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length); 
+	}
+	
 	//create json media messages to be sent to client
-	public static JSONObject clientPictureToJson(Object pic, Double lat, Double lon, String user, String[] tags)
+	public static JSONObject clientPictureToJson(Bitmap pic, Double lat, Double lon, String user, String[] tags)
 	{
 		JSONObject jo = new JSONObject();
 		try
 		{
-			jo.put("Picture", pic);
+			String picS = encodeTobase64(pic);
+			jo.put("Picture", picS);
 			jo.put("Lat",lat);
 			jo.put("Lon",lon);
 			jo.put("User", user);
@@ -36,7 +53,9 @@ public class JSONMessage {
 		
 		try
 		{
-			jo.put("Text", text);
+			//Bitmap bmp = ImageConverter.textToImage(text);
+			String picS = ""; //encodeTobase64(bmp);
+			jo.put("Picture", picS);
 			jo.put("Lat",lat);
 			jo.put("Lon",lon);
 			jo.put("User", user);
@@ -87,7 +106,7 @@ public class JSONMessage {
 		return jo;
 	}
 	//create json media messages to be sent to client
-	public static JSONObject serverPictureToJson(Object pic, String date, int id, String[] tags, int rating)
+	public static JSONObject serverPictureToJson(String[] pic, String[] date, int[] id, String[][] tags, int[] rating)
 	{
 		JSONObject jo = new JSONObject();
 		
@@ -107,7 +126,7 @@ public class JSONMessage {
 		return jo;
 	}
 	
-	public static JSONObject serverVideoToJson(Object vid,String date, int id, int rating, String[] tags)
+	public static JSONObject serverVideoToJson(Object[] vid,String[] date, int[] id, int[] rating, String[][] tags)
 	{
 		JSONObject jo = new JSONObject();
 		
@@ -143,10 +162,41 @@ public class JSONMessage {
 		return jo;
 	}
 	//getter methods
+	public static String[] clientGetImage(JSONObject jo)
+	{
+		try {
+			return (String[]) jo.get("Picture");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	public static Object getImage(JSONObject jo)
 	{
 		try {
 			return jo.get("Picture");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static String getUser(JSONObject jo)
+	{
+		try {
+			return (String)jo.get("User");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static String[] clientGetUser(JSONObject jo)
+	{
+		try {
+			return (String[])jo.get("User");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -163,6 +213,16 @@ public class JSONMessage {
 		
 		return null;
 	}
+	public static Object[] clientGetVideo(JSONObject jo)
+	{
+		try {
+			return (Object[])jo.get("Video");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	public static int getID(JSONObject jo)
 	{
 		try {
@@ -173,10 +233,30 @@ public class JSONMessage {
 		
 		return 0;
 	}
+	public static int[] clientGetID(JSONObject jo)
+	{
+		try {
+			return (int[]) jo.get("ID");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	public static String getDate(JSONObject jo)
 	{
 		try {
 			return (String) jo.get("Date");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static String[] clientGetDate(JSONObject jo)
+	{
+		try {
+			return (String[]) jo.get("Date");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -193,6 +273,16 @@ public class JSONMessage {
 		
 		return null;
 	}
+	public static String[][] clientGetTags(JSONObject jo)
+	{
+		try {
+			return (String[][]) jo.get("Tags");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	public static int getRating(JSONObject jo)
 	{
 		try {
@@ -202,6 +292,16 @@ public class JSONMessage {
 		}
 		
 		return 0;
+	}
+	public static int[] clientGetRating(JSONObject jo)
+	{
+		try {
+			return (int[])jo.get("Rating");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	public static String getText(JSONObject jo)
 	{	
@@ -223,10 +323,30 @@ public class JSONMessage {
 		
 		return null;
 	}
+	public static Double[] clientGetLon(JSONObject jo)
+	{	
+		try {
+			return (Double[])jo.get("Lon");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	public static Double getLat(JSONObject jo)
 	{	
 		try {
 			return  jo.getDouble("Lat");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static Double[] clientGetLat(JSONObject jo)
+	{	
+		try {
+			return (Double[])jo.get("Lat");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -394,6 +514,8 @@ public class JSONMessage {
 		
 		return jo;
 	}
+	
+	/*Not in use. We do not let the user unvote
 	public static JSONObject unVote(String User, int id, int prev)
 	{
 		JSONObject jo = new JSONObject();
@@ -411,7 +533,8 @@ public class JSONMessage {
 		}
 		
 		return jo;
-	}
+	}*/
+	
 	public static JSONObject flag(String User, int id)
 	{
 		JSONObject jo = new JSONObject();
@@ -429,6 +552,8 @@ public class JSONMessage {
 		
 		return jo;
 	}
+	
+	/* Not in use. We do not let the user unflag media content
 	public static JSONObject unFlag(String User, int id)
 	{
 		JSONObject jo = new JSONObject();
@@ -445,7 +570,8 @@ public class JSONMessage {
 		}
 		
 		return jo;
-	}
+	}*/
+	
 	//requests
 	public static JSONObject getPosts(int bottomId, String filter, Double lat, Double lon)
 	{
