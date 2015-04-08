@@ -105,7 +105,7 @@ public class JSONMessage {
 		return jo;
 	}
 	//create json media messages to be sent to client
-	public static JSONObject serverPictureToJson(String[] pic, String[] date, int[] id, String[][] tags, int[] rating)
+	public static JSONObject serverPictureToJson(String[] pic, String[] date, int[] id, String[] tags, int[] rating)
 	{
 		JSONObject jo = new JSONObject();
 		
@@ -125,7 +125,7 @@ public class JSONMessage {
 		return jo;
 	}
 	
-	public static JSONObject serverVideoToJson(Object[] vid,String[] date, int[] id, int[] rating, String[][] tags)
+	public static JSONObject serverVideoToJson(Object[] vid,String[] date, int[] id, int[] rating, String[] tags)
 	{
 		JSONObject jo = new JSONObject();
 		

@@ -176,7 +176,7 @@ public class SQLStatements {
 
 		//If the tag is not null then that takes priority over all other parameters
 		if (tag != null && tag != "") {
-			query = "SELECT TOP 10 Picture, Video, ID, User, Votes, Flags "
+			query = "SELECT TOP 10 Picture, Video, ID, User, Votes, Flags, Date, Tag "
 				  + "FROM Media_and_Tags "
 				  + "WHERE Latitude  < ? + 1.5 AND "	//1
 				  + "Latitude  > ? - 1.5 AND "			//2
@@ -206,7 +206,7 @@ public class SQLStatements {
 		}
 
 		//Only make it here if tag is NULL, need to search database based on other parameters
-		query = "SELECT TOP 10 Picture, Video, ID, User, Votes, Flags "
+		query = "SELECT TOP 10 Picture, Video, ID, User, Votes, Flags, Date, Tag "
 				  + "FROM Media_and_Tags "
 				  + "WHERE Latitude  < ? + 1.5 AND "	//1
 				  + "Latitude  > ? - 1.5 AND "			//2

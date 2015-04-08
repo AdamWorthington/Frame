@@ -35,6 +35,8 @@ public class DatabaseReturnManager {
 		int[] postID = new int[10];
 		int[] votes = new int[10];
 		int[] flags = new int[10];
+		String[] tags = new String[10];
+		String[] date = new String[10];
 		try {
 			while (rs.next() && i < 10) {
 
@@ -53,6 +55,8 @@ public class DatabaseReturnManager {
 				users[i]  = rs.getString("User");
 				votes[i]  = rs.getInt("Votes");
 				flags[i]  = rs.getInt("Flags");
+				tags[i] = rs.getString("Tag");
+				date[i] = rs.getString("Date");
 
 				i++;
 			}
@@ -65,10 +69,10 @@ public class DatabaseReturnManager {
 		//TODO: Need json methods that return posts to client to take arrays of things, not individual ones
 		JSONObject returnVal;
 		if (type == 0) {
-			returnVal = serverPictureToJson(media, String[] date, postID, String[][] tags, votes);
+			returnVal = serverPictureToJson(media, date, postID, tags, votes);
 		}
 		else {
-			returnVal = serverVideoToJson(media, String[] date, postID, votes, String[][] tags);
+			returnVal = serverVideoToJson(media, date, postID, votes, tags);
 		}
 		
 		
