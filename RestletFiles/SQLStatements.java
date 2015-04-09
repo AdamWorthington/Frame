@@ -1,14 +1,11 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+package com.Simple;
+
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.json.JSONObject;
-
-import com.frame.app.Core.JSONMessage;
 
 /*
  * USAGE: Depending on integer received from front end, call one of these two methods
@@ -230,10 +227,12 @@ public class SQLStatements {
 			System.err.println("Error creating PreparedStatement in getPosts");
 			return null;
 		}
-
+		
 		return stmt;
 		
 	}
+	
+	
 	
 	
 	/*
@@ -638,20 +637,40 @@ public class SQLStatements {
 		PreparedStatement stmt = null;
 
 		String query = "INSERT INTO MEDIA (ID, User, Latitude, Longitude, Picture, Video, Media_Type, Date, Votes, Flags)"
-							   + " VALUES (null, \"?\", ?, ?, ?, NULL, 0, NULL, 0, 0);";
+							   + " VALUES (null, ?, ?, ?, ?, NULL, 0, NULL, 0, 0);";
 		
+		String query2 = "INSERT INTO Test (ID, Media) VALUES (NULL, ?)";
+		System.err.println("1_______");
 		try {
-			stmt = conn.prepareStatement(query);
+			/*stmt = conn.prepareStatement(query);
+			System.err.println("2_______");
+			//stmt.setString(1,  "\"");
 			stmt.setString(1, user);
+			System.err.println("3______");
+			//stmt.setString(3,  "\"");
 			stmt.setDouble(2, lat);
+			System.err.println("4_______");
 			stmt.setDouble(3, lat);
+			System.err.println("5_______");
 			
 			Blob blob = conn.createBlob();
+			System.err.println("6_______");
 			blob.setBytes(1,  picture.getBytes());
+			System.err.println("7_______");
 			stmt.setBlob(4, blob);
+			System.err.println("8_______");*/
+			
+			stmt = conn.prepareStatement(query2);
+			//Blob blob = conn.createBlob();
+			//blob.setBytes(1, picture.getBytes());
+			//stmt.setBlob(1, blob);
+			stmt.setString(1, picture);
 		}
 		catch (SQLException e) {
+			
 			System.err.println("Error creating PreparedStatement in postPicture");
+			System.err.println(e.getMessage());
+			
 			return null;
 		}
 

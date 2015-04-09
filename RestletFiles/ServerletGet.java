@@ -17,7 +17,7 @@ public class ServerletGet extends ServerResource {
 	}
 
 	public JSONObject sqlSelect() {
-		String query = "SELECT * FROM Text_Store LIMIT 10";
+		String query = "SELECT Media FROM Test WHERE ID=(SELECT max(ID) FROM Test)";
 		Statement stmt = null;
 		String url = "";
 		String[] textFields = new String[10];
@@ -38,16 +38,16 @@ public class ServerletGet extends ServerResource {
 			
 			
 			int i = 0;
-			while (rs.next() && i < 10) {
-				textFields[i] = rs.getString("Text");
-				dateFields[i] = rs.getString("Date");
-				idFields[i] = rs.getInt("ID");
+			while (rs.next() && i < 1) {
+				textFields[i] = rs.getString("Media");
+				//dateFields[i] = rs.getString("Date");
+				//idFields[i] = rs.getInt("ID");
 				i++;
 			}
 			returnVal.put("total", i);
-			returnVal.put("Text", textFields);
-			returnVal.put("Date", dateFields);
-			returnVal.put("ID", idFields);
+			returnVal.put("Picture", textFields);
+			//returnVal.put("Date", dateFields);
+			//returnVal.put("ID", idFields);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
