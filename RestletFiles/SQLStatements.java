@@ -3,9 +3,12 @@ package com.Simple;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.json.JSONObject;
+
+import com.frame.app.Core.JSONMessage;
 
 /*
  * USAGE: Depending on integer received from front end, call one of these two methods
@@ -99,10 +102,9 @@ public class SQLStatements {
 	/*
 	 * Master method for GET
 	 */
-	public static PreparedStatement sqlGET(Connection conn, JSONObject jo) {
-			//int methodID, int postID, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
+	public static JSONObject sqlGET(Connection conn, JSONObject jo) {
 
-		PreparedStatement query = null;
+		JSONObject query = null;
 
 		
 		/*
@@ -121,8 +123,9 @@ public class SQLStatements {
 			
 			query = getPosts(conn, lastPost, lat, lon, tag);
 		}
-		/*else if() {
-			//Need json method for isCommentRequest
+		/*else if(JSONMessage.isComment(jo)) {
+			int id = JSONMessage.getID(jo);
+			query = getComments(conn, id);
 		}*/
 		else {
 			System.err.println("Error in sqlGET, unknown request");
@@ -132,19 +135,15 @@ public class SQLStatements {
 		
 		
 		/*switch(methodID) {
-
 		case 1:
 			query = getPicture(conn, lastPost, lat, lon, tag, timestamp, sort);
 			break;
-
 		case 2:
 			query = getVideo(conn, lastPost, lat, lon, tag, timestamp, sort);
 			break;
-
 		case 3:
 			query = getText(conn, lastPost, lat, lon, tag, timestamp, sort);
 			break;
-
 		case 4:
 			query = getComments(conn, postID);
 			break;
@@ -152,14 +151,13 @@ public class SQLStatements {
 		default:
 			System.err.printf("Incorrect methodID in sqlGET (Should be 1-4, was %d)\n", methodID);
 			break;
-
 		}*/
 
 		return query;
 	}
 
 
-	private static PreparedStatement getPosts(Connection conn, int lastPost, double lat, double lon, String tag) {
+	private static JSONObject getPosts(Connection conn, int lastPost, double lat, double lon, String tag) {
 		
 		PreparedStatement stmt = null;
 
@@ -173,15 +171,16 @@ public class SQLStatements {
 
 		//If the tag is not null then that takes priority over all other parameters
 		if (tag != null && tag != "") {
-			query = "SELECT TOP 10 Picture, Video, ID, User, Votes, Flags, Date, Tag "
-				  + "FROM Media_and_Tags "
+			query = "SELECT ID, User, Votes, Flags, Date "
+				  + "FROM Media_Attributes "
 				  + "WHERE Latitude  < ? + 1.5 AND "	//1
 				  + "Latitude  > ? - 1.5 AND "			//2
 				  + "Longitude < ? + 1.5 AND "			//3
-				  + "Longitude > ? - 1.5 AND "			//4
+				  + "Longitude > ? - 1.5 "				//4
+				  + "WHERE ID=(SELECT max(ID) FROM Test)";
 				  //+ "ID >  ? AND "					//5
 				  //+ "ID < (? + 10) AND "				//6
-				  + "Tag = \"?\";";
+				  //+ "Tag = \"?\";";
 			
 			try {
 				stmt = conn.prepareStatement(query);
@@ -198,37 +197,81 @@ public class SQLStatements {
 				System.err.println("Error creating PreparedStatement in getPosts");
 				return null;
 			}
-
-			return stmt;
 		}
+		else {
 
-		//Only make it here if tag is NULL, need to search database based on other parameters
-		query = "SELECT TOP 10 Picture, Video, ID, User, Votes, Flags, Date, Tag "
-				  + "FROM Media_and_Tags "
-				  + "WHERE Latitude  < ? + 1.5 AND "	//1
-				  + "Latitude  > ? - 1.5 AND "			//2
-				  + "Longitude < ? + 1.5 AND "			//3
-				  + "Longitude > ? - 1.5;";				//4
-				  //+ "ID >  ? AND "					//5
-				  //+ "ID < (? + 10) AND "				//6
+			//Only make it here if tag is NULL, need to search database based on other parameters
+			query = "SELECT ID, Flags, Votes, User, Date "
+					+ "FROM Media_Attributes "
+				  	+ "WHERE Latitude  < ? + 1.5 AND "	//1
+				  	+ "Latitude  > ? - 1.5 AND "			//2
+				  	+ "Longitude < ? + 1.5 AND "			//3
+				  	+ "Longitude > ? - 1.5 "				//4
+				  	+ "WHERE ID=(SELECT max(ID) FROM Test)";
+				  	//+ "ID >  ? AND "					//5
+					//+ "ID < (? + 10) AND "				//6
 
 
-		try {
-			stmt = conn.prepareStatement(query);
-			stmt.setDouble(1, lat);
-			stmt.setDouble(2, lat);
-			stmt.setDouble(3, lon);
-			stmt.setDouble(4, lon);
-			//stmt.setInt(5, lastPost);
-			//stmt.setInt(6, lastPost);
+			try {
+				stmt = conn.prepareStatement(query);
+				stmt.setDouble(1, lat);
+				stmt.setDouble(2, lat);
+				stmt.setDouble(3, lon);
+				stmt.setDouble(4, lon);
+				//stmt.setInt(5, lastPost);
+				//stmt.setInt(6, lastPost);
 			
+			}
+			catch (SQLException e) {
+				System.err.println("Error creating PreparedStatement in getPosts");
+				return null;
+			}
+		}
+		
+		ResultSet rs = stmt.executeQuery();
+		
+		int[] id = new int[10];
+		int[] flags = new int[10];
+		int[] votes = new int[10];
+		String[] users = new String[10];
+		String[] dates = new String[10];
+		String[] media = new String[10];
+		
+		int i = 0;
+		while (rs.next() && i < 1) {
+			id[i]    = rs.getInt("ID");
+			flags[i] = rs.getInt("Flags");
+			votes[i] = rs.getInt("Votes");
+			users[i] = rs.getString("User");
+			dates[i] = rs.getString("Date");
+			i++;
+		}
+		
+		String query2 = "SELECT FROM Media WHERE ID=?;";
+		PreparedStatement stmt2 = null;
+		try {
+			stmt = conn.prepareStatement(query2);
+			stmt.setInt(1, id[1]);
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in getPosts");
 			return null;
 		}
 		
-		return stmt;
+		ResultSet rs2 = stmt.executeQuery();
+		
+		i = 0;
+		while (rs2.next() && i < 1) {
+			media[i]    = rs.getString("Media");
+		}
+		
+		JSONObject returnVal;
+		returnVal = JSONMessage.serverPictureToJson(media, dates, id, null, votes);
+		
+		stmt.close();
+		stmt2.close();
+		
+		return returnVal;
 		
 	}
 	
@@ -484,7 +527,7 @@ public class SQLStatements {
 	/*
 	 * 	4
 	 */
-	private static PreparedStatement getComments(Connection conn, int postID) {
+	private static JSONObject getComments(Connection conn, int postID) {
 		
 		PreparedStatement stmt = null;
 		
@@ -493,7 +536,7 @@ public class SQLStatements {
 			return null;
 		}
 		
-		String query = "SELECT Comment, Comment_Flags, Comment_User, Comment_ID "
+		String query = "SELECT Comment, Comment_ID "
 					 + "FROM Comments "
 					 + "WHERE Post_ID = ?;";
 		
@@ -505,8 +548,24 @@ public class SQLStatements {
 			System.err.println("Error creating PreparedStatement in getComments");
 			return null;
 		}
+		
+		ResultSet rs = stmt.executeQuery();
+		
+		String[] comments = new String[10];
+		int[] id = new int[10];
+		
+		int i = 0;
+		while (rs.next() && i < 1) {
+			comments[i] = rs.getString("Comment");
+			id[i] = rs.getInt("Comment_ID");
+		}
+		
 
-		return stmt;
+		JSONObject returnVal = JSONMessage.serverComments(comments, postID);
+
+		stmt.close();
+		
+		return returnVal;
 	}
 
 
@@ -549,10 +608,10 @@ public class SQLStatements {
 
 
 	
-	public static PreparedStatement sqlPOST(Connection conn, JSONObject jo) {
+	public static int sqlPOST(Connection conn, JSONObject jo) {
 			//int methodID, int postID, int vote, String user, double lat, double lon, String text_or_comment, String date, File picture, File video) {
 		
-		PreparedStatement query = null;
+		int query;
 		
 		/*
 			Post information: sqlPOST (return value is String):
@@ -583,7 +642,7 @@ public class SQLStatements {
 			
 			query = postVideo(conn, video, user, lat, lon);
 		}
-		else if (JSONMessage.isText(jo)) {
+		/*else if (JSONMessage.isText(jo)) {
 			String text = JSONMessage.getText(jo);
 			String user = JSONMessage.getUser(jo);
 			double lat  = JSONMessage.getLat (jo);
@@ -591,7 +650,7 @@ public class SQLStatements {
 			String date = JSONMessage.getDate(jo);
 			
 			query = postText(conn, text, user, lat, lon, date);
-		}
+		}*/
 		else if (JSONMessage.isVote(jo)) {
 			int postID = JSONMessage.getID  (jo);
 			int vote   = JSONMessage.getVote(jo);
@@ -632,78 +691,146 @@ public class SQLStatements {
 	/*
 	 * 	5
 	 */
-	private static PreparedStatement postPicture(Connection conn, String picture, String user, double lat, double lon) {
+	private static int postPicture(Connection conn, String picture, String user, double lat, double lon) {
 		
-		PreparedStatement stmt = null;
+		int work;
+		PreparedStatement stmt  = null;
+		PreparedStatement stmt2 = null;
+		PreparedStatement stmt3 = null;
 
-		String query = "INSERT INTO MEDIA (ID, User, Latitude, Longitude, Picture, Video, Media_Type, Date, Votes, Flags)"
-							   + " VALUES (null, ?, ?, ?, ?, NULL, 0, NULL, 0, 0);";
+		String query = "INSERT INTO Media_Attributes (ID, Latitude, Longitude, Flags, Votes, User, Date)"
+							   + " VALUES (?, ?, ?, 0, 0, ?, NULL);";
 		
-		String query2 = "INSERT INTO Test (ID, Media) VALUES (NULL, ?)";
+		String query2 = "INSERT INTO Media (ID, Media, Type) VALUES (NULL, ?, 0)";
+		
+		String query3 = "SELECT ID FROM Media WHERE ID=(SELECT max(ID) FROM Media)";
 		System.err.println("1_______");
+		
+		//Posting the picture itself
+		try{
+			stmt2 = conn.prepareStatement(query2);
+			stmt2.setString(1, picture);
+			
+			work = stmt2.executeUpdate();
+		}
+		catch(SQLException e){
+			System.err.println("Error creating posting picture to table Media");
+			System.err.println(e.getMessage());
+			
+			return 0;
+		}
+		
+		//Retrieving that Picture's ID
+		int id;
 		try {
-			/*stmt = conn.prepareStatement(query);
-			System.err.println("2_______");
-			//stmt.setString(1,  "\"");
-			stmt.setString(1, user);
-			System.err.println("3______");
-			//stmt.setString(3,  "\"");
-			stmt.setDouble(2, lat);
-			System.err.println("4_______");
-			stmt.setDouble(3, lat);
-			System.err.println("5_______");
+			stmt3 = conn.prepareStatement(query3);
+			ResultSet rs = stmt3.executeQuery();
+
+			int i = 0;
+			while (rs.next() && i < 1) {
+				id = rs.getInt("ID");
+			}
+		}
+		catch(SQLException e) {
+			System.err.println("Error creating retriveing assigned ID");
+			System.err.println(e.getMessage());
 			
-			Blob blob = conn.createBlob();
-			System.err.println("6_______");
-			blob.setBytes(1,  picture.getBytes());
-			System.err.println("7_______");
-			stmt.setBlob(4, blob);
-			System.err.println("8_______");*/
 			
-			stmt = conn.prepareStatement(query2);
-			//Blob blob = conn.createBlob();
-			//blob.setBytes(1, picture.getBytes());
-			//stmt.setBlob(1, blob);
-			stmt.setString(1, picture);
+			return 0;
+		}
+		
+		//Storing the picture's Attributes
+		try {
+			stmt = conn.prepareStatement(query);
+			stmt.setInt(1, id);
+			stmt.setDouble(2,  lat);
+			stmt.setDouble(3, lon);
+			stmt.setString(4, user);
+			
+			work = stmt.executeUpdate();
 		}
 		catch (SQLException e) {
 			
-			System.err.println("Error creating PreparedStatement in postPicture");
+			System.err.println("Error creating posting picture to table Media_Attributes");
 			System.err.println(e.getMessage());
 			
-			return null;
+			return 0;
 		}
 
-		return stmt;
+		return 1;
 
 	}
 
 	/*
 	 * 	6
 	 */
-	private static PreparedStatement postVideo(Connection conn, String video, String user, double lat, double lon) {
+	private static int postVideo(Connection conn, String video, String user, double lat, double lon) {
 		
-		PreparedStatement stmt = null;
+		int work;
+		PreparedStatement stmt  = null;
+		PreparedStatement stmt2 = null;
+		PreparedStatement stmt3 = null;
 
-		String query = "INSERT INTO MEDIA (ID, User, Latitude, Longitude, Picture, Video, Media_Type, Date, Votes, Flags)"
-							   + " VALUES (null, \"?\", ?, ?, NULL, ?, 1, NULL, 0, 0);";
+		String query = "INSERT INTO Media_Attributes (ID, Latitude, Longitude, Flags, Votes, User, Date)"
+							   + " VALUES (?, ?, ?, 0, 0, ?, NULL);";
 		
+		String query2 = "INSERT INTO Media (ID, Media, Type) VALUES (NULL, ?, 1)";
+		
+		String query3 = "SELECT ID FROM Media WHERE ID=(SELECT max(ID) FROM Media)";
+		System.err.println("1_______");
+		
+		//Posting the picture itself
+		try{
+			stmt2 = conn.prepareStatement(query2);
+			stmt2.setString(1, video);
+			
+			work = stmt2.executeUpdate();
+		}
+		catch(SQLException e){
+			System.err.println("Error creating posting video to table Media");
+			System.err.println(e.getMessage());
+			
+			return 0;
+		}
+		
+		//Retrieving that Picture's ID
+		int id;
+		try {
+			stmt3 = conn.prepareStatement(query3);
+			ResultSet rs = stmt3.executeQuery();
+
+			int i = 0;
+			while (rs.next() && i < 1) {
+				id = rs.getInt("ID");
+			}
+		}
+		catch(SQLException e) {
+			System.err.println("Error creating retriveing assigned ID");
+			System.err.println(e.getMessage());
+			
+			
+			return 0;
+		}
+		
+		//Storing the picture's Attributes
 		try {
 			stmt = conn.prepareStatement(query);
-			stmt.setString(1, user);
-			stmt.setDouble(2, lat);
-			stmt.setDouble(3, lat);
+			stmt.setInt(1, id);
+			stmt.setDouble(2,  lat);
+			stmt.setDouble(3, lon);
+			stmt.setString(4, user);
 			
-			Blob blob = conn.createBlob();
-			blob.setBytes(1,  video.getBytes());
-			stmt.setBlob(4, blob);
+			work = stmt.executeUpdate();
 		}
 		catch (SQLException e) {
-			System.err.println("Error creating PreparedStatement in postVideo");
-			return null;
+			
+			System.err.println("Error creating posting video to table Media_Attributes");
+			System.err.println(e.getMessage());
+			
+			return 0;
 		}
 
-		return stmt;
+		return 1;
 
 	}
 
@@ -742,11 +869,12 @@ public class SQLStatements {
 	/*
 	 * 8
 	 */
-	private static PreparedStatement setVote(Connection conn, int postID, int vote) {
+	private static int setVote(Connection conn, int postID, int vote) {
 		
 		PreparedStatement stmt = null;
+		int ret;
 		
-		String query = "UPDATE Media "
+		String query = "UPDATE Media_Attributes "
 					 + "SET Votes = ? "
 					 + "WHERE ID = ?;";
 		
@@ -754,155 +882,212 @@ public class SQLStatements {
 			stmt = conn.prepareStatement(query);
 			stmt.setInt(1, vote);
 			stmt.setInt(2, postID);
+			
+			ret = stmt.executeUpdate();
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in setVote");
-			return null;
+			return 0;
 		}
 
-		return stmt;
+		return ret;
 		
 	}
 
 	/*
 	 * 	9
 	 */
-	private static PreparedStatement flag(Connection conn, int postID) {
+	private static int flag(Connection conn, int postID) {
 
 		PreparedStatement stmt = null;
+		int ret;
 		
-		String query = "UPDATE Media "
+		String query = "UPDATE Media_Attributes "
 					 + "SET Flags = Flags + 1 "
 					 + "WHERE ID = ?;";
 
 		try {
 			stmt = conn.prepareStatement(query);
 			stmt.setInt(1, postID);
+			
+			ret = stmt.executeUpdate();
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in flag");
-			return null;
+			return 0;
 		}
 
-		return stmt;
+		return ret;
 
 	}
 
 	/*
 	 * 	10
 	 */
-	private static PreparedStatement unFlag(Connection conn, int postID) {
+	private static int unFlag(Connection conn, int postID) {
 
 		PreparedStatement stmt = null;
+		int ret;
 		
-		String query = "UPDATE Media "
+		String query = "UPDATE Media_Attributes "
 					 + "SET Flags = Flags - 1 "
 					 + "WHERE ID = ?;";
 
 		try {
 			stmt = conn.prepareStatement(query);
 			stmt.setInt(1, postID);
+			
+			ret = stmt.executeUpdate();
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in unFlag");
-			return null;
+			return 0;
 		}
 
-		return stmt;
+		return ret;
 
 	}
 
 	/*
 	 * 	11
 	 */
-	private static PreparedStatement postComment(Connection conn, int postID, String comment, String user) {
+	private static int postComment(Connection conn, int postID, String comment, String user) {
 		
 		if (user == null || user == "" || comment == null || comment == "") {
 			System.err.println("Parameter error in postComment");
+			return 0;
 		}
 
 		PreparedStatement stmt = null;
+		int ret;
 
 		String query = "INSERT INTO Commments (Post_ID, Comment, Comment_Date, Comment_Flags, Comment_ID, Comment_User) "
-									+ "VALUES (?, \"?\", null, 0, null, \"?\")";
+									+ "VALUES (?, ?, null, 0, null, ?)";
 
 		try {
 			stmt = conn.prepareStatement(query);
 			stmt.setInt(1, postID);
 			stmt.setString(2, comment);
 			stmt.setString(3, user);
+			
+			ret = stmt.executeUpdate();
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in postComment");
-			return null;
+			return 0;
 		}
 		
 
-		return stmt;
+		return ret;
 
 	}
 
 	/*
 	 * 	12
 	 */
-	private static PreparedStatement removeMedia(Connection conn, int postID, String user) {
+	private static int removeMedia(Connection conn, int postID, String user) {
 		
 		PreparedStatement stmt = null;
+		PreparedStatement stmt1 = null;
+		PreparedStatement stmt2 = null;
+		int ret;
 
-		String queries = "DELETE FROM Media "
+		String query1 =   "DELETE FROM Media_Attributes "
 						+ "WHERE ID = ? AND "
-						+ "User = \"?\"; "
-					
-						+ "DELETE FROM Comments "
-						+ "WHERE Comment_ID = ? AND "
-						+ "User = \"?\"; "
-							
-						+ "DELETE FROM Tags "
+						+ "User = ?;";
+		
+		String query2 =   "DELETE FROM Comments "
 						+ "WHERE Post_ID = ?;";
+		
+		String query3 =   "DELETE FROM Tags "
+						+ "WHERE Post_ID = ?;";
+		
+		String query4 = "DELETE FROM Media "
+					  + "WHERE ID = ?;";
 
+		//Query1
 		try {
-			stmt = conn.prepareStatement(queries);
+			stmt = conn.prepareStatement(query1);
 			
 			stmt.setInt(1, postID);
 			stmt.setString(2, user);
 			
-			stmt.setInt(3, postID);
-			stmt.setString(4, user);
-			
-			stmt.setInt(5, postID);
+			ret = stmt.executeUpdate();
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in removeMedia");
-			return null;
+			return 0;
+		}
+		
+		//Query2
+		try {
+			stmt2 = conn.prepareStatement(query2);
+			
+			stmt.setInt(1, postID);
+			
+			ret = stmt.executeUpdate();
+		}
+		catch (SQLException e) {
+			System.err.println("Error creating PreparedStatement in removeMedia");
+			return 0;
+		}
+		
+		//Query3
+		try {
+			stmt2 = conn.prepareStatement(query3);
+			
+			stmt.setInt(1, postID);
+			
+			ret = stmt.executeUpdate();
+		}
+		catch (SQLException e) {
+			System.err.println("Error creating PreparedStatement in removeMedia");
+			return 0;
+		}
+		
+		//Query4
+		try {
+			stmt2 = conn.prepareStatement(query4);
+					
+			stmt.setInt(1, postID);
+					
+			ret = stmt.executeUpdate();
+		}
+		catch (SQLException e) {
+			System.err.println("Error creating PreparedStatement in removeMedia");
+			return 0;
 		}
 		
 
-		return stmt;
+		return ret;
 
 	}
 
 	/*
 	 * 13
 	 */
-	private static PreparedStatement removeComment(Connection conn, int commentID, String user) {
+	private static int removeComment(Connection conn, int commentID, String user) {
 		
 		PreparedStatement stmt = null;
+		int ret;
 
 		String query = "DELETE FROM Comments "
-				+ "WHERE Comment_ID = ? AND User = \"?\";";
+					 + "WHERE Comment_ID = ? AND User = ?;";
 
 		try {
 			stmt = conn.prepareStatement(query);
 			stmt.setInt(1, commentID);
 			stmt.setString(2, user);
+			
+			ret = stmt.executeUpdate();
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in removeComment");
-			return null;
+			return 0;
 		}
 		
 
-		return stmt;
+		return ret;
 
 	}
 	

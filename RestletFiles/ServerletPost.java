@@ -66,20 +66,21 @@ public class ServerletPost extends ServerResource implements Serializable{
 			e.printStackTrace();
 			returnVal = 4;
 		}
+		
 		if(JSONMessage.isPic(obj)){
 			PreparedStatement stmt = SQLStatements.sqlPOST(conn, obj);
 			System.err.println(stmt.toString());
 			
 			//PreparedStatement stmt = null;
 			
-			String query = "INSERT INTO MEDIA (ID, User, Latitude, Longitude, Picture, Video, Media_Type, Date, Votes, Flags)"
+			/*String query = "INSERT INTO MEDIA (ID, User, Latitude, Longitude, Picture, Video, Media_Type, Date, Votes, Flags)"
 					   + " VALUES (NULL, \"DAN\", 1, 1, NULL, NULL, 0, NULL, 0, 0);";
 			
 			String query1 = "INSERT INTO Text_Store (ID, Text, Date) VALUES (NULL, \"TESTESTESTESTEST\", NULL)";
 			
 			String query2 = "INSERT INTO Test (ID, Media) VALUES (NULL, ?)";
 			String test = "Test";
-			/*try {
+			try {
 				stmt = conn.prepareStatement();
 				Blob blob = conn.createBlob();
 				blob.setBytes(1,  test.getBytes());
@@ -87,7 +88,7 @@ public class ServerletPost extends ServerResource implements Serializable{
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}*/
+			}
 			
 			System.err.println(conn.toString());
 			
@@ -106,7 +107,7 @@ public class ServerletPost extends ServerResource implements Serializable{
 				conn.close();
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}*/
 		}
 		else if(JSONMessage.isVid(obj)){
 			

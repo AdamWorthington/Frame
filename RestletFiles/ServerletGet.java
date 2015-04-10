@@ -24,28 +24,29 @@ public class ServerletGet extends ServerResource {
 		
 		
 		// ------------Parses the text field---------------//
-				String s = "";
-				try {
-					s = r.getText();
-				} catch (IOException e2) {
-					System.err.println("Couldn't get text");
-			
-				}
-				JSONObject obj = null;
-				try {
-					obj = new JSONObject(s);
-				} catch (JSONException e1) {
-					System.err.println("Couldn't make JSONObject from string: " + s);
-					
-				}
+		String s = "";
+		try {
+			s = r.getText();
+		} catch (IOException e2) {
+			System.err.println("Couldn't get text");
+		}
 		
-		String query = "SELECT Media FROM Test WHERE ID=(SELECT max(ID) FROM Test)";
+		JSONObject obj = null;
+		try {
+			obj = new JSONObject(s);
+		} catch (JSONException e1) {
+			System.err.println("Couldn't make JSONObject from string: " + s);			
+		}
+		
+		/*String query = "SELECT Media FROM Test WHERE ID=(SELECT max(ID) FROM Test)";
 		Statement stmt = null;
 		String url = "";
 		String[] textFields = new String[10];
 		String[] dateFields = new String[10];
-		int[] idFields = new int[10];
-		JSONObject returnVal = new JSONObject();
+		int[] idFields = new int[10];*/
+		JSONObject returnVal = null;
+		
+		String url = "";
 		
 		try {
 			Class.forName("com.mysql.jdbc.GoogleDriver");
@@ -54,9 +55,11 @@ public class ServerletGet extends ServerResource {
 			
 			Connection conn = DriverManager.getConnection(url);
 			
-			stmt = conn.createStatement();
+			//stmt = conn.createStatement();
 			
-			ResultSet rs = stmt.executeQuery(query);
+			returnVal = SQLStatements.sqlGET(conn, obj);
+			
+			/*ResultSet rs = stmt.executeQuery(query);
 			
 			
 			int i = 0;
@@ -69,11 +72,12 @@ public class ServerletGet extends ServerResource {
 			returnVal.put("total", i);
 			returnVal.put("Picture", textFields);
 			//returnVal.put("Date", dateFields);
-			//returnVal.put("ID", idFields);
+			//returnVal.put("ID", idFields);*/
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
+		}
+		/*finally {
 			if (stmt != null) {
 				try {
 					stmt.close();
@@ -82,7 +86,7 @@ public class ServerletGet extends ServerResource {
 					System.err.println("Failed to close statement");
 				}
 			}
-		}
+		}*/
 		
 		return returnVal;
 	}
