@@ -30,7 +30,7 @@ public class TableMediaContent
 			+ COLUMN_FLAGCOUNT + " int not null, "
 			+ COLUMN_LATITUDE + " float not null, "
 			+ COLUMN_LONGITUDE + " float not null, "
-			+ COLUMN_DATE + " int not null"
+			+ COLUMN_DATE + " text not null"
 			+ ");";
 	
 	public static void onCreate(SQLiteDatabase database)
@@ -70,7 +70,7 @@ public class TableMediaContent
 		{
 			mediaContent.setDBId(Integer.parseInt(cursor.getString(0)));
 			database.delete(TABLE_MEDIACONTENT, COLUMN_ID + " = ?", 
-					new String[] {String.valueOf(mediaContent.getDatabaseId())});
+					new String[] {String.valueOf(contentId)});
 			result = true;
 		}
 		
@@ -79,15 +79,55 @@ public class TableMediaContent
 		return result;
 	}
 	
-	public static void upvoteContent(int contentId, SQLiteDatabase database)
+	public static ArrayList<MediaContent> getAllMediaContent(SQLiteDatabase database)
+	{
+		ArrayList<MediaContent> content = new ArrayList<MediaContent>();
+		
+		String selectQuery = "SELECT  * FROM " + TABLE_MEDIACONTENT;
+		Cursor cursor = database.rawQuery(selectQuery, null);
+		if (cursor.moveToFirst()) 
+		{
+			do 
+			{
+				MediaContent c = new MediaContent();
+				int id = cursor.getInt(0);
+				int rating = cursor.getInt(1);
+				int flags = cursor.getInt(2);
+				float latitude = cursor.getFloat(3);
+				float longitude = cursor.getFloat(4);
+				String date = cursor.getString(5);
+				//c.
+				//content.add(c);
+			} while (cursor.moveToNext());
+		}
+		
+		return content;
+	}
+	
+	public static void upvoteContent(int contentId, int newVal, SQLiteDatabase database)
 	{
 		String query = "Select * FROM " + TABLE_MEDIACONTENT + " WHERE " + COLUMN_ID +
 				" = \"" + Integer.toString(contentId) + "\"";
+		
+		Cursor cursor = database.rawQuery(query, null);
+		
+		ContentValues newValue = new ContentValues();
+		newValue.put(COLUMN_RATING, newVal);
+		
+		database.update(TABLE_MEDIACONTENT, newValue, "COLUMN_ID" + " = ?", new String[] {String.valueOf(contentId)});
 	}
 	
-	public static void downvoteContent(MediaContent mediaContent, SQLiteDatabase database)
+	public static void downvoteContent(int contentId, int newVal, SQLiteDatabase database)
 	{
+		String query = "Select * FROM " + TABLE_MEDIACONTENT + " WHERE " + COLUMN_ID +
+				" = \"" + Integer.toString(contentId) + "\"";
 		
+		Cursor cursor = database.rawQuery(query, null);
+		
+		ContentValues newValue = new ContentValues();
+		newValue.put(COLUMN_RATING, newVal);
+		
+		database.update(TABLE_MEDIACONTENT, newValue, "COLUMN_ID" + " = ?", new String[] {String.valueOf(contentId)});
 	}
 	
 	public static void flagContent(MediaContent mediaContent, SQLiteDatabase database)

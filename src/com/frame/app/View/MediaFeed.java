@@ -124,32 +124,26 @@ public class MediaFeed extends Fragment
 			
 			double longitude = 0;//location.getLongitude();
 			double latitude = 0;//location.getLatitude();
-			Double lon = Double.valueOf(longitude);
-			Double lat = Double.valueOf(latitude);
 			int bottomId = -1; //Indicates that we want the latest.
 			
-			JSONObject obj = JSONMessage.getPosts(bottomId, "", lat, lon);
+			JSONObject obj = JSONMessage.getPosts(bottomId, "", latitude, longitude);
 			StringRepresentation stringRep = new StringRepresentation(
 					obj.toString());
 			stringRep.setMediaType(MediaType.APPLICATION_JSON);
+			JSONObject o = null;
 			try {
-				Representation r = res.post(stringRep);
+				Representation r = res.get();
+				o = new JSONObject(r.getText());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return o;
 		}
 		
 		@Override
 	    protected void onPostExecute(JSONObject result) 
 		{
-			if(result == null)
-			{
-				//Something went wrong
-				return;
-			}
-			
 			String[] s = JSONMessage.clientGetImage(result);
 			Bitmap b = JSONMessage.decodeBase64(s[0]);
 			
@@ -168,7 +162,7 @@ public class MediaFeed extends Fragment
 			
 			 FileOutputStream out = null;
 	         File imageFile = new File(mediaStorageDir, String.format("%s.jpg",
-	                    "from server2"));
+	                    "CRAG"));
 	            try {
 			    out = new FileOutputStream(imageFile);
 			    b.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
