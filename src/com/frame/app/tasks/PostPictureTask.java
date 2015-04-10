@@ -11,6 +11,7 @@ import com.frame.app.Core.JSONMessage;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class PostPictureTask extends AsyncTask<Object, Void, Void> 
 {
@@ -34,7 +35,8 @@ public class PostPictureTask extends AsyncTask<Object, Void, Void>
 		stringRep.setMediaType(MediaType.APPLICATION_JSON);
 
 		try {
-			//res.post(stringRep).write(System.out);
+			res.post(stringRep).write(System.out);
+			Log.d("POSTPICTURE", "SENT");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

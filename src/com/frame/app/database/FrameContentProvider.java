@@ -13,7 +13,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-public class FrameContentProvider extends ContentProvider
+/*public class FrameContentProvider extends ContentProvider
 {
 	 // database
 	  private FrameDatabaseHelper database;
@@ -21,22 +21,35 @@ public class FrameContentProvider extends ContentProvider
 	  // used for the UriMacher
 	  private static final int TODOS = 10;
 	  private static final int TODO_ID = 20;
+	  private static final int COMMENTS = 30;
+	  private static final int COMMENT_ID = 40;
 
-	  private static final String AUTHORITY = "com.frame.app.database";
+	  private static final String AUTHORITY = "com.frame.app.database.contentprovider";
 
-	  private static final String BASE_PATH = "mediacontents";
-	  public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY
-	      + "/" + BASE_PATH);
+	  private static final String BASE_PATH_MEDIACONTENT = "mediacontents";
+	  private static final String BASE_PATH_COMMENT = "comments";
+	  
+	  public static final Uri CONTENT_URI_MEDIACONTENT = Uri.parse("content://" + AUTHORITY
+	      + "/" + BASE_PATH_MEDIACONTENT);
+	  public static final Uri Content_URI_COMMENTS = Uri.parse("content://" + AUTHORITY
+		      + "/" + BASE_PATH_COMMENT);
 
-	  public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
+	  public static final String CONTENT_TYPE_MEDIACONTENT = ContentResolver.CURSOR_DIR_BASE_TYPE
 	      + "/mediacontents";
-	  public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
+	  public static final String CONTENT_ITEM_TYPE_MEDIACONTENT = ContentResolver.CURSOR_ITEM_BASE_TYPE
 	      + "/mediacontent";
+	  
+	  public static final String CONTENT_TYPE_COMMENT = ContentResolver.CURSOR_DIR_BASE_TYPE
+		      + "/comments";
+		  public static final String CONTENT_ITEM_TYPE_COMMENT = ContentResolver.CURSOR_ITEM_BASE_TYPE
+		      + "/comment";
 
 	  private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	  static {
-	    sURIMatcher.addURI(AUTHORITY, BASE_PATH, TODOS);
-	    sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/#", TODO_ID);
+	    sURIMatcher.addURI(AUTHORITY, BASE_PATH_MEDIACONTENT, TODOS);
+	    sURIMatcher.addURI(AUTHORITY, BASE_PATH_MEDIACONTENT + "/#", TODO_ID);
+	    sURIMatcher.addURI(AUTHORITY, BASE_PATH_COMMENT, COMMENTS);
+	    sURIMatcher.addURI(AUTHORITY, BASE_PATH_COMMENT + "/#", COMMENT_ID);
 	  }
 
 	  @Override
@@ -59,24 +72,29 @@ public class FrameContentProvider extends ContentProvider
 
 	    // Set the table
 	    queryBuilder.setTables(MediaContentTable.TABLE_MEDIACONTENT);
+	    queryBuilder.setTables(CommentTable.TABLE_COMMENT);
 
 	    int uriType = sURIMatcher.match(uri);
 	    switch (uriType) 
 	    {
 		    case TODOS:
-		      break;
+		        break;
 		    case TODO_ID:
-		      // adding the ID to the original query
-		      queryBuilder.appendWhere(MediaContentTable.COLUMN_ID + "="
-		          + uri.getLastPathSegment());
-		      break;
+		        // adding the ID to the original query
+		        queryBuilder.appendWhere(MediaContentTable.COLUMN_ID + "=" + uri.getLastPathSegment());
+		      	break;
+		    case COMMENTS:
+		    	break;
+			case COMMENT_ID:
+				// adding the ID to the original query
+			    queryBuilder.appendWhere(CommentTable.COLUMN_ID + "=" + uri.getLastPathSegment());
+			    break;
 		    default:
-		      throw new IllegalArgumentException("Unknown URI: " + uri);
+		    	throw new IllegalArgumentException("Unknown URI: " + uri);
 	    }
 
 	    SQLiteDatabase db = database.getWritableDatabase();
-	    Cursor cursor = queryBuilder.query(db, projection, selection,
-	        selectionArgs, null, null, sortOrder);
+	    Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 	    // make sure that potential listeners are getting notified
 	    cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
@@ -96,17 +114,23 @@ public class FrameContentProvider extends ContentProvider
 		  SQLiteDatabase sqlDB = database.getWritableDatabase();
 		  int rowsDeleted = 0;
 		  long id = 0;
+		  String path;
 		  switch (uriType) 
 		  {
 			  case TODOS:
-			    id = sqlDB.insert(MediaContentTable.TABLE_MEDIACONTENT, null, values);
-			    break;
+			   	  id = sqlDB.insert(MediaContentTable.TABLE_MEDIACONTENT, null, values);
+			   	  path = BASE_PATH_MEDIACONTENT;
+			      break;
+			  case COMMENTS:
+			   	  id = sqlDB.insert(CommentTable.TABLE_COMMENT, null, values);
+			   	  path = BASE_PATH_COMMENT;
+				  break;
 			  default:
 			    throw new IllegalArgumentException("Unknown URI: " + uri);
 		  }
 		  
 		  getContext().getContentResolver().notifyChange(uri, null);
-		  return Uri.parse(BASE_PATH + "/" + id);
+		  return Uri.parse(path + "/" + id);
 	  }
 
 	  @Override
@@ -135,6 +159,24 @@ public class FrameContentProvider extends ContentProvider
 	      					+ " and " + selection, selectionArgs);
 	      		}
 	      		break;
+	      	case COMMENTS:
+	      		rowsDeleted = sqlDB.delete(CommentTable.TABLE_COMMENT, selection,
+	      				selectionArgs);
+	      		break;
+	      	case COMMENT_ID:
+	      		String id2 = uri.getLastPathSegment();
+	      		if (TextUtils.isEmpty(selection)) 
+	      		{
+	      			rowsDeleted = sqlDB.delete(CommentTable.TABLE_COMMENT,
+	      					CommentTable.COLUMN_ID + "=" + id2, null);
+	      		} 
+	      		else 
+	      		{
+	      			rowsDeleted = sqlDB.delete(CommentTable.TABLE_COMMENT,
+	      					CommentTable.COLUMN_ID + "=" + id2 
+	      					+ " and " + selection, selectionArgs);
+	      		}
+	      		break;
 	      	default:
 	      		throw new IllegalArgumentException("Unknown URI: " + uri);
 	    }
@@ -151,28 +193,47 @@ public class FrameContentProvider extends ContentProvider
 		  int rowsUpdated = 0;
 		  switch (uriType) 
 		  {
-			  case TODOS:
-				  rowsUpdated = sqlDB.update(MediaContentTable.TABLE_MEDIACONTENT, 
+		  		case TODOS:
+				    rowsUpdated = sqlDB.update(MediaContentTable.TABLE_MEDIACONTENT, 
 						  values, selection, selectionArgs);
-		      break;
-		      case TODO_ID:
-		    	  String id = uri.getLastPathSegment();
-		    	  if (TextUtils.isEmpty(selection)) 
-		    	  {
-		    		  rowsUpdated = sqlDB.update(MediaContentTable.TABLE_MEDIACONTENT, values, MediaContentTable.COLUMN_ID + "=" + id, null);
-		    	  } 
-		    	  else 
-		    	  {
-		    		  rowsUpdated = sqlDB.update(MediaContentTable.TABLE_MEDIACONTENT, 
-			            values,
-			            MediaContentTable.COLUMN_ID + "=" + id 
-			            + " and " 
-			            + selection,
-			            selectionArgs);
-			      }
-		      break;
-		    default:
-		      throw new IllegalArgumentException("Unknown URI: " + uri);
+				    break;
+		        case TODO_ID:
+		    	    String id = uri.getLastPathSegment();
+		    	    if (TextUtils.isEmpty(selection)) 
+		    	    {
+		    		    rowsUpdated = sqlDB.update(MediaContentTable.TABLE_MEDIACONTENT, values, MediaContentTable.COLUMN_ID + "=" + id, null);
+		    	    } 
+		    	    else 
+		    	    {
+		    		    rowsUpdated = sqlDB.update(MediaContentTable.TABLE_MEDIACONTENT, 
+			            	values,
+			            	MediaContentTable.COLUMN_ID + "=" + id 
+			            	+ " and " 
+			            	+ selection,
+			            	selectionArgs);
+			        }
+		    	    break;
+		  		case COMMENTS:
+				    rowsUpdated = sqlDB.update(CommentTable.TABLE_COMMENT, 
+						  values, selection, selectionArgs);
+				    break;
+		        case COMMENT_ID:
+		    	    String id2 = uri.getLastPathSegment();
+		    	    if (TextUtils.isEmpty(selection)) 
+		    	    {
+		    		    rowsUpdated = sqlDB.update(CommentTable.TABLE_COMMENT, values, CommentTable.COLUMN_ID + "=" + id2, null);
+		    	    } 
+		    	    else 
+		    	    {
+		    		    rowsUpdated = sqlDB.update(CommentTable.TABLE_COMMENT, values,
+		    		    		CommentTable.COLUMN_ID + "=" + id2 
+			            	+ " and " 
+			            	+ selection,
+			            	selectionArgs);
+			        }
+		    	    break;
+		        default:
+		        	throw new IllegalArgumentException("Unknown URI: " + uri);
 	    }
 		  
 	    getContext().getContentResolver().notifyChange(uri, null);
@@ -196,4 +257,4 @@ public class FrameContentProvider extends ContentProvider
 	        }
 	     }
 	  }
-}
+}*/

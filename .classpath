@@ -9,11 +9,10 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="D:/eclipse/workspace/Frame/libs/android-support-v4.jar"/>
-	<classpathentry kind="lib" path="D:/eclipse/workspace/Frame/libs/org.restlet.ext.httpclient.jar"/>
-	<classpathentry kind="lib" path="D:/eclipse/workspace/Frame/libs/org.restlet.ext.jackson.jar"/>
-	<classpathentry kind="lib" path="D:/eclipse/workspace/Frame/libs/org.restlet.jar"/>
-	<classpathentry kind="lib" path="D:/eclipse/workspace/Frame/libs/spring-android-rest-template-1.0.0.M2.jar"/>
-	<classpathentry kind="lib" path="D:/eclipse/workspace/Frame/libs/volley.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Craig/Documents/GitHub/Frame/libs/android-support-v4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Craig/Documents/GitHub/Frame/libs/org.restlet.ext.httpclient.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Craig/Documents/GitHub/Frame/libs/org.restlet.ext.jackson.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Craig/Documents/GitHub/Frame/libs/org.restlet.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Craig/Documents/GitHub/Frame/libs/spring-android-rest-template-1.0.0.M2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

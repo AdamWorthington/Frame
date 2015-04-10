@@ -2,6 +2,10 @@ package com.frame.app.Core;
 
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,7 +19,7 @@ public class JSONMessage {
 	public static String encodeTobase64(Bitmap image)
 	{
 	    ByteArrayOutputStream baos = new ByteArrayOutputStream();  
-	    image.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+	    image.compress(Bitmap.CompressFormat.JPEG, 10, baos);
 	    byte[] b = baos.toByteArray();
 	    String toReturn = Base64.encodeToString(b,Base64.DEFAULT);
 	    return toReturn;
@@ -88,6 +92,7 @@ public class JSONMessage {
 	
 		return jo;
 	}
+	
 	public static JSONObject clientComment(String text, String user, int id)
 	{
 		JSONObject jo = new JSONObject();
@@ -164,8 +169,16 @@ public class JSONMessage {
 	//getter methods
 	public static String[] clientGetImage(JSONObject jo)
 	{
-		try {
-			return (String[]) jo.get("Picture");
+		try
+		{
+			JSONArray jsonArray = (JSONArray) jo.get("Picture");
+			List<String> list = new ArrayList<String>();
+			for(int i = 0; i < jsonArray.length(); i++)
+			{
+				list.add(jsonArray.getString(i));
+			}
+			String[] arrayString = list.toArray(new String[list.size()]);
+			return arrayString;
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

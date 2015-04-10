@@ -33,7 +33,7 @@ public class VotePostTask extends AsyncTask<Object, Void, Void>
 		stringRep.setMediaType(MediaType.APPLICATION_JSON);
 
 		try {
-			//res.post(stringRep).write(System.out);
+			res.post(stringRep).write(System.out);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

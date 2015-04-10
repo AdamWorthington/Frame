@@ -1,4 +1,4 @@
-package com.frame.app.database;
+/*package com.frame.app.database;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,4 +40,4 @@ public class MediaContentTable
 		database.execSQL("DROP TABLE IF EXISTS " + TABLE_MEDIACONTENT);
 		onCreate(database);
 	}
-}
+}*/

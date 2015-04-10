@@ -337,15 +337,15 @@ public class MediaContentPost extends ActionBarActivity
 		
 		String[] tags = {""};
 		
-		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE); 
-		Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		//LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE); 
+		//Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		
 		//Location returns null if no position is currently available. In this case, cancel the request.
-		if(location == null)
-			return;
+		//if(location == null)
+		//	return;
 		
-		Double longitude = new Double(location.getLongitude());
-		Double latitude = new Double(location.getLatitude());
+		Double longitude = new Double(0);//new Double(location.getLongitude());
+		Double latitude = new Double(0);//new Double(location.getLatitude());
 		
 		new PostPictureTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
 				picture, latitude, longitude, "Craig", tags);
