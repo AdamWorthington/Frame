@@ -8,7 +8,7 @@ import android.location.Location;
 
 import com.frame.app.Model.Comment;
 
-public class CommentTable
+public class TableComment
 {	
 	public static final String TABLE_COMMENT = "comment";
 	public static final String COLUMN_ID = "_id";
@@ -32,5 +32,10 @@ public class CommentTable
 	{
 		database.execSQL("DROP TABLE IF EXISTS " + TABLE_COMMENT);
 		onCreate(database);
+	}
+	
+	public static void addComment(Comment comment)
+	{
+		
 	}
 }

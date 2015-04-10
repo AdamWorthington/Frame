@@ -139,7 +139,7 @@ public class MainPage extends ActionBarActivity
        		contentRating.setTextColor(Color.GREEN);
        	
 		String user = "Craig";
-		Integer Id = Integer.valueOf(0);
+		Integer Id = Integer.valueOf(5);
 		Integer vote = Integer.valueOf(1);
     	
 		new VotePostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 

@@ -124,26 +124,32 @@ public class MediaFeed extends Fragment
 			
 			double longitude = 0;//location.getLongitude();
 			double latitude = 0;//location.getLatitude();
+			Double lon = Double.valueOf(longitude);
+			Double lat = Double.valueOf(latitude);
 			int bottomId = -1; //Indicates that we want the latest.
 			
-			JSONObject obj = JSONMessage.getPosts(bottomId, "", latitude, longitude);
+			JSONObject obj = JSONMessage.getPosts(bottomId, "", lat, lon);
 			StringRepresentation stringRep = new StringRepresentation(
 					obj.toString());
 			stringRep.setMediaType(MediaType.APPLICATION_JSON);
-			JSONObject o = null;
 			try {
-				Representation r = res.get();
-				o = new JSONObject(r.getText());
+				Representation r = res.post(stringRep);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return o;
+			return null;
 		}
 		
 		@Override
 	    protected void onPostExecute(JSONObject result) 
 		{
+			if(result == null)
+			{
+				//Something went wrong
+				return;
+			}
+			
 			String[] s = JSONMessage.clientGetImage(result);
 			Bitmap b = JSONMessage.decodeBase64(s[0]);
 			

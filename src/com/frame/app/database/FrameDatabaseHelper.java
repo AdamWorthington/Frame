@@ -1,4 +1,7 @@
-/*package com.frame.app.database;
+package com.frame.app.database;
+
+import com.frame.app.Model.Comment;
+import com.frame.app.Model.MediaContent;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,12 +24,43 @@ public class FrameDatabaseHelper extends SQLiteOpenHelper
 	@Override
 	public void onCreate(SQLiteDatabase database)
 	{
-		MediaContentTable.onCreate(database);
+		TableMediaContent.onCreate(database);
+		TableComment.onCreate(database);
 	}
 	
 	public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion)
 	{
-		MediaContentTable.onUpgrade(database, oldVersion, newVersion);
+		TableMediaContent.onUpgrade(database, oldVersion, newVersion);
+		TableComment.onUpgrade(database, oldVersion, newVersion);
+	}
+	
+	public void addComment(Comment comment)
+	{
+		TableComment.addComment(comment);
+	}
+	
+	public void addMediaContent(MediaContent mediaContent)
+	{
+		TableMediaContent.addMediaContent(mediaContent, null);
+	}
+	
+	public void removeMediaContent(MediaContent mediaContent)
+	{
+		//TableMediaContent.removeMediaContent(mediaContent, null);
+	}
+	
+	public void upvoteContent(MediaContent mediaContent)
+	{
+		//TableMediaContent.upvoteContent(mediaContent, null);
+	}
+	
+	public void downvoteContent(MediaContent mediaContent)
+	{
+		//TableMediaContent.downvoteContent(mediaContent, null);
+	}
+	
+	public void flagContent(MediaContent mediaContent)
+	{
+		//TableMediaContent.flagContent(mediaContent, null);
 	}
 }
-*/

@@ -32,6 +32,10 @@ public class MediaContent
 		comments = new ArrayList<Comment>();
 	}
 	
+	public MediaContent() {
+		// TODO Auto-generated constructor stub
+	}
+
 	/* This section contains getters and/or setters for class properties */
 	public boolean getFileType()
 	{
@@ -91,6 +95,11 @@ public class MediaContent
 	public Date getTimestamp()
 	{
 		return timestamp;
+	}
+	
+	public void setDBId(int id)
+	{
+		this.databaseId = id;
 	}
 	
 	/* This section contains class-specific methods */
