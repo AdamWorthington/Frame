@@ -3,12 +3,9 @@ package com.Simple;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.json.JSONObject;
-
-import com.frame.app.Core.JSONMessage;
 
 /*
  * USAGE: Depending on integer received from front end, call one of these two methods
@@ -102,9 +99,10 @@ public class SQLStatements {
 	/*
 	 * Master method for GET
 	 */
-	public static JSONObject sqlGET(Connection conn, JSONObject jo) {
+	public static PreparedStatement sqlGET(Connection conn, JSONObject jo) {
+			//int methodID, int postID, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
 
-		JSONObject query = null;
+		PreparedStatement query = null;
 
 		
 		/*
@@ -123,10 +121,9 @@ public class SQLStatements {
 			
 			query = getPosts(conn, lastPost, lat, lon, tag);
 		}
-		else if(JSONMessage.isComment(jo)) {
-			int id = JSONMessage.getID(jo);
-			query = getComments(conn, id);
-		}
+		/*else if() {
+			//Need json method for isCommentRequest
+		}*/
 		else {
 			System.err.println("Error in sqlGET, unknown request");
 			System.err.println(jo);
@@ -162,7 +159,7 @@ public class SQLStatements {
 	}
 
 
-	private static JSONObject getPosts(Connection conn, int lastPost, double lat, double lon, String tag) {
+	private static PreparedStatement getPosts(Connection conn, int lastPost, double lat, double lon, String tag) {
 		
 		PreparedStatement stmt = null;
 
@@ -176,16 +173,15 @@ public class SQLStatements {
 
 		//If the tag is not null then that takes priority over all other parameters
 		if (tag != null && tag != "") {
-			query = "SELECT ID, User, Votes, Flags, Date "
-				  + "FROM Media_Attributes "
+			query = "SELECT TOP 10 Picture, Video, ID, User, Votes, Flags, Date, Tag "
+				  + "FROM Media_and_Tags "
 				  + "WHERE Latitude  < ? + 1.5 AND "	//1
 				  + "Latitude  > ? - 1.5 AND "			//2
 				  + "Longitude < ? + 1.5 AND "			//3
-				  + "Longitude > ? - 1.5 "				//4
-				  + "WHERE ID=(SELECT max(ID) FROM Test)";
+				  + "Longitude > ? - 1.5 AND "			//4
 				  //+ "ID >  ? AND "					//5
 				  //+ "ID < (? + 10) AND "				//6
-				  //+ "Tag = \"?\";";
+				  + "Tag = \"?\";";
 			
 			try {
 				stmt = conn.prepareStatement(query);
@@ -202,81 +198,37 @@ public class SQLStatements {
 				System.err.println("Error creating PreparedStatement in getPosts");
 				return null;
 			}
-		}
-		else {
 
-			//Only make it here if tag is NULL, need to search database based on other parameters
-			query = "SELECT ID, Flags, Votes, User, Date "
-					+ "FROM Media_Attributes "
-				  	+ "WHERE Latitude  < ? + 1.5 AND "	//1
-				  	+ "Latitude  > ? - 1.5 AND "			//2
-				  	+ "Longitude < ? + 1.5 AND "			//3
-				  	+ "Longitude > ? - 1.5 "				//4
-				  	+ "WHERE ID=(SELECT max(ID) FROM Test)";
-				  	//+ "ID >  ? AND "					//5
-					//+ "ID < (? + 10) AND "				//6
+			return stmt;
+		}
+
+		//Only make it here if tag is NULL, need to search database based on other parameters
+		query = "SELECT TOP 10 Picture, Video, ID, User, Votes, Flags, Date, Tag "
+				  + "FROM Media_and_Tags "
+				  + "WHERE Latitude  < ? + 1.5 AND "	//1
+				  + "Latitude  > ? - 1.5 AND "			//2
+				  + "Longitude < ? + 1.5 AND "			//3
+				  + "Longitude > ? - 1.5;";				//4
+				  //+ "ID >  ? AND "					//5
+				  //+ "ID < (? + 10) AND "				//6
 
 
-			try {
-				stmt = conn.prepareStatement(query);
-				stmt.setDouble(1, lat);
-				stmt.setDouble(2, lat);
-				stmt.setDouble(3, lon);
-				stmt.setDouble(4, lon);
-				//stmt.setInt(5, lastPost);
-				//stmt.setInt(6, lastPost);
-			
-			}
-			catch (SQLException e) {
-				System.err.println("Error creating PreparedStatement in getPosts");
-				return null;
-			}
-		}
-		
-		ResultSet rs = stmt.executeQuery();
-		
-		int[] id = new int[10];
-		int[] flags = new int[10];
-		int[] votes = new int[10];
-		String[] users = new String[10];
-		String[] dates = new String[10];
-		String[] media = new String[10];
-		
-		int i = 0;
-		while (rs.next() && i < 1) {
-			id[i]    = rs.getInt("ID");
-			flags[i] = rs.getInt("Flags");
-			votes[i] = rs.getInt("Votes");
-			users[i] = rs.getString("User");
-			dates[i] = rs.getString("Date");
-			i++;
-		}
-		
-		String query2 = "SELECT FROM Media WHERE ID=?;";
-		PreparedStatement stmt2 = null;
 		try {
-			stmt = conn.prepareStatement(query2);
-			stmt.setInt(1, id[1]);
+			stmt = conn.prepareStatement(query);
+			stmt.setDouble(1, lat);
+			stmt.setDouble(2, lat);
+			stmt.setDouble(3, lon);
+			stmt.setDouble(4, lon);
+			//stmt.setInt(5, lastPost);
+			//stmt.setInt(6, lastPost);
+			
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in getPosts");
 			return null;
 		}
 		
-		ResultSet rs2 = stmt.executeQuery();
-		
-		i = 0;
-		while (rs2.next() && i < 1) {
-			media[i]    = rs.getString("Media");
-		}
-		
-		JSONObject returnVal;
-		returnVal = JSONMessage.serverPictureToJson(media, dates, id, null, votes);
-		
-		stmt.close();
-		stmt2.close();
-		
-		return returnVal;
+		return stmt;
 		
 	}
 	
@@ -532,7 +484,7 @@ public class SQLStatements {
 	/*
 	 * 	4
 	 */
-	private static JSONObject getComments(Connection conn, int postID) {
+	private static PreparedStatement getComments(Connection conn, int postID) {
 		
 		PreparedStatement stmt = null;
 		
@@ -541,7 +493,7 @@ public class SQLStatements {
 			return null;
 		}
 		
-		String query = "SELECT Comment, Comment_ID "
+		String query = "SELECT Comment, Comment_Flags, Comment_User, Comment_ID "
 					 + "FROM Comments "
 					 + "WHERE Post_ID = ?;";
 		
@@ -553,24 +505,8 @@ public class SQLStatements {
 			System.err.println("Error creating PreparedStatement in getComments");
 			return null;
 		}
-		
-		ResultSet rs = stmt.executeQuery();
-		
-		String[] comments = new String[10];
-		int[] id = new int[10];
-		
-		int i = 0;
-		while (rs.next() && i < 1) {
-			comments[i] = rs.getString("Comment");
-			id[i] = rs.getInt("Comment_ID");
-		}
-		
 
-		JSONObject returnVal = JSONMessage.serverComments(comments, postID);
-
-		stmt.close();
-		
-		return returnVal;
+		return stmt;
 	}
 
 
