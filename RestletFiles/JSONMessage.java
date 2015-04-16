@@ -22,6 +22,33 @@ public class JSONMessage {
 		return jo;
 	}
 	
+	//FRONTEND
+	public static JSONObject commentToJson(int id, String comment, String user) {
+		JSONObject jo = new JSONObject();
+		try {
+			jo.put("POST", 1);
+			jo.put("ID", id);
+			jo.put("Comment", comment);
+			jo.put("User", user);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return jo;
+	}
+	
+	//FRONTEND
+	public static JSONObject getCommentsFromDatabase(int postID) {
+		JSONObject jo = new JSONObject();
+		try {
+			jo.put("GET", 1);
+			jo.put("Comment", 1);
+			jo.put("ID", postID);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return jo;
+	}
+	
 	public static JSONObject clientTextToJson(String text, Double lat, Double lon, String user,String[] tags)
 	{
 		JSONObject jo = new JSONObject();

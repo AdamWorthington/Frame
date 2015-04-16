@@ -182,7 +182,7 @@ public class SQLStatements {
 				  	+ "Latitude  > ? - 1.5 AND "			//2
 				  	+ "Longitude < ? + 1.5 AND "			//3
 				  	+ "Longitude > ? - 1.5 "					//4
-				  	+ "ORDER BY ID DESC LIMIT 5";
+				  	+ "ORDER BY ID DESC LIMIT 5;";
 				  	//+ "WHERE ID=(SELECT max(ID) FROM Test)";
 				  	//+ "ID >  ? AND "					//5
 					//+ "ID < (? + 10) AND "				//6
@@ -203,8 +203,6 @@ public class SQLStatements {
 				return null;
 			}
 		}
-		
-		System.err.println(stmt.toString());
 
 		int[] id = new int[5];
 		int[] flags = new int[5];
@@ -245,14 +243,11 @@ public class SQLStatements {
 		}
 		try {
 			stmt2 = conn2.prepareStatement(query2);
-			//stmt2.setInt(1, id[1]);
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in getPosts");
 			return null;
 		}
-		
-		System.err.println(stmt2.toString());
 		
 		try {
 			ResultSet rs2 = stmt2.executeQuery();
@@ -567,9 +562,9 @@ public class SQLStatements {
 		
 		
 			int i = 0;
-			while (rs.next() && i < 1) {
+			while (rs.next()) {
 				comments[i] = rs.getString("Comment");
-				id[i] = rs.getInt("Comment_ID");
+				id[i++] = rs.getInt("Comment_ID");
 			}
 
 			stmt.close();
@@ -579,7 +574,6 @@ public class SQLStatements {
 		}
 
 		JSONObject returnVal = JSONMessage.serverComments(comments, postID);
-
 		
 		return returnVal;
 	}
@@ -972,16 +966,16 @@ public class SQLStatements {
 	 */
 	private static int postComment(Connection conn, int postID, String comment, String user) {
 		
-		if (user == null || user == "" || comment == null || comment == "") {
+		if (user == null || user == "" || comment == null || comment == "" || postID < 0) {
 			System.err.println("Parameter error in postComment");
 			return 0;
 		}
 
 		PreparedStatement stmt = null;
-		int ret;
+		boolean ret;
 
-		String query = "INSERT INTO Commments (Post_ID, Comment, Comment_Date, Comment_Flags, Comment_ID, Comment_User) "
-									+ "VALUES (?, ?, null, 0, null, ?)";
+		String query = "INSERT INTO Comments (Post_ID, Comment, Comment_Date, Comment_Flags, Comment_ID, Comment_User) "
+									+ "VALUES (?, ?, null, 0, null, ?);";
 
 		try {
 			stmt = conn.prepareStatement(query);
@@ -989,15 +983,18 @@ public class SQLStatements {
 			stmt.setString(2, comment);
 			stmt.setString(3, user);
 			
-			ret = stmt.executeUpdate();
+			ret = stmt.execute();
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in postComment");
+			System.err.printf("PreparedStatement: %s\n", stmt.toString());
 			return 0;
 		}
 		
-
-		return ret;
+		if (ret) {
+			return 1;
+		}
+		return 0;
 
 	}
 
