@@ -3,6 +3,7 @@ package com.frame.app.Model;
 import java.util.ArrayList;
 import java.util.Date;
 
+import android.graphics.Bitmap;
 import android.location.Location;
 
 /* Class representation of the media in the application */
@@ -13,18 +14,17 @@ public class MediaContent
 	private int rating;
 	private int flagCount;
 	private ArrayList<Comment> comments;
-	private Location locationStamp;
 	private Date timestamp;
+	private Bitmap bitmap;
 	
 	private int databaseId;
 	
-	public MediaContent(boolean fileType, String fileId, 
-			Location locationStamp, Date timestamp)
+	public MediaContent(boolean fileType, String fileId, Date timestamp, Bitmap bitmap)
 	{
 		this.fileType = fileType;
 		this.fileId = fileId;
-		this.locationStamp = locationStamp;
 		this.timestamp = timestamp;
+		this.bitmap = bitmap;
 		
 		this.rating = 0;
 		this.flagCount = 0;
@@ -50,11 +50,6 @@ public class MediaContent
 	public String getFileId()
 	{
 		return fileId;
-	}
-	
-	public Location getLocation()
-	{
-		return locationStamp;
 	}
 	
 	public int getRating()
@@ -85,11 +80,6 @@ public class MediaContent
 	public ArrayList<Comment> getComments()
 	{
 		return this.comments;
-	}
-	
-	public Location getLocationStamp()
-	{
-		return locationStamp;
 	}
 	
 	public Date getTimestamp()

@@ -13,41 +13,55 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 
-public class JSONMessage {
-	
-	
-	public static String encodeTobase64(Bitmap image)
-	{
-	    ByteArrayOutputStream baos = new ByteArrayOutputStream();  
-	    image.compress(Bitmap.CompressFormat.JPEG, 10, baos);
-	    byte[] b = baos.toByteArray();
-	    String toReturn = Base64.encodeToString(b,Base64.DEFAULT);
-	    return toReturn;
 
-	}
-	public static Bitmap decodeBase64(String input) 
-	{
-	    byte[] decodedByte = Base64.decode(input, 0);
-	    return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length); 
-	}
+
+public class JSONMessage 
+{
 	
-	//create json media messages to be sent to client
-	public static JSONObject clientPictureToJson(Bitmap pic, Double lat, Double lon, String user, String[] tags)
-	{
+	public static Bitmap decodeBase64(String input)  
+	{ 
+		byte[] decodedByte = Base64.decode(input, 0); 
+		return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);  
+	} 
+
+	public static String encodeTobase64(Bitmap image) 
+ 	{ 
+ 	    ByteArrayOutputStream baos = new ByteArrayOutputStream();   
+ 	    image.compress(Bitmap.CompressFormat.JPEG, 10, baos); 
+ 	    byte[] b = baos.toByteArray(); 
+	    String toReturn = Base64.encodeToString(b,Base64.DEFAULT); 
+ 	    return toReturn; 
+ 	} 
+
+	
+	//create json media messages to be sent to client 
+ 	public static JSONObject clientPictureToJson(Bitmap pic, Double lat, Double lon, String user, String[] tags) 
+ 	{ 
+ 		JSONObject jo = new JSONObject(); 
+ 		try 
+ 		{ 
+ 			String picS = encodeTobase64(pic); 
+ 			jo.put("Picture", picS); 
+ 			jo.put("Lat",lat); 
+ 			jo.put("Lon",lon); 
+ 			jo.put("User", user); 
+ 			jo.put("Tags", tags); 
+		} 
+ 		catch (JSONException e) { 
+ 			e.printStackTrace(); 
+ 		} 
+ 		 
+ 		return jo; 
+ 	} 
+
+	
+	public static JSONObject isSuccess(){
 		JSONObject jo = new JSONObject();
-		try
-		{
-			String picS = encodeTobase64(pic);
-			jo.put("Picture", picS);
-			jo.put("Lat",lat);
-			jo.put("Lon",lon);
-			jo.put("User", user);
-			jo.put("Tags", tags);
+		try {
+			jo.put("Success", 1);
+		} catch (JSONException e) {
+			System.err.println("Failed making success packet");
 		}
-		catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
 		return jo;
 	}
 	
@@ -59,6 +73,7 @@ public class JSONMessage {
 		{
 			//Bitmap bmp = ImageConverter.textToImage(text);
 			String picS = ""; //encodeTobase64(bmp);
+			jo.put("POST", 1);
 			jo.put("Picture", picS);
 			jo.put("Lat",lat);
 			jo.put("Lon",lon);
@@ -79,6 +94,7 @@ public class JSONMessage {
 		
 		try
 		{
+			jo.put("POST", 1);
 			jo.put("Video", vid);
 			jo.put("Lat",lat);
 			jo.put("Lon",lon);
@@ -99,6 +115,7 @@ public class JSONMessage {
 		
 		try
 		{
+			jo.put("POST", 1);
 			jo.put("Comment", text);
 			jo.put("User", user);
 			jo.put("ID", id);
@@ -268,8 +285,16 @@ public class JSONMessage {
 	}
 	public static String[] clientGetDate(JSONObject jo)
 	{
-		try {
-			return (String[]) jo.get("Date");
+		try
+		{
+			JSONArray jsonArray = (JSONArray) jo.get("Date");
+			List<String> list = new ArrayList<String>();
+			for(int i = 0; i < jsonArray.length(); i++)
+			{
+				list.add(jsonArray.getString(i));
+			}
+			String[] arrayString = list.toArray(new String[list.size()]);
+			return arrayString;
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -507,7 +532,26 @@ public class JSONMessage {
 			return false;
 		}
 	}
-	
+	public static boolean isPost(JSONObject jo)
+	{
+		try
+		{
+			jo.get("POST");
+			return true;
+		} catch(JSONException e) {
+			return false;
+		}
+	}
+	public static boolean isGet(JSONObject jo)
+	{
+		try
+		{
+			jo.get("GET");
+			return true;
+		} catch(JSONException e) {
+			return false;
+		}
+	}
 	//voting messages and flags
 	public static JSONObject vote(String User, int id, int prev, int vote)
 	{
@@ -586,16 +630,18 @@ public class JSONMessage {
 	}*/
 	
 	//requests
-	public static JSONObject getPosts(int bottomId, String filter, Double lat, Double lon)
+	public static JSONObject getPosts(int bottomId, String filter, Double lat, Double lon, int sort)
 	{
 		JSONObject jo = new JSONObject();
 		
 		try
 		{
+			jo.put("GET", 1);
 			jo.put("Bottom", bottomId);
 			jo.put("Lat",lat);
 			jo.put("Lon",lon);
 			jo.put("Filter", filter);
+			jo.put("Sort", sort);
 		}
 		catch (JSONException e) 
 		{
@@ -603,5 +649,17 @@ public class JSONMessage {
 		}
 		
 		return jo;
+	}
+	
+	public static int getSort(JSONObject jo) {
+		try
+		{
+			return ((Integer) jo.get("Sort")).intValue();
+		}
+		catch (JSONException e) 
+		{
+			e.printStackTrace();
+		}
+		return 0;
 	}
 }

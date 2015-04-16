@@ -32,6 +32,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -120,7 +121,7 @@ public class MediaFeed extends Fragment
 			double latitude = location.getLatitude();
 			int bottomId = -1; //Indicates that we want the latest.
 			
-			JSONObject obj = JSONMessage.getPosts(bottomId, "", Double.valueOf(latitude), Double.valueOf(longitude));
+			JSONObject obj = JSONMessage.getPosts(bottomId, "", Double.valueOf(latitude), Double.valueOf(longitude), 0);
 			StringRepresentation stringRep = new StringRepresentation(obj.toString());
 			stringRep.setMediaType(MediaType.APPLICATION_JSON);
 			JSONObject o = null;
@@ -153,8 +154,17 @@ public class MediaFeed extends Fragment
 				return;
 			}
 			
-			String[] s = JSONMessage.clientGetImage(result);
-			Bitmap b = JSONMessage.decodeBase64(s[0]);
+			//Return the array of string representation pictures
+			String[] pics = JSONMessage.clientGetImage(result);
+			String[] dates = JSONMessage.clientGetDate(result);
+			for(int i = 0; i < pics.length; i++)
+			{
+				Bitmap b = JSONMessage.decodeBase64(pics[i]);
+				
+				DateFormat d = new DateFormat();
+				MediaContent newContent = new MediaContent(false, "fileid", null, b);
+			}
+
 			//ImageView iv = (ImageView)root.findViewById(R.id.contentImage);
 			//iv.setImageBitmap(b);
 	    }
