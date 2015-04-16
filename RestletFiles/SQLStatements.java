@@ -1,14 +1,13 @@
 package com.Simple;
 
-import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.json.JSONObject;
 
-import com.frame.app.Core.JSONMessage;
 
 /*
  * USAGE: Depending on integer received from front end, call one of these two methods
@@ -87,13 +86,8 @@ public class SQLStatements {
 	/*
 	 * PARAMETERS FOR GET METHODS
 	 *  -@param conn: the connection, for PreparedStatements				(Connection)
-	 *  -@param lastPost: Last post ID on user page (so can get next ten) 	(int)
-	 *  -@param lat: latitude of posts to get 								(double)
-	 *  -@param lon: longitude of the posts to get 							(double)
-	 *  -@param tag: get all posts with this tag 							(String)
-	 *  -@param timestamp: String value of the date in YYYY-MM-DD HH:MM:SS 	(String, HH is 00-23)
-	 *  -@param sort: 0 for descending, 1 for ascending 				   	(int)
-	 *  -@param postID: the ID of the post we are getting information from 	(int)
+	 *  -@param jo: the json object to be dealt with						(JSONObjec)
+	 *  -@param sort: the way to sort the data, 0 = most recent, 1 = most votes
 	 */
 
 
@@ -120,44 +114,24 @@ public class SQLStatements {
 			double lat = JSONMessage.getLat(jo);
 			double lon = JSONMessage.getLon(jo);
 			String tag = JSONMessage.getFilter(jo);
+			int sort =   JSONMessage.getSort(jo);
 			
-			query = getPosts(conn, lastPost, lat, lon, tag);
+			query = getPosts(conn, lastPost, lat, lon, tag, sort);
 		}
-		/*else if(JSONMessage.isComment(jo)) {
+		else if(JSONMessage.isComment(jo)) {
 			int id = JSONMessage.getID(jo);
 			query = getComments(conn, id);
-		}*/
+		}
 		else {
 			System.err.println("Error in sqlGET, unknown request");
 			System.err.println(jo);
 		}
-		
-		
-		
-		/*switch(methodID) {
-		case 1:
-			query = getPicture(conn, lastPost, lat, lon, tag, timestamp, sort);
-			break;
-		case 2:
-			query = getVideo(conn, lastPost, lat, lon, tag, timestamp, sort);
-			break;
-		case 3:
-			query = getText(conn, lastPost, lat, lon, tag, timestamp, sort);
-			break;
-		case 4:
-			query = getComments(conn, postID);
-			break;
-			
-		default:
-			System.err.printf("Incorrect methodID in sqlGET (Should be 1-4, was %d)\n", methodID);
-			break;
-		}*/
 
 		return query;
 	}
 
 
-	private static JSONObject getPosts(Connection conn, int lastPost, double lat, double lon, String tag) {
+	public static JSONObject getPosts(Connection conn, int lastPost, double lat, double lon, String tag, int sort) {
 		
 		PreparedStatement stmt = null;
 
@@ -171,16 +145,17 @@ public class SQLStatements {
 
 		//If the tag is not null then that takes priority over all other parameters
 		if (tag != null && tag != "") {
-			query = "SELECT ID, User, Votes, Flags, Date "
+			query = "SELECT TOP 5 ID, User, Votes, Flags, Date "
 				  + "FROM Media_Attributes "
 				  + "WHERE Latitude  < ? + 1.5 AND "	//1
 				  + "Latitude  > ? - 1.5 AND "			//2
 				  + "Longitude < ? + 1.5 AND "			//3
-				  + "Longitude > ? - 1.5 "				//4
-				  + "WHERE ID=(SELECT max(ID) FROM Test)";
+				  + "Longitude > ? - 1.5 AND "			//4
+				  //+ "WHERE ID=(SELECT max(ID) FROM Test)";
 				  //+ "ID >  ? AND "					//5
 				  //+ "ID < (? + 10) AND "				//6
-				  //+ "Tag = \"?\";";
+				  + "Tag = ? "
+				  + "ORDER BY ID DESC LIMIT 5;";
 			
 			try {
 				stmt = conn.prepareStatement(query);
@@ -188,9 +163,9 @@ public class SQLStatements {
 				stmt.setDouble(2, lat);
 				stmt.setDouble(3, lon);
 				stmt.setDouble(4, lon);
+				stmt.setString(5, tag);
 				//stmt.setInt(5, lastPost);
 				//stmt.setInt(6, lastPost);
-				stmt.setString(5, tag);
 				
 			}
 			catch (SQLException e) {
@@ -206,8 +181,9 @@ public class SQLStatements {
 				  	+ "WHERE Latitude  < ? + 1.5 AND "	//1
 				  	+ "Latitude  > ? - 1.5 AND "			//2
 				  	+ "Longitude < ? + 1.5 AND "			//3
-				  	+ "Longitude > ? - 1.5 "				//4
-				  	+ "WHERE ID=(SELECT max(ID) FROM Test)";
+				  	+ "Longitude > ? - 1.5 "					//4
+				  	+ "ORDER BY ID DESC LIMIT 5";
+				  	//+ "WHERE ID=(SELECT max(ID) FROM Test)";
 				  	//+ "ID >  ? AND "					//5
 					//+ "ID < (? + 10) AND "				//6
 
@@ -228,48 +204,79 @@ public class SQLStatements {
 			}
 		}
 		
-		ResultSet rs = stmt.executeQuery();
+		System.err.println(stmt.toString());
+
+		int[] id = new int[5];
+		int[] flags = new int[5];
+		int[] votes = new int[5];
+		String[] users = new String[5];
+		String[] dates = new String[5];
+		String[] media = new String[5];
 		
-		int[] id = new int[10];
-		int[] flags = new int[10];
-		int[] votes = new int[10];
-		String[] users = new String[10];
-		String[] dates = new String[10];
-		String[] media = new String[10];
+		try {
+			ResultSet rs = stmt.executeQuery();
 		
-		int i = 0;
-		while (rs.next() && i < 1) {
-			id[i]    = rs.getInt("ID");
-			flags[i] = rs.getInt("Flags");
-			votes[i] = rs.getInt("Votes");
-			users[i] = rs.getString("User");
-			dates[i] = rs.getString("Date");
-			i++;
+			int i = 0;
+			while (rs.next() && i < 5) {
+				id[i]    = rs.getInt("ID");
+				flags[i] = rs.getInt("Flags");
+				votes[i] = rs.getInt("Votes");
+				users[i] = rs.getString("User");
+				dates[i] = rs.getString("Date");
+				i++;
+			}
+			rs.close();
+		}
+		catch(SQLException e) {
+			System.err.println("ERROR IN GET POSTS RETRIEVING QUERY 1 DATA");
 		}
 		
-		String query2 = "SELECT FROM Media WHERE ID=?;";
+		String query2 = "SELECT Media FROM Media ORDER BY ID DESC LIMIT 5";
 		PreparedStatement stmt2 = null;
+		
+		Connection conn2 = null;
 		try {
-			stmt = conn.prepareStatement(query2);
-			stmt.setInt(1, id[1]);
+			Class.forName("com.mysql.jdbc.GoogleDriver");
+			String url = "jdbc:google:mysql://august-clover-86805:frame/Frame?user=root";
+			conn2 = DriverManager.getConnection(url);
+		}
+		catch (Exception e) {
+			System.err.println("Error generating connection 2");
+		}
+		try {
+			stmt2 = conn2.prepareStatement(query2);
+			//stmt2.setInt(1, id[1]);
 		}
 		catch (SQLException e) {
 			System.err.println("Error creating PreparedStatement in getPosts");
 			return null;
 		}
 		
-		ResultSet rs2 = stmt.executeQuery();
+		System.err.println(stmt2.toString());
 		
-		i = 0;
-		while (rs2.next() && i < 1) {
-			media[i]    = rs.getString("Media");
+		try {
+			ResultSet rs2 = stmt2.executeQuery();
+			
+			int i = 0;
+			while (rs2.next() && i < 5) {
+				media[i] = rs2.getString("Media");
+				i++;
+			}
+			rs2.close();
+		}
+		catch(SQLException e) {
+			System.err.println("ERROR GETTING DATA FROM QUERY 2");
 		}
 		
 		JSONObject returnVal;
 		returnVal = JSONMessage.serverPictureToJson(media, dates, id, null, votes);
 		
-		stmt.close();
-		stmt2.close();
+		try {
+			stmt.close();
+			stmt2.close();
+		} catch (SQLException e) {
+			System.err.println("ERROR CLOSING STMTS IN GET PICTURE");
+		}
 		
 		return returnVal;
 		
@@ -281,6 +288,7 @@ public class SQLStatements {
 	/*
 	 * 	1
 	 */
+	@SuppressWarnings("unused")
 	private static PreparedStatement getPicture(Connection conn, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
 		
 		PreparedStatement stmt = null;;
@@ -363,6 +371,7 @@ public class SQLStatements {
 	/*
 	 * 	2
 	 */
+	@SuppressWarnings("unused")
 	private static PreparedStatement getVideo(Connection conn, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
 		
 		PreparedStatement stmt = null;
@@ -445,6 +454,7 @@ public class SQLStatements {
 	/*
 	 * 	3
 	 */
+	@SuppressWarnings("unused")
 	private static PreparedStatement getText(Connection conn, int lastPost, double lat, double lon, String tag, String timestamp, int sort) {
 		
 		PreparedStatement stmt = null;
@@ -549,21 +559,27 @@ public class SQLStatements {
 			return null;
 		}
 		
-		ResultSet rs = stmt.executeQuery();
-		
+
 		String[] comments = new String[10];
 		int[] id = new int[10];
+		try {
+			ResultSet rs = stmt.executeQuery();
 		
-		int i = 0;
-		while (rs.next() && i < 1) {
-			comments[i] = rs.getString("Comment");
-			id[i] = rs.getInt("Comment_ID");
+		
+			int i = 0;
+			while (rs.next() && i < 1) {
+				comments[i] = rs.getString("Comment");
+				id[i] = rs.getInt("Comment_ID");
+			}
+
+			stmt.close();
 		}
-		
+		catch(SQLException e) {
+			System.err.println("ERROR GETTING COMMENTS");
+		}
 
 		JSONObject returnVal = JSONMessage.serverComments(comments, postID);
 
-		stmt.close();
 		
 		return returnVal;
 	}
@@ -611,7 +627,7 @@ public class SQLStatements {
 	public static int sqlPOST(Connection conn, JSONObject jo) {
 			//int methodID, int postID, int vote, String user, double lat, double lon, String text_or_comment, String date, File picture, File video) {
 		
-		int query;
+		int query = 0;
 		
 		/*
 			Post information: sqlPOST (return value is String):
@@ -691,6 +707,7 @@ public class SQLStatements {
 	/*
 	 * 	5
 	 */
+	@SuppressWarnings("unused")
 	private static int postPicture(Connection conn, String picture, String user, double lat, double lon) {
 		
 		int work;
@@ -704,7 +721,7 @@ public class SQLStatements {
 		String query2 = "INSERT INTO Media (ID, Media, Type) VALUES (NULL, ?, 0)";
 		
 		String query3 = "SELECT ID FROM Media WHERE ID=(SELECT max(ID) FROM Media)";
-		System.err.println("1_______");
+		//System.err.println("1_______");
 		
 		//Posting the picture itself
 		try{
@@ -721,7 +738,7 @@ public class SQLStatements {
 		}
 		
 		//Retrieving that Picture's ID
-		int id;
+		int id = 0;
 		try {
 			stmt3 = conn.prepareStatement(query3);
 			ResultSet rs = stmt3.executeQuery();
@@ -764,6 +781,7 @@ public class SQLStatements {
 	/*
 	 * 	6
 	 */
+	@SuppressWarnings("unused")
 	private static int postVideo(Connection conn, String video, String user, double lat, double lon) {
 		
 		int work;
@@ -777,7 +795,7 @@ public class SQLStatements {
 		String query2 = "INSERT INTO Media (ID, Media, Type) VALUES (NULL, ?, 1)";
 		
 		String query3 = "SELECT ID FROM Media WHERE ID=(SELECT max(ID) FROM Media)";
-		System.err.println("1_______");
+		//System.err.println("1_______");
 		
 		//Posting the picture itself
 		try{
@@ -794,7 +812,7 @@ public class SQLStatements {
 		}
 		
 		//Retrieving that Picture's ID
-		int id;
+		int id = 0;
 		try {
 			stmt3 = conn.prepareStatement(query3);
 			ResultSet rs = stmt3.executeQuery();
@@ -837,6 +855,7 @@ public class SQLStatements {
 	/*
 	 * 	7
 	 */
+	@SuppressWarnings("unused")
 	private static PreparedStatement postText(Connection conn, String text, String user, double lat, double lon, String date) {
 		
 		PreparedStatement stmt = null;
@@ -985,6 +1004,7 @@ public class SQLStatements {
 	/*
 	 * 	12
 	 */
+	@SuppressWarnings("unused")
 	private static int removeMedia(Connection conn, int postID, String user) {
 		
 		PreparedStatement stmt = null;
@@ -1066,6 +1086,7 @@ public class SQLStatements {
 	/*
 	 * 13
 	 */
+	@SuppressWarnings("unused")
 	private static int removeComment(Connection conn, int commentID, String user) {
 		
 		PreparedStatement stmt = null;
@@ -1088,58 +1109,6 @@ public class SQLStatements {
 		
 
 		return ret;
-
-	}
-	
-	
-	
-	
-	
-	
-	/*
-	 * OBSOLETE
-	 */
-	
-	/*
-	 * 	8
-	 */
-	private String upvote(int postID) {
-
-		String query = "UPDATE Media "
-				+ "SET Votes = Votes + 1 "
-				+ "WHERE ID = " + postID + ";";
-
-		return query;
-	}
-
-	/*
-	 * 	9
-	 */
-	private String downvote(int postID) {
-
-		String query = "UPDATE Media "
-				+ "SET Votes = Votes - 1 "
-				+ "WHERE ID = " + postID + ";";
-
-		return query;
-
-	}
-
-	/*
-	 * 	10
-	 */
-	private String unUpvote(int postID) {
-
-		return downvote(postID);
-
-	}
-
-	/*
-	 * 	11
-	 */
-	private String unDownvote(int postID) {
-
-		return upvote(postID);
 
 	}
 

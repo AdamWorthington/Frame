@@ -1,27 +1,24 @@
 package com.Simple;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
+
 public class JSONMessage {
 	
-	//create json media messages to be sent to client
-	public static JSONObject clientPictureToJson(Object pic, Double lat, Double lon, String user, String[] tags)
-	{
+	public static JSONObject isSuccess(){
 		JSONObject jo = new JSONObject();
-		try
-		{
-			jo.put("Picture", pic);
-			jo.put("Lat",lat);
-			jo.put("Lon",lon);
-			jo.put("User", user);
-			jo.put("Tags", tags);
+		try {
+			jo.put("Success", 1);
+		} catch (JSONException e) {
+			System.err.println("Failed making success packet");
 		}
-		catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
 		return jo;
 	}
 	
@@ -31,7 +28,10 @@ public class JSONMessage {
 		
 		try
 		{
-			jo.put("Text", text);
+			//Bitmap bmp = ImageConverter.textToImage(text);
+			String picS = ""; //encodeTobase64(bmp);
+			jo.put("POST", 1);
+			jo.put("Picture", picS);
 			jo.put("Lat",lat);
 			jo.put("Lon",lon);
 			jo.put("User", user);
@@ -51,6 +51,7 @@ public class JSONMessage {
 		
 		try
 		{
+			jo.put("POST", 1);
 			jo.put("Video", vid);
 			jo.put("Lat",lat);
 			jo.put("Lon",lon);
@@ -64,12 +65,14 @@ public class JSONMessage {
 	
 		return jo;
 	}
+	
 	public static JSONObject clientComment(String text, String user, int id)
 	{
 		JSONObject jo = new JSONObject();
 		
 		try
 		{
+			jo.put("POST", 1);
 			jo.put("Comment", text);
 			jo.put("User", user);
 			jo.put("ID", id);
@@ -82,7 +85,7 @@ public class JSONMessage {
 		return jo;
 	}
 	//create json media messages to be sent to client
-	public static JSONObject serverPictureToJson(Object pic, String date, int id, String[] tags, int rating)
+	public static JSONObject serverPictureToJson(String[] pic, String[] date, int[] id, String[][] tags, int[] rating)
 	{
 		JSONObject jo = new JSONObject();
 		
@@ -102,7 +105,7 @@ public class JSONMessage {
 		return jo;
 	}
 	
-	public static JSONObject serverVideoToJson(Object vid,String date, int id, int rating, String[] tags)
+	public static JSONObject serverVideoToJson(Object[] vid,String[] date, int[] id, int[] rating, String[][] tags)
 	{
 		JSONObject jo = new JSONObject();
 		
@@ -138,12 +141,51 @@ public class JSONMessage {
 		return jo;
 	}
 	//getter methods
+	public static String[] clientGetImage(JSONObject jo)
+	{
+		try
+		{
+			JSONArray jsonArray = (JSONArray) jo.get("Picture");
+			List<String> list = new ArrayList<String>();
+			for(int i = 0; i < jsonArray.length(); i++)
+			{
+				list.add(jsonArray.getString(i));
+			}
+			String[] arrayString = list.toArray(new String[list.size()]);
+			return arrayString;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	public static Object getImage(JSONObject jo)
 	{
 		try {
 			return jo.get("Picture");
 		} catch (JSONException e) {
-			//e.printStackTrace();
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static String getUser(JSONObject jo)
+	{
+		try {
+			return (String)jo.get("User");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static String[] clientGetUser(JSONObject jo)
+	{
+		try {
+			return (String[])jo.get("User");
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 		
 		return null;
@@ -152,6 +194,16 @@ public class JSONMessage {
 	{
 		try {
 			return jo.get("Video");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static Object[] clientGetVideo(JSONObject jo)
+	{
+		try {
+			return (Object[])jo.get("Video");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -168,10 +220,30 @@ public class JSONMessage {
 		
 		return 0;
 	}
+	public static int[] clientGetID(JSONObject jo)
+	{
+		try {
+			return (int[]) jo.get("ID");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	public static String getDate(JSONObject jo)
 	{
 		try {
 			return (String) jo.get("Date");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static String[] clientGetDate(JSONObject jo)
+	{
+		try {
+			return (String[]) jo.get("Date");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -188,6 +260,16 @@ public class JSONMessage {
 		
 		return null;
 	}
+	public static String[][] clientGetTags(JSONObject jo)
+	{
+		try {
+			return (String[][]) jo.get("Tags");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	public static int getRating(JSONObject jo)
 	{
 		try {
@@ -198,20 +280,20 @@ public class JSONMessage {
 		
 		return 0;
 	}
-	public static String getText(JSONObject jo)
-	{	
+	public static int[] clientGetRating(JSONObject jo)
+	{
 		try {
-			return (String) jo.get("Text");
+			return (int[])jo.get("Rating");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		
 		return null;
 	}
-	public static String getUser(JSONObject jo)
+	public static String getText(JSONObject jo)
 	{	
 		try {
-			return (String) jo.get("User");
+			return (String) jo.get("Text");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -228,10 +310,30 @@ public class JSONMessage {
 		
 		return null;
 	}
+	public static Double[] clientGetLon(JSONObject jo)
+	{	
+		try {
+			return (Double[])jo.get("Lon");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	public static Double getLat(JSONObject jo)
 	{	
 		try {
 			return  jo.getDouble("Lat");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	public static Double[] clientGetLat(JSONObject jo)
+	{	
+		try {
+			return (Double[])jo.get("Lat");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -369,16 +471,6 @@ public class JSONMessage {
 			return false;
 		}
 	}
-	public static boolean isComments(JSONObject jo)
-	{
-		try
-		{
-			jo.get("Comments");
-			return true;
-		} catch(JSONException e) {
-			return false;
-		}
-	}
 	public static boolean isPostRequest(JSONObject jo)
 	{
 		try
@@ -389,17 +481,26 @@ public class JSONMessage {
 			return false;
 		}
 	}
-	public static boolean isCommentRequest(JSONObject jo)
+	public static boolean isPost(JSONObject jo)
 	{
 		try
 		{
-			jo.get("requestComments");
+			jo.get("POST");
 			return true;
 		} catch(JSONException e) {
 			return false;
 		}
 	}
-	
+	public static boolean isGet(JSONObject jo)
+	{
+		try
+		{
+			jo.get("GET");
+			return true;
+		} catch(JSONException e) {
+			return false;
+		}
+	}
 	//voting messages and flags
 	public static JSONObject vote(String User, int id, int prev, int vote)
 	{
@@ -419,6 +520,8 @@ public class JSONMessage {
 		
 		return jo;
 	}
+	
+	/*Not in use. We do not let the user unvote
 	public static JSONObject unVote(String User, int id, int prev)
 	{
 		JSONObject jo = new JSONObject();
@@ -436,7 +539,8 @@ public class JSONMessage {
 		}
 		
 		return jo;
-	}
+	}*/
+	
 	public static JSONObject flag(String User, int id)
 	{
 		JSONObject jo = new JSONObject();
@@ -454,6 +558,8 @@ public class JSONMessage {
 		
 		return jo;
 	}
+	
+	/* Not in use. We do not let the user unflag media content
 	public static JSONObject unFlag(String User, int id)
 	{
 		JSONObject jo = new JSONObject();
@@ -470,18 +576,21 @@ public class JSONMessage {
 		}
 		
 		return jo;
-	}
+	}*/
+	
 	//requests
-	public static JSONObject getPosts(int bottomId, String filter, Double lat, Double lon)
+	public static JSONObject getPosts(int bottomId, String filter, Double lat, Double lon, int sort)
 	{
 		JSONObject jo = new JSONObject();
 		
 		try
 		{
+			jo.put("GET", 1);
 			jo.put("Bottom", bottomId);
 			jo.put("Lat",lat);
 			jo.put("Lon",lon);
 			jo.put("Filter", filter);
+			jo.put("Sort", sort);
 		}
 		catch (JSONException e) 
 		{
@@ -490,20 +599,16 @@ public class JSONMessage {
 		
 		return jo;
 	}
-	public static JSONObject requestComments(int Id)
-	{
-		JSONObject jo = new JSONObject();
-		
+	
+	public static int getSort(JSONObject jo) {
 		try
 		{
-			jo.put("ID", Id);
-			jo.put("requestComments", Id);
+			return (int) jo.get("Sort");
 		}
 		catch (JSONException e) 
 		{
 			e.printStackTrace();
 		}
-		
-		return jo;
+		return 0;
 	}
 }

@@ -1,52 +1,38 @@
 package com.Simple;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
 public class ServerletGet extends ServerResource {
 
 	@Get("json")
-	public JSONObject represent(Representation R) {
-		return sqlSelect(R);
+	public JSONObject represent() {
+		
+		return sqlSelect();
 	}
 
-	public JSONObject sqlSelect(Representation r) {
+	public JSONObject sqlSelect() {
+		String query = "SELECT Media FROM Media WHERE ID=(SELECT max(ID) FROM Media)";
 		
+		String query2 = "SELECT ID, Flags, Votes "
+				+ "FROM Media_Attributes "
+			  	+ "WHERE ID=(SELECT max(ID) FROM Test)";
 		
-		// ------------Parses the text field---------------//
-		String s = "";
-		try {
-			s = r.getText();
-		} catch (IOException e2) {
-			System.err.println("Couldn't get text");
-		}
-		
-		JSONObject obj = null;
-		try {
-			obj = new JSONObject(s);
-		} catch (JSONException e1) {
-			System.err.println("Couldn't make JSONObject from string: " + s);			
-		}
-		
-		/*String query = "SELECT Media FROM Test WHERE ID=(SELECT max(ID) FROM Test)";
 		Statement stmt = null;
+		Statement stmt2 = null;
 		String url = "";
 		String[] textFields = new String[10];
-		String[] dateFields = new String[10];
-		int[] idFields = new int[10];*/
-		JSONObject returnVal = null;
-		
-		String url = "";
+		int[] id = new int[10];
+		int[] flags = new int[10];
+		int[] votes = new int[10];
+		JSONObject returnVal = new JSONObject();
 		
 		try {
 			Class.forName("com.mysql.jdbc.GoogleDriver");
@@ -55,29 +41,44 @@ public class ServerletGet extends ServerResource {
 			
 			Connection conn = DriverManager.getConnection(url);
 			
-			//stmt = conn.createStatement();
+			stmt = conn.createStatement();
 			
-			returnVal = SQLStatements.sqlGET(conn, obj);
-			
-			/*ResultSet rs = stmt.executeQuery(query);
+			ResultSet rs = stmt.executeQuery(query);
 			
 			
 			int i = 0;
 			while (rs.next() && i < 1) {
 				textFields[i] = rs.getString("Media");
+				System.err.println(textFields[i]);
 				//dateFields[i] = rs.getString("Date");
 				//idFields[i] = rs.getInt("ID");
 				i++;
 			}
+			
 			returnVal.put("total", i);
 			returnVal.put("Picture", textFields);
-			//returnVal.put("Date", dateFields);
-			//returnVal.put("ID", idFields);*/
+			
+			Connection conn2 = DriverManager.getConnection(url);
+			stmt2 = conn2.createStatement();
+			ResultSet rs2 = stmt2.executeQuery(query2);
+			
+			i = 0;
+			while(rs2.next() && i < 1) {
+				id[i] = rs.getInt("ID");
+				flags[i] = rs.getInt("Flags");
+				votes[i] = rs.getInt("Votes");
+			}
+			
+			
+			returnVal.put("Flags", flags);
+			returnVal.put("ID", id);
+			returnVal.put("Votes", votes);
+			
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		/*finally {
+		} finally {
 			if (stmt != null) {
 				try {
 					stmt.close();
@@ -86,7 +87,7 @@ public class ServerletGet extends ServerResource {
 					System.err.println("Failed to close statement");
 				}
 			}
-		}*/
+		}
 		
 		return returnVal;
 	}
