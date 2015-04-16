@@ -19,7 +19,10 @@ import com.frame.app.Core.JSONMessage;
 import com.frame.app.Core.MediaArrayAdapter;
 import com.frame.app.Model.MediaContent;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -36,56 +39,28 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 public class MediaFeed extends Fragment
 {
+	private ListView listview;
+	private ArrayList<MediaContent> contentList = new ArrayList<MediaContent>();
+	private SwipeRefreshLayout swipe = null;
+	private MediaArrayAdapter adapter;
+	View root;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{				
 		View root = inflater.inflate(R.layout.fragment_media_feed, container, false);
-		final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) root.findViewById(R.id.swipeMediaFeed);
-		swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-			
-			@Override
-			public void onRefresh() 
-			{
-				//Put refresh code here!
-				new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get");
-
-				swipeView.setRefreshing(false);
-			}
-		});
-		
-		populateListView(root);
-		
-		return root;
-	}
-	
-	private void populateListView(View root)
-	{
-		final ListView listview = (ListView) root.findViewById(R.id.mediaFeedListView);
-		String[] testVals = new String[] { "Android", "iPhone", "WindowsMobile",
-		        "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-		        "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-		        "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-		        "Android", "iPhone", "WindowsMobile" };
-		
-		final ArrayList<MediaContent> list = new ArrayList<MediaContent>();
-		for (int i = 0; i < testVals.length; ++i) 
-		{
-			Date d = new Date();
-			MediaContent c = new MediaContent(false, testVals[i], null, d);
-			list.add(c);
-		}
-
-		final MediaArrayAdapter adapter = new MediaArrayAdapter(this.getActivity(), android.R.layout.simple_list_item_1, list);
+		this.root = root;
+		listview = (ListView) root.findViewById(R.id.mediaFeedListView);
+		adapter = new MediaArrayAdapter(this.getActivity(), android.R.layout.simple_list_item_1, contentList);
 		listview.setAdapter(adapter);
-		
 		OnItemClickListener clickListener = new AdapterView.OnItemClickListener() 
 		{
-
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) 
 			{
@@ -101,6 +76,18 @@ public class MediaFeed extends Fragment
 		};
 		
 		listview.setOnItemClickListener(clickListener);
+		
+		final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) root.findViewById(R.id.swipeMediaFeed);
+		swipe = swipeView;
+		swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() 
+			{
+				new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get");
+			}
+		});
+		
+		return root;
 	}
 	
 	private class GetTask extends AsyncTask<Object, Void, JSONObject> 
@@ -111,79 +98,98 @@ public class MediaFeed extends Fragment
 			ClientResource res = new ClientResource(params[0].toString());
 			res.setMethod(Method.GET);
 			
-			/*LocationManager lm = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE); 
-			Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+			LocationManager lm = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE); 
+			Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			
 			
 			//Location returns null if no position is currently available. In this case, cancel the request.
 			if(location == null)
 			{
-				SwipeRefreshLayout swipeView = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeMediaFeed);
-				swipeView.setRefreshing(false);
-				return null;
-			}*/
+				
+				JSONObject o = new JSONObject();
+				try {
+					o.put("Date", "no date");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return o;
+			}
 			
-			double longitude = 0;//location.getLongitude();
-			double latitude = 0;//location.getLatitude();
-			Double lon = Double.valueOf(longitude);
-			Double lat = Double.valueOf(latitude);
+			double longitude = location.getLongitude();
+			double latitude = location.getLatitude();
 			int bottomId = -1; //Indicates that we want the latest.
 			
-			JSONObject obj = JSONMessage.getPosts(bottomId, "", lat, lon);
-			StringRepresentation stringRep = new StringRepresentation(
-					obj.toString());
+			JSONObject obj = JSONMessage.getPosts(bottomId, "", Double.valueOf(latitude), Double.valueOf(longitude));
+			StringRepresentation stringRep = new StringRepresentation(obj.toString());
 			stringRep.setMediaType(MediaType.APPLICATION_JSON);
+			JSONObject o = null;
 			try {
-				Representation r = res.post(stringRep);
+				Representation r = res.get();
+				o = new JSONObject(r.getText());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return null;
+			return o;
 		}
 		
 		@Override
 	    protected void onPostExecute(JSONObject result) 
 		{
+			swipe.setRefreshing(false);
+			
 			if(result == null)
 			{
-				//Something went wrong
+				//Something went wrong. We need to notify the user.
+				sendAlertFailure("We were unable to retrieve any data from the server at this time.");
+				return;
+			}
+			
+			if(JSONMessage.getDate(result) == "no date")
+			{
+				//Indicates an error.
+				sendAlertFailure("We couldn't find your location. Perhaps your GPS is turned off?");
 				return;
 			}
 			
 			String[] s = JSONMessage.clientGetImage(result);
 			Bitmap b = JSONMessage.decodeBase64(s[0]);
-			
-		    File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-		              Environment.DIRECTORY_PICTURES), "MyCameraApp");
-		    // This location works best if you want the created images to be shared
-		    // between applications and persist after your app has been uninstalled.
-		
-		    // Create the storage directory if it does not exist
-		    if (! mediaStorageDir.exists()){
-		        if (! mediaStorageDir.mkdirs()){
-		            Log.d("MyCameraApp", "failed to create directory");
-		            return;
-		        }
-		    }
-			
-			 FileOutputStream out = null;
-	         File imageFile = new File(mediaStorageDir, String.format("%s.jpg",
-	                    "from server2"));
-	            try {
-			    out = new FileOutputStream(imageFile);
-			    b.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-			    // PNG is a lossless format, the compression factor (100) is ignored
-			} catch (Exception e) {
-			    e.printStackTrace();
-			} finally {
-			    try {
-			        if (out != null) {
-			            out.close();
-			        }
-			    } catch (IOException e) {
-			        e.printStackTrace();
-			    }
-			}
+			//ImageView iv = (ImageView)root.findViewById(R.id.contentImage);
+			//iv.setImageBitmap(b);
 	    }
+	}
+	
+	private void sendAlertFailure(final String msg)
+	{
+		final Context context = this.getActivity();
+		((Activity) context).runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run() 
+			{
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+		 
+					// set title
+					alertDialogBuilder.setTitle("Something went wrong");
+		 
+					// set dialog message
+					alertDialogBuilder
+						.setMessage(msg)
+						.setCancelable(false)
+						.setPositiveButton("Okay",new DialogInterface.OnClickListener() 
+						{
+							public void onClick(DialogInterface dialog,int id) {
+							}
+						});
+
+						// create alert dialog
+						AlertDialog alertDialog = alertDialogBuilder.create();
+		 
+						// show it
+						alertDialog.show();
+			}
+		
+		});
 	}
 }

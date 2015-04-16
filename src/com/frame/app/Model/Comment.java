@@ -4,31 +4,29 @@ import java.util.Date;
 
 public class Comment 
 {
-	private int userId;
-	private Date timestamp;
 	private String value;
+	private int dbId;
+	private int ownerId;
 	
-	public Comment(int userId, Date timestamp, String value)
+	public Comment(String value)
 	{
-		this.userId = userId;
-		this.timestamp = timestamp;
 		this.value = value;
 	}
 	
-	/* This section contains getters and/or setters for class properties */
-	public int getUserId()
-	{
-		return this.userId;
-	}
-	
-	public Date getTimestamp()
-	{
-		return this.timestamp;
-	}
-	
+	/* This section contains getters and/or setters for class properties */	
 	public String getValue()
 	{
 		return this.value;
+	}
+	
+	public int getDbId()
+	{
+		return this.dbId;
+	}
+	
+	public int getOwnerId()
+	{
+		return this.ownerId;
 	}
 	
 }

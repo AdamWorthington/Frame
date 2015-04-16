@@ -1,5 +1,7 @@
 package com.frame.app.database;
 
+import java.util.ArrayList;
+
 import com.frame.app.Model.Comment;
 import com.frame.app.Model.MediaContent;
 
@@ -36,31 +38,46 @@ public class FrameDatabaseHelper extends SQLiteOpenHelper
 	
 	public void addComment(Comment comment)
 	{
-		TableComment.addComment(comment);
+		SQLiteDatabase db = this.getReadableDatabase();
+		TableComment.addComment(comment, db);
 	}
 	
 	public void addMediaContent(MediaContent mediaContent)
 	{
-		TableMediaContent.addMediaContent(mediaContent, null);
+		SQLiteDatabase db = this.getReadableDatabase();
+		TableMediaContent.addMediaContent(mediaContent, db);
+	}
+	
+	public ArrayList<MediaContent> getAllMediaContent()
+	{
+		SQLiteDatabase db = this.getReadableDatabase();
+		return TableMediaContent.getAllMediaContent(db);
 	}
 	
 	public void removeMediaContent(MediaContent mediaContent)
 	{
-		//TableMediaContent.removeMediaContent(mediaContent, null);
+		SQLiteDatabase db = this.getReadableDatabase();
+		for(int i = 0; i < mediaContent.getComments().size(); i++)
+			TableComment.removeComment(mediaContent.getDatabaseId(), db);
+		
+		TableMediaContent.removeMediaContent(mediaContent.getDatabaseId(), db);
 	}
 	
 	public void upvoteContent(MediaContent mediaContent)
 	{
-		//TableMediaContent.upvoteContent(mediaContent, null);
+		SQLiteDatabase db = this.getReadableDatabase();
+		TableMediaContent.upvoteContent(mediaContent.getDatabaseId(), mediaContent.getRating() + 1, db);
 	}
 	
 	public void downvoteContent(MediaContent mediaContent)
 	{
-		//TableMediaContent.downvoteContent(mediaContent, null);
+		SQLiteDatabase db = this.getReadableDatabase();
+		TableMediaContent.downvoteContent(mediaContent.getDatabaseId(), mediaContent.getRating() - 1, db);
 	}
 	
 	public void flagContent(MediaContent mediaContent)
 	{
-		//TableMediaContent.flagContent(mediaContent, null);
+		SQLiteDatabase db = this.getReadableDatabase();
+		TableMediaContent.flagContent(mediaContent, db);
 	}
 }
