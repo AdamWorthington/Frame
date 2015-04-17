@@ -10,6 +10,7 @@
         android:gravity="center_vertical|left"
         android:text="Description"
         android:padding="6dip"
+        android:visibility="invisible"
         android:textSize="16sp" />
 
     <TextView
@@ -23,8 +24,8 @@
     
     <ImageView
         android:id="@+id/contentImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_height="300dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/timestamp"
         android:src="@drawable/standin" />

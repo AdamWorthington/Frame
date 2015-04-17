@@ -2,7 +2,9 @@ package com.frame.app.View;
 
 import com.frame.app.R;
 import com.frame.app.Core.FrameFragmentPagerAdapter;
+import com.frame.app.Core.Singleton;
 import com.frame.app.Core.TabsListener;
+import com.frame.app.Model.MediaContent;
 import com.frame.app.tasks.FlagPostTask;
 import com.frame.app.tasks.PostPictureTask;
 import com.frame.app.tasks.VotePostTask;
@@ -25,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 @SuppressWarnings("deprecation")
 public class MainPage extends ActionBarActivity
@@ -41,6 +44,7 @@ public class MainPage extends ActionBarActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
+		Singleton.initInstance();
 		setRequestedOrientation(1);
 		
 		super.onCreate(savedInstanceState);
@@ -113,12 +117,21 @@ public class MainPage extends ActionBarActivity
     {
     	//Disable the button
     	view.setEnabled(false);
+    	RelativeLayout rl = (RelativeLayout)view.getParent();
+
+       	TextView id = (TextView)rl.findViewById(R.id.nameOfView);
+       	int intId = Integer.parseInt(id.getText().toString());
+       	
+       	MediaContent thisContent = Singleton.getInstance().getMediaContent(intId);
+       	thisContent.setHasBeenFlagged(true);
     	
     	String user = "Craig";
-    	Integer id = Integer.valueOf(0);
+    	Integer Id = Integer.valueOf(intId);
+    	
+    	Toast.makeText(this, "Content Flagged", Toast.LENGTH_LONG).show();
     	
 		new FlagPostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
-				user, id);
+				user, Id);
     }
     
     public void sendUpvote(View view)
@@ -138,9 +151,18 @@ public class MainPage extends ActionBarActivity
        	if(intVal >= 0)
        		contentRating.setTextColor(Color.GREEN);
        	
+       	TextView id = (TextView)rl.findViewById(R.id.nameOfView);
+       	int intId = Integer.parseInt(id.getText().toString());
+       	
+       	MediaContent thisContent = Singleton.getInstance().getMediaContent(intId);
+       	thisContent.incrementRating();
+       	thisContent.setHasBeenVoted(true);
+       	
 		String user = "Craig";
-		Integer Id = Integer.valueOf(5);
+		Integer Id = Integer.valueOf(intId);
 		Integer vote = Integer.valueOf(1);
+		
+		Toast.makeText(this, "Content Upvoted", Toast.LENGTH_LONG).show();
     	
 		new VotePostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
 				user, Id, vote);
@@ -162,10 +184,19 @@ public class MainPage extends ActionBarActivity
        	contentRating.setText(newVal);
        	if(intVal < 0)
        		contentRating.setTextColor(Color.RED);
+       	
+       	TextView id = (TextView)rl.findViewById(R.id.nameOfView);
+       	int intId = Integer.parseInt(id.getText().toString());
+       	
+       	MediaContent thisContent = Singleton.getInstance().getMediaContent(intId);
+       	thisContent.decrementRating();
+       	thisContent.setHasBeenVoted(true);
     	
 		String user = "Craig";
-		Integer Id = Integer.valueOf(0);
+		Integer Id = Integer.valueOf(intId);
 		Integer vote = Integer.valueOf(-1);
+		
+		Toast.makeText(this, "Content Downvoted", Toast.LENGTH_LONG).show();
     	
 		new VotePostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
 				user, Id, vote);

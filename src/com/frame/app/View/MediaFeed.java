@@ -17,7 +17,9 @@ import org.restlet.resource.ClientResource;
 import com.frame.app.R;
 import com.frame.app.Core.JSONMessage;
 import com.frame.app.Core.MediaArrayAdapter;
+import com.frame.app.Core.Singleton;
 import com.frame.app.Model.MediaContent;
+import com.frame.app.tasks.VotePostTask;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,6 +27,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -36,18 +39,21 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MediaFeed extends Fragment
 {
 	private ListView listview;
-	private ArrayList<MediaContent> contentList = new ArrayList<MediaContent>();
 	private SwipeRefreshLayout swipe = null;
 	private MediaArrayAdapter adapter;
 	View root;
@@ -57,8 +63,9 @@ public class MediaFeed extends Fragment
 	{				
 		View root = inflater.inflate(R.layout.fragment_media_feed, container, false);
 		this.root = root;
+				
 		listview = (ListView) root.findViewById(R.id.mediaFeedListView);
-		adapter = new MediaArrayAdapter(this.getActivity(), android.R.layout.simple_list_item_1, contentList);
+		adapter = new MediaArrayAdapter(this.getActivity(), android.R.layout.simple_list_item_1, Singleton.getInstance().getMediaFeed());
 		listview.setAdapter(adapter);
 		OnItemClickListener clickListener = new AdapterView.OnItemClickListener() 
 		{
@@ -69,13 +76,11 @@ public class MediaFeed extends Fragment
 		        intent = new Intent(getActivity(), focusedMediaContentPage.class);
 		        
 		        //Load the data that this page will be displaying
-		        intent.putExtra("ListItem1", "Hello");
-		        intent.putExtra("ListItem2", "Goodbye");
+		        intent.putExtra("Position", position);
 		        
 		        getActivity().startActivity(intent);
 			}
 		};
-		
 		listview.setOnItemClickListener(clickListener);
 		
 		final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) root.findViewById(R.id.swipeMediaFeed);
@@ -89,6 +94,14 @@ public class MediaFeed extends Fragment
 		});
 		
 		return root;
+	}
+	
+	@Override
+	public void onResume()
+	{
+		adapter.notifyDataSetChanged();
+		
+		super.onResume();
 	}
 	
 	private class GetTask extends AsyncTask<Object, Void, JSONObject> 
@@ -126,7 +139,7 @@ public class MediaFeed extends Fragment
 			stringRep.setMediaType(MediaType.APPLICATION_JSON);
 			JSONObject o = null;
 			try {
-				Representation r = res.get();
+				Representation r = res.post(stringRep);
 				o = new JSONObject(r.getText());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -147,7 +160,7 @@ public class MediaFeed extends Fragment
 				return;
 			}
 			
-			if(JSONMessage.getDate(result) == "no date")
+			if(JSONMessage.clientGetDate(result)[0] == "no date")
 			{
 				//Indicates an error.
 				sendAlertFailure("We couldn't find your location. Perhaps your GPS is turned off?");
@@ -157,16 +170,16 @@ public class MediaFeed extends Fragment
 			//Return the array of string representation pictures
 			String[] pics = JSONMessage.clientGetImage(result);
 			String[] dates = JSONMessage.clientGetDate(result);
+			Integer[] ratings = JSONMessage.clientGetRating(result);
+			Integer[] ids = JSONMessage.clientGetID(result);
 			for(int i = 0; i < pics.length; i++)
 			{
 				Bitmap b = JSONMessage.decodeBase64(pics[i]);
 				
 				DateFormat d = new DateFormat();
-				MediaContent newContent = new MediaContent(false, "fileid", null, b);
+				MediaContent newContent = new MediaContent(false, ids[i].intValue(), null, b, ratings[i].intValue());
+				adapter.add(newContent);
 			}
-
-			//ImageView iv = (ImageView)root.findViewById(R.id.contentImage);
-			//iv.setImageBitmap(b);
 	    }
 	}
 	

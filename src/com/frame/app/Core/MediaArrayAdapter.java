@@ -8,10 +8,13 @@ import com.frame.app.R;
 import com.frame.app.Model.MediaContent;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,15 +40,40 @@ public class MediaArrayAdapter extends ArrayAdapter<MediaContent>
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView = inflater.inflate(R.layout.layout_mediacontent, parent, false);
 		
+		MediaContent thisContent = values.get(position);
+		
 	    ImageView imageView = (ImageView) rowView.findViewById(R.id.contentImage);
-	    imageView.setImageResource(R.drawable.standin);
+	    imageView.setImageBitmap(thisContent.getBitmap());
 
 	    TextView timestampView = (TextView) rowView.findViewById(R.id.timestamp);
-	    String convertedStamp = convertTimestamp(values.get(position).getTimestamp());
+	    String convertedStamp = "now";//convertTimestamp(values.get(position).getTimestamp());
 	    timestampView.setText(convertedStamp);
 	    
 	    TextView nameView = (TextView) rowView.findViewById(R.id.nameOfView);
-	    nameView.setText(values.get(position).getFileId());
+	    nameView.setText(Integer.toString(thisContent.getFileId()));
+	    
+	    TextView ratingView = (TextView) rowView.findViewById(R.id.rating);
+	    int rating = thisContent.getRating();
+	    ratingView.setText(String.valueOf(rating));
+	    
+	    ImageButton upvote = (ImageButton) rowView.findViewById(R.id.upvote);
+	    if(thisContent.getHasBeenVoted())
+	    	upvote.setEnabled(false);
+	    
+	    ImageButton downvote = (ImageButton) rowView.findViewById(R.id.downvote);
+	    if(thisContent.getHasBeenVoted())
+	    	downvote.setEnabled(false);  
+	    
+	    ImageButton flag = (ImageButton) rowView.findViewById(R.id.flag);
+	    if(thisContent.getHasBeenFlagged())
+	    	flag.setEnabled(false);  
+	    
+       	if(rating > 0)
+       		ratingView.setTextColor(Color.GREEN);
+       	else if (rating < 0)
+       		ratingView.setTextColor(Color.RED);
+       	else
+       		ratingView.setTextColor(Color.BLACK);
 
 	    return rowView;
 	}

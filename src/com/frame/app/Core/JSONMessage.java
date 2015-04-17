@@ -21,8 +21,37 @@ public class JSONMessage
 	public static Bitmap decodeBase64(String input)  
 	{ 
 		byte[] decodedByte = Base64.decode(input, 0); 
-		return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);  
+		BitmapFactory.Options o = new BitmapFactory.Options();
+		o.inJustDecodeBounds = true;
+		
+		BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+		o.inSampleSize = 8;//calculateInSampleSize(o, 300, 300);
+		o.inJustDecodeBounds = false;
+		return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length, o);  
 	} 
+	
+	private static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    // Raw height and width of image
+    final int height = options.outHeight;
+    final int width = options.outWidth;
+    int inSampleSize = 1;
+
+    if (height > reqHeight || width > reqWidth) {
+
+        final int halfHeight = height / 2;
+        final int halfWidth = width / 2;
+
+        // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+        // height and width larger than the requested height and width.
+        while ((halfHeight / inSampleSize) > reqHeight
+                && (halfWidth / inSampleSize) > reqWidth) {
+            inSampleSize *= 2;
+        }
+    }
+
+    return inSampleSize;
+}
 
 	public static String encodeTobase64(Bitmap image) 
  	{ 
@@ -263,10 +292,18 @@ public class JSONMessage
 		
 		return 0;
 	}
-	public static int[] clientGetID(JSONObject jo)
-	{
-		try {
-			return (int[]) jo.get("ID");
+	public static Integer[] clientGetID(JSONObject jo)
+	{	
+		try
+		{
+			JSONArray jsonArray = (JSONArray) jo.get("ID");
+			List<Integer> list = new ArrayList<Integer>();
+			for(int i = 0; i < jsonArray.length(); i++)
+			{
+				list.add(jsonArray.getInt(i));
+			}
+			Integer[] arrayInt = list.toArray(new Integer[list.size()]);
+			return arrayInt;
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -331,10 +368,18 @@ public class JSONMessage
 		
 		return 0;
 	}
-	public static int[] clientGetRating(JSONObject jo)
+	public static Integer[] clientGetRating(JSONObject jo)
 	{
-		try {
-			return (int[])jo.get("Rating");
+		try
+		{
+			JSONArray jsonArray = (JSONArray) jo.get("Rating");
+			List<Integer> list = new ArrayList<Integer>();
+			for(int i = 0; i < jsonArray.length(); i++)
+			{
+				list.add(jsonArray.getInt(i));
+			}
+			Integer[] arrayInt = list.toArray(new Integer[list.size()]);
+			return arrayInt;
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

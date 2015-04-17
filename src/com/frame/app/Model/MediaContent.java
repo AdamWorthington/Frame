@@ -10,23 +10,26 @@ import android.location.Location;
 public class MediaContent 
 {
 	private boolean fileType;
-	private String fileId;
+	private int fileId;
 	private int rating;
 	private int flagCount;
 	private ArrayList<Comment> comments;
 	private Date timestamp;
 	private Bitmap bitmap;
 	
+	private boolean hasBeenVoted = false;
+	private boolean hasBeenFlagged = false;
+	
 	private int databaseId;
 	
-	public MediaContent(boolean fileType, String fileId, Date timestamp, Bitmap bitmap)
+	public MediaContent(boolean fileType, int fileId, Date timestamp, Bitmap bitmap, int rating)
 	{
 		this.fileType = fileType;
 		this.fileId = fileId;
 		this.timestamp = timestamp;
 		this.bitmap = bitmap;
 		
-		this.rating = 0;
+		this.rating = rating;
 		this.flagCount = 0;
 		this.databaseId = 0;
 		comments = new ArrayList<Comment>();
@@ -42,12 +45,37 @@ public class MediaContent
 		return fileType;
 	}
 	
+	public Bitmap getBitmap()
+	{
+		return bitmap;
+	}
+	
 	public int getDatabaseId()
 	{
 		return databaseId;
 	}
 	
-	public String getFileId()
+	public boolean getHasBeenFlagged()
+	{
+		return hasBeenFlagged;
+	}
+	
+	public void setHasBeenFlagged(boolean value)
+	{
+		hasBeenFlagged = value;
+	}
+	
+	public boolean getHasBeenVoted()
+	{
+		return hasBeenVoted;
+	}
+	
+	public void setHasBeenVoted(boolean value)
+	{
+		hasBeenVoted = value;
+	}
+	
+	public int getFileId()
 	{
 		return fileId;
 	}
