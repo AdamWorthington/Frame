@@ -208,4 +208,10 @@ public class focusedMediaContentPage extends ActionBarActivity
 			return Integer.toString(timeInSeconds) + " seconds ago";
 		
 	}
+
+    public void changePage(View view){
+        Intent intent;
+        intent = new Intent(this,Comment_post.class);
+        this.startActivity(intent);
+    }
 }
