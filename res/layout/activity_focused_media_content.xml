@@ -69,12 +69,25 @@
         android:text="0"
         android:gravity="center"
         android:textSize="25sp" />
-    
+
    <ListView
    	    android:id="@+id/comment_listview"
    	    android:layout_width="match_parent"
    	    android:layout_height="match_parent"
    	    android:orientation="vertical"
-   	    android:layout_below="@+id/flag"/>
+   	    android:layout_below="@+id/flag"
+       android:clickable="true" />
 
-</RelativeLayout> 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Comment"
+        android:id="@+id/button3"
+        android:layout_marginLeft="36dp"
+        android:layout_marginStart="36dp"
+        android:layout_below="@+id/contentImage"
+        android:layout_toRightOf="@+id/flag"
+        android:onClick="changePage"
+        android:layout_toEndOf="@+id/flag" />
+
+</RelativeLayout>
