@@ -22,6 +22,33 @@ public class JSONMessage {
 		return jo;
 	}
 	
+	//FRONTEND
+	public static JSONObject commentToJson(int id, String comment, String user) {
+		JSONObject jo = new JSONObject();
+		try {
+			jo.put("POST", 1);
+			jo.put("ID", id);
+			jo.put("Comment", comment);
+			jo.put("User", user);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return jo;
+	}
+	
+	//FRONTEND
+	public static JSONObject getCommentsFromDatabase(int postID) {
+		JSONObject jo = new JSONObject();
+		try {
+			jo.put("GET", 1);
+			jo.put("Comment", 1);
+			jo.put("ID", postID);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return jo;
+	}
+	
 	public static JSONObject clientTextToJson(String text, Double lat, Double lon, String user,String[] tags)
 	{
 		JSONObject jo = new JSONObject();
@@ -124,7 +151,7 @@ public class JSONMessage {
 	
 		return jo;
 	}
-	public static JSONObject serverComments(String[] text, int id)
+	public static JSONObject serverComments(String[] text, int id, int numComments)
 	{
 		JSONObject jo = new JSONObject();
 		
@@ -132,6 +159,7 @@ public class JSONMessage {
 		{
 			jo.put("Comment", text);
 			jo.put("ID", id);
+			jo.put("Total", numComments);
 		}
 		catch (JSONException e) 
 		{
@@ -359,6 +387,15 @@ public class JSONMessage {
 		}
 		
 		return null;
+	}
+	public static int numberOfComments(JSONObject jo) {
+		try {
+			return (int) jo.get("Total");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
 	}
 	public static int getVote(JSONObject jo)
 	{
