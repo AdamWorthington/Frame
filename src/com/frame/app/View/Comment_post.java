@@ -63,8 +63,12 @@ public class Comment_post extends ActionBarActivity {
         this.startActivity(intent);
 
     }
+    
+    String message = "";
 
     public void changeToFocusedAfterPosting(View view){
+        //EditText editText = (EditText) findViewById(R.id.editText);
+        //message = editText.getText().toString();
         Intent intent;
         intent = new Intent(this, focusedMediaContentPage.class);
         this.startActivity(intent);

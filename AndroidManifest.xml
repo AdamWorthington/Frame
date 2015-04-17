@@ -45,6 +45,10 @@
             android:name=".View.focusedMediaContentPage"
             android:label="@string/title_activity_text_post" >
         </activity>
+        <activity
+            android:name=".View.Comment_post"
+            android:label="@string/title_activity_text_post" >
+        </activity>
 
     </application>
 
