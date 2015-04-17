@@ -50,7 +50,7 @@ public class Singleton
 	 {
 		 for(int i = 0; i < mediaFeed.size(); i++)
 		 {
-			 if(mediaFeed.get(i).getFileId() == id)
+			 if(mediaFeed.get(i).getDbId() == id)
 				 return mediaFeed.get(i);
 		 }
 		 
@@ -61,5 +61,16 @@ public class Singleton
 	 public MediaContent getMediaContentByPos(int pos)
 	 {
 		return mediaFeed.get(pos); 
+	 }
+	 
+	 public boolean containsMediaContentWithId(int id)
+	 {
+		 for(int i = 0; i < mediaFeed.size(); i++)
+		 {
+			 if(mediaFeed.get(i).getDbId() == id)
+				 return true;
+		 }
+		 
+		 return false;
 	 }
  }

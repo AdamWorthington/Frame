@@ -61,8 +61,8 @@ public class focusedMediaContentPage extends ActionBarActivity
        		rating.setTextColor(Color.BLACK);
 		
 	    TextView timestampView = (TextView) findViewById(R.id.timestamp);
-	    String convertedStamp = "now";//convertTimestamp(values.get(position).getTimestamp());
-	    timestampView.setText(convertedStamp);
+	    String elapsedTime = convertTimestamp(thisContent.getTimestamp());
+	    timestampView.setText(elapsedTime);
 		
 	    ImageView imageView = (ImageView) findViewById(R.id.contentImage);
 	    imageView.setImageBitmap(thisContent.getBitmap());
@@ -178,4 +178,34 @@ public class focusedMediaContentPage extends ActionBarActivity
 		new VotePostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
 				user, Id, vote);
     }
+    
+	
+	/* Given a timestamp, will calculate the difference between NOW and the stamp.
+	 * It will round to either the nearest seconds, minutes, or hours.
+	 * For example: If the timestamp difference is less than a minute, the string will be 'x seconds' 
+	 * 
+	 */
+	private String convertTimestamp(Date stamp)
+	{
+		//Will instantiate a date with the current time
+		Date now = new Date();
+		
+		//Returns the difference in milliseconds
+		long dateDifference = now.getTime() - stamp.getTime();
+		
+		int timeInSeconds = (int)(dateDifference / 1000);
+		int timeInMinutes = timeInSeconds / 60;
+		int timeInHours = timeInSeconds / 3600;
+		int timeInDays = timeInHours / 24;
+
+		if(timeInDays > 0)
+			return Integer.toString(timeInHours) + " days ago";
+		else if(timeInHours > 0)
+			return Integer.toString(timeInHours) + " hours ago";
+		else if(timeInMinutes > 0)
+			return Integer.toString(timeInMinutes) + " minutes ago";
+		else
+			return Integer.toString(timeInSeconds) + " seconds ago";
+		
+	}
 }

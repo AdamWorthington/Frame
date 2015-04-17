@@ -1,0 +1,16 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:padding="6dip" >
+    
+    <TextView
+        android:id="@+id/emptyNotification"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|top"
+        android:padding="6dip"
+        android:text="It looks pretty empty in here! Swipe down to refresh the feed!"
+        android:textSize="24sp" />
+
+</LinearLayout> 

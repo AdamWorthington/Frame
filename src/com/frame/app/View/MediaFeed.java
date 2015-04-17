@@ -3,6 +3,8 @@ package com.frame.app.View;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -46,6 +48,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -82,6 +85,7 @@ public class MediaFeed extends Fragment
 			}
 		};
 		listview.setOnItemClickListener(clickListener);
+		listview.setEmptyView((LinearLayout)root.findViewById(R.id.emptyNotification));
 		
 		final SwipeRefreshLayout swipeView = (SwipeRefreshLayout) root.findViewById(R.id.swipeMediaFeed);
 		swipe = swipeView;
@@ -172,17 +176,28 @@ public class MediaFeed extends Fragment
 			String[] dates = JSONMessage.clientGetDate(result);
 			Integer[] ratings = JSONMessage.clientGetRating(result);
 			Integer[] ids = JSONMessage.clientGetID(result);
+			int insertIndex = 0;
 			for(int i = 0; i < pics.length; i++)
 			{
 				//We're at the end of the stream. Return.
-				if(pics[i] == null)
+				if(pics[i] == "null")
 					return;
+				
+				if(Singleton.getInstance().containsMediaContentWithId(ids[i]))
+					continue;
 				
 				Bitmap b = JSONMessage.decodeBase64(pics[i]);
 				
-				DateFormat d = new DateFormat();
-				MediaContent newContent = new MediaContent(false, ids[i].intValue(), null, b, ratings[i].intValue());
-				adapter.add(newContent);
+				SimpleDateFormat d = new SimpleDateFormat("yyyy-MM-DD hh:mm:ss.S");
+				Date date = null;
+				try {
+					date = d.parse(dates[i]);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				MediaContent newContent = new MediaContent(false, ids[i].intValue(), date, b, ratings[i].intValue());
+				adapter.insert(newContent, insertIndex++);
 			}
 	    }
 	}

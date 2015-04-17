@@ -1,5 +1,6 @@
 package com.frame.app.Core;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,11 +47,11 @@ public class MediaArrayAdapter extends ArrayAdapter<MediaContent>
 	    imageView.setImageBitmap(thisContent.getBitmap());
 
 	    TextView timestampView = (TextView) rowView.findViewById(R.id.timestamp);
-	    String convertedStamp = "now";//convertTimestamp(values.get(position).getTimestamp());
-	    timestampView.setText(convertedStamp);
+	    String elapsedTime = convertTimestamp(thisContent.getTimestamp());
+	    timestampView.setText(elapsedTime);
 	    
 	    TextView nameView = (TextView) rowView.findViewById(R.id.nameOfView);
-	    nameView.setText(Integer.toString(thisContent.getFileId()));
+	    nameView.setText(Integer.toString(thisContent.getDatabaseId()));
 	    
 	    TextView ratingView = (TextView) rowView.findViewById(R.id.rating);
 	    int rating = thisContent.getRating();
@@ -94,9 +95,11 @@ public class MediaArrayAdapter extends ArrayAdapter<MediaContent>
 		int timeInSeconds = (int)(dateDifference / 1000);
 		int timeInMinutes = timeInSeconds / 60;
 		int timeInHours = timeInSeconds / 3600;
-		
-		
-		if(timeInHours > 0)
+		int timeInDays = timeInHours / 24;
+
+		if(timeInDays > 0)
+			return Integer.toString(timeInHours) + " days ago";
+		else if(timeInHours > 0)
 			return Integer.toString(timeInHours) + " hours ago";
 		else if(timeInMinutes > 0)
 			return Integer.toString(timeInMinutes) + " minutes ago";
