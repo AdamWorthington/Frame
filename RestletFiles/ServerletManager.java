@@ -23,7 +23,6 @@ public class ServerletManager extends ServerResource implements Serializable{
 		
 		JSONObject obj = parseJSON(r);
 		JSONObject ret = new JSONObject();
-		System.err.println(obj);
 		
 		if(JSONMessage.isGet(obj)){
 			GetManager getManager = new GetManager(obj);

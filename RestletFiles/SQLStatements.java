@@ -859,6 +859,7 @@ public class SQLStatements {
 
 		if (user == null || user == "" || text == null || text == "" || date == null || date == "") {
 			System.err.println("Parameter error in postText");
+			return null;
 		}
 		
 		String query = "INSERT INTO MEDIA (ID, User, Latitude, Longitude, Picture, Video, Text, Media_Type, Date, Votes, Flags)"
