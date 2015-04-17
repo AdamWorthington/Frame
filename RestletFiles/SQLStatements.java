@@ -557,13 +557,16 @@ public class SQLStatements {
 
 		String[] comments = new String[10];
 		int[] id = new int[10];
+		int numComments = 0;
 		try {
 			ResultSet rs = stmt.executeQuery();
 		
 		
 			int i = 0;
-			while (rs.next()) {
-				comments[i] = rs.getString("Comment");
+			while (rs.next() && i < 10) {
+				String commentString = rs.getString("Comment");
+				if (commentString != null) numComments++;
+				comments[i] = commentString;
 				id[i++] = rs.getInt("Comment_ID");
 			}
 
@@ -573,7 +576,7 @@ public class SQLStatements {
 			System.err.println("ERROR GETTING COMMENTS");
 		}
 
-		JSONObject returnVal = JSONMessage.serverComments(comments, postID);
+		JSONObject returnVal = JSONMessage.serverComments(comments, postID, numComments);
 		
 		return returnVal;
 	}

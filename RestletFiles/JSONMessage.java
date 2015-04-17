@@ -151,7 +151,7 @@ public class JSONMessage {
 	
 		return jo;
 	}
-	public static JSONObject serverComments(String[] text, int id)
+	public static JSONObject serverComments(String[] text, int id, int numComments)
 	{
 		JSONObject jo = new JSONObject();
 		
@@ -159,6 +159,7 @@ public class JSONMessage {
 		{
 			jo.put("Comment", text);
 			jo.put("ID", id);
+			jo.put("Total", numComments);
 		}
 		catch (JSONException e) 
 		{
@@ -386,6 +387,15 @@ public class JSONMessage {
 		}
 		
 		return null;
+	}
+	public static int numberOfComments(JSONObject jo) {
+		try {
+			return (int) jo.get("Total");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
 	}
 	public static int getVote(JSONObject jo)
 	{
