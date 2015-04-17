@@ -174,6 +174,10 @@ public class MediaFeed extends Fragment
 			Integer[] ids = JSONMessage.clientGetID(result);
 			for(int i = 0; i < pics.length; i++)
 			{
+				//We're at the end of the stream. Return.
+				if(pics[i] == null)
+					return;
+				
 				Bitmap b = JSONMessage.decodeBase64(pics[i]);
 				
 				DateFormat d = new DateFormat();

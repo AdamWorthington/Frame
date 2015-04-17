@@ -70,6 +70,7 @@ public class JSONMessage
  		try 
  		{ 
  			String picS = encodeTobase64(pic); 
+ 			jo.put("POST", 1);
  			jo.put("Picture", picS); 
  			jo.put("Lat",lat); 
  			jo.put("Lon",lon); 

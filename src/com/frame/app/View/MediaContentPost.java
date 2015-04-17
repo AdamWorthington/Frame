@@ -32,6 +32,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.frame.app.R;
+import com.frame.app.Core.Singleton;
 import com.frame.app.Model.CameraPreview;
 import com.frame.app.tasks.PostPictureTask;
 
@@ -337,18 +338,20 @@ public class MediaContentPost extends ActionBarActivity
 		
 		String[] tags = {""};
 		
-		//LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE); 
-		//Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE); 
+		Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		
 		//Location returns null if no position is currently available. In this case, cancel the request.
-		//if(location == null)
-		//	return;
+		if(location == null)
+			return;
 		
-		Double longitude = new Double(0);//new Double(location.getLongitude());
-		Double latitude = new Double(0);//new Double(location.getLatitude());
+		double longitude = location.getLongitude();
+		double latitude = location.getLatitude();
+		
+		String id = Singleton.getInstance().getDeviceId();
 		
 		new PostPictureTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
-				picture, latitude, longitude, "Craig", tags);
+				picture, latitude, longitude, Singleton.getInstance().getDeviceId(), tags);
 		
 		//Launch the intent to return to the main page
         Intent intent = new Intent(this, MainPage.class);

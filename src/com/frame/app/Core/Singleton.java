@@ -1,6 +1,9 @@
 package com.frame.app.Core;
 
 import java.util.ArrayList;
+import java.util.UUID;
+
+import android.telephony.TelephonyManager;
 
 import com.frame.app.Model.MediaContent;
 
@@ -9,13 +12,16 @@ public class Singleton
 	private static Singleton instance;
 	
 	private ArrayList<MediaContent> mediaFeed = new ArrayList<MediaContent>();
+	
+	private String deviceId;
 
-	public static void initInstance()
+	public static void initInstance(String uid)
 	{
 		if (instance == null)
 		{
-		  // Create the instance
-		  instance = new Singleton();
+			// Create the instance
+			instance = new Singleton();
+			instance.deviceId = uid;
 		}
 	}
 	
@@ -32,6 +38,11 @@ public class Singleton
 	 public ArrayList<MediaContent> getMediaFeed()
 	 {
 		 return mediaFeed;
+	 }
+	 
+	 public String getDeviceId()
+	 {
+		 return deviceId;
 	 }
 	 
 	 //Gets media content by basis of DB id

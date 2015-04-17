@@ -13,11 +13,11 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class PostPictureTask extends AsyncTask<Object, Void, Void> 
+public class PostPictureTask extends AsyncTask<Object, Void, Bitmap> 
 {
 
 	@Override
-	protected Void doInBackground(Object... params) 
+	protected Bitmap doInBackground(Object... params) 
 	{		
 		ClientResource res = new ClientResource(
 				params[0].toString());
@@ -29,7 +29,8 @@ public class PostPictureTask extends AsyncTask<Object, Void, Void>
 		String user = (String) params[4];
 		String[] tags = (String[]) params[5];
 
-		JSONObject obj = JSONMessage.clientPictureToJson(picture, latitude.doubleValue(), longitude.doubleValue(), "Craig", tags);
+		
+		JSONObject obj = JSONMessage.clientPictureToJson(picture, latitude.doubleValue(), longitude.doubleValue(), user, tags);
 		StringRepresentation stringRep = new StringRepresentation(
 				obj.toString());
 		stringRep.setMediaType(MediaType.APPLICATION_JSON);
@@ -41,6 +42,11 @@ public class PostPictureTask extends AsyncTask<Object, Void, Void>
 			e.printStackTrace();
 		}
 		
-		return null;
-	} 
+		return picture;
+	}
+	
+    protected void onPostExecute(Bitmap result) 
+    {
+    	result.recycle();
+	}
 }

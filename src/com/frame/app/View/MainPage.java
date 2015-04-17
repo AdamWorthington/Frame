@@ -1,5 +1,7 @@
 package com.frame.app.View;
 
+import java.util.UUID;
+
 import com.frame.app.R;
 import com.frame.app.Core.FrameFragmentPagerAdapter;
 import com.frame.app.Core.Singleton;
@@ -10,6 +12,7 @@ import com.frame.app.tasks.PostPictureTask;
 import com.frame.app.tasks.VotePostTask;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,6 +21,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -44,8 +48,19 @@ public class MainPage extends ActionBarActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
-		Singleton.initInstance();
 		setRequestedOrientation(1);
+		
+		final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+
+	    final String tmDevice, tmSerial, androidId;
+	    tmDevice = "" + tm.getDeviceId();
+	    tmSerial = "" + tm.getSimSerialNumber();
+	    androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+	    UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
+	    String deviceId = deviceUuid.toString();
+	    
+	    Singleton.initInstance(deviceId);
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_page);
