@@ -188,7 +188,7 @@ public class MediaFeed extends Fragment
 				
 				Bitmap b = JSONMessage.decodeBase64(pics[i]);
 				
-				SimpleDateFormat d = new SimpleDateFormat("yyyy-MM-DD hh:mm:ss.S");
+				SimpleDateFormat d = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
 				Date date = null;
 				try {
 					date = d.parse(dates[i]);
