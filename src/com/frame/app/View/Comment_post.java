@@ -61,7 +61,6 @@ public class Comment_post extends ActionBarActivity {
         Intent intent;
         intent = new Intent(this, focusedMediaContentPage.class);
         this.startActivity(intent);
-
     }
     
     String message = "";

@@ -47,7 +47,8 @@
         </activity>
         <activity
             android:name=".View.Comment_post"
-            android:label="@string/title_activity_text_post" >
+            android:label="@string/title_activity_text_post" 
+            android:noHistory="true">
         </activity>
 
     </application>

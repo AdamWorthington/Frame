@@ -1,93 +1,99 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:padding="6dip" >
-    
-       <TextView
-        android:id="@+id/nameOfView"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical|left"
-        android:text="Description"
-        android:padding="6dip"
-        android:visibility="invisible"
-        android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/timestamp"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical|right"
-        android:text="Timestamp"
-        android:padding="6dip"
-        android:textSize="16sp" />
-    
-    <ImageView
-        android:id="@+id/contentImage"
-        android:layout_width="fill_parent"
-        android:layout_height="300dp"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/timestamp"
-        android:src="@drawable/standin" />
-
-    <ImageButton
-        android:id="@+id/downvote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/contentImage"
-        android:layout_alignTop="@+id/upvote"
-        android:onClick="sendDownvote"
-        android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
-
-    <ImageButton
-        android:id="@+id/flag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/contentImage"
-        android:layout_alignTop="@+id/upvote"
-        android:onClick="sendFlag"
-        android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
-
-    <ImageButton
-        android:id="@+id/upvote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/contentImage"
-        android:layout_toLeftOf="@+id/rating"
-        android:onClick="sendUpvote"
-        android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
-
-    <TextView
-        android:id="@+id/rating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/downvote"
-        android:layout_below="@+id/contentImage"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_toLeftOf="@+id/downvote"
-        android:text="0"
-        android:gravity="center"
-        android:textSize="25sp" />
-
-   <ListView
-   	    android:id="@+id/comment_listview"
-   	    android:layout_width="match_parent"
-   	    android:layout_height="match_parent"
-   	    android:orientation="vertical"
-   	    android:layout_below="@+id/flag"
-       android:clickable="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Comment"
-        android:id="@+id/button3"
-        android:layout_marginLeft="36dp"
-        android:layout_marginStart="36dp"
-        android:layout_below="@+id/contentImage"
-        android:layout_toRightOf="@+id/flag"
-        android:onClick="changePage"
-        android:layout_toEndOf="@+id/flag" />
-
-</RelativeLayout>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content">
+	
+	<RelativeLayout
+	    android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+	    android:padding="6dip" >
+	    
+	       <TextView
+	        android:id="@+id/nameOfView"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_vertical|left"
+	        android:text="Description"
+	        android:padding="6dip"
+	        android:visibility="invisible"
+	        android:textSize="16sp" />
+	
+	    <TextView
+	        android:id="@+id/timestamp"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:gravity="center_vertical|right"
+	        android:text="Timestamp"
+	        android:padding="6dip"
+	        android:textSize="16sp" />
+	    
+	    <ImageView
+	        android:id="@+id/contentImage"
+	        android:layout_width="fill_parent"
+	        android:layout_height="300dp"
+	        android:layout_centerHorizontal="true"
+	        android:layout_below="@id/timestamp"
+	        android:src="@drawable/standin" />
+	
+	    <ImageButton
+	        android:id="@+id/downvote"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignRight="@+id/contentImage"
+	        android:layout_alignTop="@+id/upvote"
+	        android:onClick="sendDownvote"
+	        android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
+	
+	    <ImageButton
+	        android:id="@+id/flag"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/contentImage"
+	        android:layout_alignTop="@+id/upvote"
+	        android:onClick="sendFlag"
+	        android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
+	
+	    <ImageButton
+	        android:id="@+id/upvote"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/contentImage"
+	        android:layout_toLeftOf="@+id/rating"
+	        android:onClick="sendUpvote"
+	        android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
+	
+	    <TextView
+	        android:id="@+id/rating"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignBottom="@+id/downvote"
+	        android:layout_below="@+id/contentImage"
+	        android:layout_marginLeft="8dp"
+	        android:layout_marginRight="8dp"
+	        android:layout_toLeftOf="@+id/downvote"
+	        android:text="0"
+	        android:gravity="center"
+	        android:textSize="25sp" />
+	
+	   <LinearLayout
+	   	    android:id="@+id/comment_linearlayout"
+	   	    android:layout_width="match_parent"
+	   	    android:layout_height="match_parent"
+	   	    android:orientation="vertical"
+	   	    android:layout_below="@+id/flag"/>
+	
+	    <Button
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Comment"
+	        android:id="@+id/button3"
+	        android:layout_marginLeft="36dp"
+	        android:layout_marginStart="36dp"
+	        android:layout_below="@+id/contentImage"
+	        android:layout_toRightOf="@+id/flag"
+	        android:onClick="changePage"
+	        android:layout_toEndOf="@+id/flag" />
+	
+	</RelativeLayout>
+	
+	    
+</ScrollView>
