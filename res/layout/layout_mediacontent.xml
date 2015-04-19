@@ -32,30 +32,33 @@
 
     <ImageButton
         android:id="@+id/downvote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_alignRight="@+id/contentImage"
         android:layout_alignTop="@+id/upvote"
+        android:background="@null"
         android:onClick="sendDownvote"
-        android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
+        android:src="@drawable/downvote" />
 
     <ImageButton
         android:id="@+id/flag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_alignLeft="@+id/contentImage"
         android:layout_alignTop="@+id/upvote"
+        android:background="@null"
         android:onClick="sendFlag"
-        android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
+        android:src="@drawable/flag" />
 
     <ImageButton
         android:id="@+id/upvote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_below="@+id/contentImage"
         android:layout_toLeftOf="@+id/rating"
+        android:background="@null"
         android:onClick="sendUpvote"
-        android:src="@drawable/abc_btn_radio_to_on_mtrl_000" />
+        android:src="@drawable/upvote" />
 
     <TextView
         android:id="@+id/rating"

@@ -27,8 +27,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.frame.app.R;
@@ -53,6 +56,9 @@ public class MediaContentPost extends ActionBarActivity
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_camera_preview);
 		
@@ -61,7 +67,7 @@ public class MediaContentPost extends ActionBarActivity
 		FrameLayout fPreview = (FrameLayout) findViewById(R.id.camera_preview);
 		fPreview.addView(preview, fPreview.getChildCount() - 1);
 
-        Button button = (Button) findViewById(R.id.button_capture);
+        ImageButton button = (ImageButton) findViewById(R.id.button_capture);
         button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -229,29 +235,29 @@ public class MediaContentPost extends ActionBarActivity
 		if(edit)
 		{
 			//Hide the preview buttons
-			Button button_changeCam = (Button) findViewById(R.id.button_changeCam);
+			ImageButton button_changeCam = (ImageButton) findViewById(R.id.button_changeCam);
 			button_changeCam.setVisibility(View.GONE);
-			Button button_capture = (Button) findViewById(R.id.button_capture);
+			ImageButton button_capture = (ImageButton) findViewById(R.id.button_capture);
 			button_capture.setVisibility(View.GONE);
 			
 			//Show the edit buttons
-			Button button_send = (Button) findViewById(R.id.button_send);
+			ImageButton button_send = (ImageButton) findViewById(R.id.button_send);
 			button_send.setVisibility(View.VISIBLE);
-			Button button_cancel = (Button) findViewById(R.id.button_cancel);
+			ImageButton button_cancel = (ImageButton) findViewById(R.id.button_cancel);
 			button_cancel.setVisibility(View.VISIBLE);
 		}
 		else
 		{
 			//Hide the edit buttons
-			Button button_send = (Button) findViewById(R.id.button_send);
+			ImageButton button_send = (ImageButton) findViewById(R.id.button_send);
 			button_send.setVisibility(View.GONE);
-			Button button_cancel = (Button) findViewById(R.id.button_cancel);
+			ImageButton button_cancel = (ImageButton) findViewById(R.id.button_cancel);
 			button_cancel.setVisibility(View.GONE);
 			
 			//Show the preview buttons
-			Button button_changeCam = (Button) findViewById(R.id.button_changeCam);
+			ImageButton button_changeCam = (ImageButton) findViewById(R.id.button_changeCam);
 			button_changeCam.setVisibility(View.VISIBLE);
-			Button button_capture = (Button) findViewById(R.id.button_capture);
+			ImageButton button_capture = (ImageButton) findViewById(R.id.button_capture);
 			button_capture.setVisibility(View.VISIBLE);
 		}
 	}
