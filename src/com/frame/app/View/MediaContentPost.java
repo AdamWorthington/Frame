@@ -351,7 +351,7 @@ public class MediaContentPost extends ActionBarActivity
 		String id = Singleton.getInstance().getDeviceId();
 		
 		new PostPictureTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
-				picture, latitude, longitude, Singleton.getInstance().getDeviceId(), tags);
+				picture, latitude, longitude, Singleton.getInstance().getDeviceId(), tags, false);
 		
 		//Launch the intent to return to the main page
         Intent intent = new Intent(this, MainPage.class);

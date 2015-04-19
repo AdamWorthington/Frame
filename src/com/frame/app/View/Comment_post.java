@@ -35,12 +35,12 @@ public class Comment_post extends ActionBarActivity {
         setContentView(R.layout.activity_comment_post);
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_text_post, menu);
         return true;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -63,12 +63,14 @@ public class Comment_post extends ActionBarActivity {
         this.startActivity(intent);
 
     }
-    
     String message = "";
 
     public void changeToFocusedAfterPosting(View view){
+
+
         //EditText editText = (EditText) findViewById(R.id.editText);
         //message = editText.getText().toString();
+
         Intent intent;
         intent = new Intent(this, focusedMediaContentPage.class);
         this.startActivity(intent);

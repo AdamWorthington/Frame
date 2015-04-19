@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,7 +66,7 @@ public class MediaFeed extends Fragment
 	{				
 		View root = inflater.inflate(R.layout.fragment_media_feed, container, false);
 		this.root = root;
-				
+
 		listview = (ListView) root.findViewById(R.id.mediaFeedListView);
 		adapter = new MediaArrayAdapter(this.getActivity(), android.R.layout.simple_list_item_1, Singleton.getInstance().getMediaFeed());
 		listview.setAdapter(adapter);
@@ -189,8 +188,7 @@ public class MediaFeed extends Fragment
 				
 				Bitmap b = JSONMessage.decodeBase64(pics[i]);
 				
-				SimpleDateFormat d = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
-				d.setTimeZone(TimeZone.getTimeZone("GMT"));
+				SimpleDateFormat d = new SimpleDateFormat("yyyy-MM-DD hh:mm:ss.S");
 				Date date = null;
 				try {
 					date = d.parse(dates[i]);
@@ -198,7 +196,6 @@ public class MediaFeed extends Fragment
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 				MediaContent newContent = new MediaContent(false, ids[i].intValue(), date, b, ratings[i].intValue());
 				adapter.insert(newContent, insertIndex++);
 			}
