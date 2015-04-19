@@ -29,7 +29,6 @@ import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -50,7 +49,7 @@ public class focusedMediaContentPage extends ActionBarActivity
 		
        	MediaContent thisContent = Singleton.getInstance().getMediaContentByPos(pos);
 		
-		final LinearLayout commentView = (LinearLayout) findViewById(R.id.comment_linearlayout);
+		final ListView listview = (ListView) findViewById(R.id.comment_listview);
 		
 		TextView rating = (TextView) findViewById(R.id.rating);
 		rating.setText(Integer.toString(thisContent.getRating()));
@@ -85,7 +84,7 @@ public class focusedMediaContentPage extends ActionBarActivity
 		
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, 
 				new String[]{"hey", "yo", "Good Morning", "Hey there!", "Buenos Dias", "Hola", "Chao"});
-		//listview.setAdapter(adapter);
+		listview.setAdapter(adapter);
 	}
 	
     public void sendFlag(View view)
@@ -216,3 +215,4 @@ public class focusedMediaContentPage extends ActionBarActivity
         this.startActivity(intent);
     }
 }
+
