@@ -90,7 +90,7 @@ public class MediaArrayAdapter extends ArrayAdapter<MediaContent>
 		Date now = new Date();
 		
 		//Returns the difference in milliseconds
-		long dateDifference = Math.abs(now.getTime() - stamp.getTime());
+		long dateDifference = now.getTime() - stamp.getTime();
 		
 		int timeInSeconds = (int)(dateDifference / 1000);
 		int timeInMinutes = timeInSeconds / 60;

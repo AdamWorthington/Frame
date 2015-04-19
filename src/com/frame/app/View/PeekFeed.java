@@ -32,7 +32,7 @@ public class PeekFeed extends Fragment
 
 		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_list_item_1, list);
 		listview.setAdapter(adapter);
-		
+
 		return root;
 	}
 }

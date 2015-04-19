@@ -53,23 +53,29 @@ public class JSONMessage
     return inSampleSize;
 }
 
-	public static String encodeTobase64(Bitmap image) 
+	public static String encodeTobase64(Bitmap image, Boolean text)
  	{ 
- 	    ByteArrayOutputStream baos = new ByteArrayOutputStream();   
- 	    image.compress(Bitmap.CompressFormat.JPEG, 10, baos); 
- 	    byte[] b = baos.toByteArray(); 
+ 	    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        if(!text){
+            image.compress(Bitmap.CompressFormat.JPEG, 10, baos);
+        }
+        else{
+            image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+        }
+        byte[] b = baos.toByteArray();
 	    String toReturn = Base64.encodeToString(b,Base64.DEFAULT); 
  	    return toReturn; 
  	} 
 
 	
 	//create json media messages to be sent to client 
- 	public static JSONObject clientPictureToJson(Bitmap pic, Double lat, Double lon, String user, String[] tags) 
+ 	public static JSONObject clientPictureToJson(Bitmap pic, Double lat, Double lon, String user, String[] tags, Boolean text)
  	{ 
  		JSONObject jo = new JSONObject(); 
  		try 
  		{ 
- 			String picS = encodeTobase64(pic); 
+ 			String picS = encodeTobase64(pic, text);
  			jo.put("POST", 1);
  			jo.put("Picture", picS); 
  			jo.put("Lat",lat); 
