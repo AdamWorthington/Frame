@@ -215,3 +215,4 @@ public class focusedMediaContentPage extends ActionBarActivity
         this.startActivity(intent);
     }
 }
+
