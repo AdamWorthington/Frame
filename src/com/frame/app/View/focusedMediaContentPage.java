@@ -283,8 +283,9 @@ public class focusedMediaContentPage extends ActionBarActivity
 		{
 			if(result == null)
 			{
-				//Something went wrong. We need to notify the user.
-				sendAlertFailure("We were unable to retrieve comments from the server at this time.");
+				//Something went wrong. We need to notify the user. <--- For now I am not...seems
+				//to be an issue if you focus on multiple pictures in quick succession. 
+				//sendAlertFailure("We were unable to retrieve comments from the server at this time.");
 				return;
 			}	
 			
@@ -297,10 +298,8 @@ public class focusedMediaContentPage extends ActionBarActivity
 				if(jsonComments[i] == "null")
 					return;
 				
-				comments.add(jsonComments[i]);
+				adapter.add(jsonComments[i]);
 			}
-			
-			adapter.notifyDataSetChanged();
 	    }
 	}
 	
