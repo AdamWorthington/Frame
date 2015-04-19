@@ -8,8 +8,11 @@ import android.graphics.Paint;
 
 public class ImageConverter {
 	
-	private static int width = 800;
-	private static int height = 1200;
+	private static int width = 300;
+	private static int height = 300;
+	private static int line = 20;
+	private static int textSize = 10;
+	private static int increment = 50;
 	
 	public static Bitmap textToImage(String str)
 	{
@@ -20,16 +23,30 @@ public class ImageConverter {
 		Paint paint = new Paint();
 		paint.setColor(Color.WHITE); 
 		paint.setTextSize(30);
-        if(str.length() > 20){
-            String str1;
-            str1 = str.substring(0,20);
-            can.drawText(str1, 50, 300, paint);
-            String str2;
-            str2 = str.substring(21,str.length());
-            can.drawText(str2, 50, 330, paint);
-        }
-        else{
-            can.drawText(str, 50, 300, paint);
+		String str1;
+		String str2;
+		String strt;
+		int printingPos = increment;
+		str1 = str.substring(0,line);
+        can.drawText(str1, 10, printingPos, paint);
+        strt = str.substring(line + 1,str.length());
+        while(strt.length() > line){
+            printingPos += increment;
+            str1 = strt.substring(0,line);
+            can.drawText(str1, 10, printingPos, paint);
+            
+            printingPos += increment;
+            str2 = strt.substring(line + 1,strt.length());
+            
+            if(str2.length() > line)
+            {
+            	strt = str2;
+            }
+            else
+            {
+	            can.drawText(str2, 10, 300, paint);
+	            break;
+	        }
 
         }
 		return bmp;
