@@ -209,9 +209,16 @@ public class focusedMediaContentPage extends ActionBarActivity
 		
 	}
 
-    public void changePage(View view){
+    public void writeComment(View view)
+    {
         Intent intent;
         intent = new Intent(this,Comment_post.class);
+        
+        TextView id = (TextView)findViewById(R.id.nameOfView);
+       	String idString = (String) id.getText();
+       	Integer idInt = Integer.parseInt(idString);
+        intent.putExtra("Id", idInt);
+        
         this.startActivity(intent);
     }
 }

@@ -12,7 +12,10 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -23,16 +26,24 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.frame.app.R;
+import com.frame.app.Core.Singleton;
+import com.frame.app.tasks.PostCommentTask;
+import com.frame.app.tasks.PostPictureTask;
 import com.frame.app.tasks.PostTask;
 
 public class Comment_post extends ActionBarActivity {
 
     protected static final String ERROR_TAG = null;
+    private Integer picId;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) 
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment_post);
+        
+        Intent intent = getIntent();
+        picId = intent.getIntExtra("Id", 0);
     }
 
     @Override
@@ -57,20 +68,23 @@ public class Comment_post extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void changeToMain(View view) {
-        Intent intent;
-        intent = new Intent(this, focusedMediaContentPage.class);
-        this.startActivity(intent);
+    public void CancelPage(View view) 
+    {
+    	finish();
     }
     
-    String message = "";
+    public void changeToFocusedAfterPosting(View view)
+    {
+		String id = Singleton.getInstance().getDeviceId();
+    	
+        EditText editText = (EditText) findViewById(R.id.editText);
+        String message = editText.getText().toString();
+				
+		new PostCommentTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
+				message, id, picId);
 
-    public void changeToFocusedAfterPosting(View view){
-        //EditText editText = (EditText) findViewById(R.id.editText);
-        //message = editText.getText().toString();
-        Intent intent;
-        intent = new Intent(this, focusedMediaContentPage.class);
-        this.startActivity(intent);
+		//Removes the activity from the back-stack.
+		finish();
 
     }
 }

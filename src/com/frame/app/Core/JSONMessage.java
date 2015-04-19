@@ -21,11 +21,11 @@ public class JSONMessage
 	public static Bitmap decodeBase64(String input)  
 	{ 
 		byte[] decodedByte = Base64.decode(input, 0); 
+		
 		BitmapFactory.Options o = new BitmapFactory.Options();
 		o.inJustDecodeBounds = true;
-		
 		BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
-		o.inSampleSize = 8;//calculateInSampleSize(o, 300, 300);
+		o.inSampleSize = calculateInSampleSize(o, 300, 300);
 		o.inJustDecodeBounds = false;
 		return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length, o);  
 	} 
