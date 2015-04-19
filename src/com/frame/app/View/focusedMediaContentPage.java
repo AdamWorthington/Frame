@@ -1,10 +1,21 @@
 package com.frame.app.View;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
+
 import com.frame.app.R;
 import com.frame.app.Core.FrameFragmentPagerAdapter;
+import com.frame.app.Core.JSONMessage;
 import com.frame.app.Core.MediaArrayAdapter;
 import com.frame.app.Core.Singleton;
 import com.frame.app.Core.TabsListener;
@@ -13,9 +24,15 @@ import com.frame.app.tasks.FlagPostTask;
 import com.frame.app.tasks.VotePostTask;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
@@ -37,6 +54,9 @@ import android.widget.Toast;
 @SuppressWarnings("deprecation")
 public class focusedMediaContentPage extends ActionBarActivity
 {
+	private ArrayAdapter<String> adapter;
+	private ArrayList<String> comments;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{		
@@ -82,9 +102,21 @@ public class focusedMediaContentPage extends ActionBarActivity
 	    if(thisContent.getHasBeenFlagged())
 	    	flag.setEnabled(false);  
 		
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, 
-				new String[]{"hey", "yo", "Good Morning", "Hey there!", "Buenos Dias", "Hola", "Chao"});
+	    comments = new ArrayList<String>();
+		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, 
+				comments);
 		listview.setAdapter(adapter);
+		
+		refreshComments();
+	}
+	
+	private void refreshComments()
+	{
+        TextView id = (TextView)findViewById(R.id.nameOfView);
+       	String idString = (String) id.getText();
+       	Integer idInt = Integer.parseInt(idString);
+		
+		new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", idInt);
 	}
 	
     public void sendFlag(View view)
@@ -221,5 +253,88 @@ public class focusedMediaContentPage extends ActionBarActivity
         
         this.startActivity(intent);
     }
+    
+	private class GetTask extends AsyncTask<Object, Void, JSONObject> 
+	{
+		@Override
+		protected JSONObject doInBackground(Object... params) 
+		{		
+			ClientResource res = new ClientResource(params[0].toString());
+			res.setMethod(Method.GET);
+			
+			Integer picId = (Integer)params[1];
+
+			JSONObject obj = JSONMessage.getCommentsFromDatabase(picId);
+			StringRepresentation stringRep = new StringRepresentation(obj.toString());
+			stringRep.setMediaType(MediaType.APPLICATION_JSON);
+			JSONObject o = null;
+			try {
+				Representation r = res.post(stringRep);
+				o = new JSONObject(r.getText());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return o;
+		}
+		
+		@Override
+	    protected void onPostExecute(JSONObject result) 
+		{
+			if(result == null)
+			{
+				//Something went wrong. We need to notify the user.
+				sendAlertFailure("We were unable to retrieve comments from the server at this time.");
+				return;
+			}	
+			
+			//Return the array of string representation pictures
+			String[] jsonComments = JSONMessage.getComments(result);
+
+			for(int i = 0; i < jsonComments.length; i++)
+			{
+				//We're at the end of the stream. Return.
+				if(jsonComments[i] == "null")
+					return;
+				
+				comments.add(jsonComments[i]);
+			}
+			
+			adapter.notifyDataSetChanged();
+	    }
+	}
+	
+	private void sendAlertFailure(final String msg)
+	{
+		final Context context = this;
+		((Activity) context).runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run() 
+			{
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+		 
+					// set title
+					alertDialogBuilder.setTitle("Something went wrong");
+		 
+					// set dialog message
+					alertDialogBuilder
+						.setMessage(msg)
+						.setCancelable(false)
+						.setPositiveButton("Okay",new DialogInterface.OnClickListener() 
+						{
+							public void onClick(DialogInterface dialog,int id) {
+							}
+						});
+
+						// create alert dialog
+						AlertDialog alertDialog = alertDialogBuilder.create();
+		 
+						// show it
+						alertDialog.show();
+			}
+		
+		});
+	}
 }
 

@@ -30,28 +30,57 @@ public class JSONMessage
 		return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length, o);  
 	} 
 	
-	private static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
-    // Raw height and width of image
-    final int height = options.outHeight;
-    final int width = options.outWidth;
-    int inSampleSize = 1;
+	private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) 
+	{
+	    // Raw height and width of image
+	    final int height = options.outHeight;
+	    final int width = options.outWidth;
+	    int inSampleSize = 1;
+	
+	    if (height > reqHeight || width > reqWidth) 
+	    {
+	
+	        final int halfHeight = height / 2;
+	        final int halfWidth = width / 2;
+	
+	        // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+	        // height and width larger than the requested height and width.
+	        while ((halfHeight / inSampleSize) > reqHeight
+	                && (halfWidth / inSampleSize) > reqWidth) 
+	        {
+	            inSampleSize *= 2;
+	        }
+	    }
 
-    if (height > reqHeight || width > reqWidth) {
-
-        final int halfHeight = height / 2;
-        final int halfWidth = width / 2;
-
-        // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-        // height and width larger than the requested height and width.
-        while ((halfHeight / inSampleSize) > reqHeight
-                && (halfWidth / inSampleSize) > reqWidth) {
-            inSampleSize *= 2;
-        }
-    }
-
-    return inSampleSize;
-}
+	    return inSampleSize;
+	}
+	
+	//FRONTEND
+	public static JSONObject commentToJson(Integer id, String comment, String user) {
+		JSONObject jo = new JSONObject();
+		try {
+			jo.put("POST", 1);
+			jo.put("ID", id);
+			jo.put("Comment", comment);
+			jo.put("User", user);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return jo;
+	}
+	
+	//FRONTEND
+	public static JSONObject getCommentsFromDatabase(Integer postID) {
+		JSONObject jo = new JSONObject();
+		try {
+			jo.put("GET", 1);
+			jo.put("Comment", 1);
+			jo.put("ID", postID);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return jo;
+	}
 
 	public static String encodeTobase64(Bitmap image, Boolean text)
  	{ 
@@ -455,8 +484,16 @@ public class JSONMessage
 	}
 	public static String[] getComments(JSONObject jo)
 	{	
-		try {
-			return (String[]) jo.get("Comment");
+		try
+		{
+			JSONArray jsonArray = (JSONArray) jo.get("Comment");
+			List<String> list = new ArrayList<String>();
+			for(int i = 0; i < jsonArray.length(); i++)
+			{
+				list.add(jsonArray.getString(i));
+			}
+			String[] arrayString = list.toArray(new String[list.size()]);
+			return arrayString;
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

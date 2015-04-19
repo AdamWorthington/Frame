@@ -26,8 +26,7 @@ public class PostCommentTask extends AsyncTask<Object, Void, Void>
 		String user = (String)params[2]; //This is the id
 		Integer Id = (Integer) params[3]; //This is the value of the vote +1 = upvote, -1 = downvote
 		
-		JSONObject obj = JSONMessage.clientComment(text, user, Id);
-		
+		JSONObject obj = JSONMessage.commentToJson(Id, text, user);
 		StringRepresentation stringRep = new StringRepresentation(
 				obj.toString());
 		stringRep.setMediaType(MediaType.APPLICATION_JSON);
