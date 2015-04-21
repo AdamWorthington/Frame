@@ -81,16 +81,14 @@
    	    android:layout_below="@+id/flag"
        android:clickable="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Comment"
-        android:id="@+id/button3"
-        android:layout_marginLeft="36dp"
-        android:layout_marginStart="36dp"
+	<ImageButton
+        android:id="@+id/commentButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_below="@+id/contentImage"
         android:layout_toRightOf="@+id/flag"
+        android:background="@null"
         android:onClick="writeComment"
-        android:layout_toEndOf="@+id/flag" />
+        android:src="@drawable/bubble" />
 
 </RelativeLayout>

@@ -157,8 +157,10 @@ public class focusedMediaContentPage extends ActionBarActivity
        	intVal += 1;
        	String newVal = String.valueOf(intVal);
        	contentRating.setText(newVal);
-       	if(intVal >= 0)
+       	if(intVal > 0)
        		contentRating.setTextColor(Color.GREEN);
+       	else if(intVal == 0)
+       		contentRating.setTextColor(Color.BLACK);
        	
        	TextView id = (TextView)rl.findViewById(R.id.nameOfView);
        	int intId = Integer.parseInt(id.getText().toString());
@@ -167,7 +169,7 @@ public class focusedMediaContentPage extends ActionBarActivity
        	thisContent.incrementRating();
        	thisContent.setHasBeenVoted(true);
        	
-		String user = "Craig";
+		String user = Singleton.getInstance().getDeviceId();
 		Integer Id = Integer.valueOf(intId);
 		Integer vote = Integer.valueOf(1);
     	
@@ -193,6 +195,8 @@ public class focusedMediaContentPage extends ActionBarActivity
        	contentRating.setText(newVal);
        	if(intVal < 0)
        		contentRating.setTextColor(Color.RED);
+       	else if(intVal == 0)
+       		contentRating.setTextColor(Color.BLACK);
        	
        	TextView id = (TextView)rl.findViewById(R.id.nameOfView);
        	int intId = Integer.parseInt(id.getText().toString());
@@ -201,7 +205,7 @@ public class focusedMediaContentPage extends ActionBarActivity
        	thisContent.decrementRating();
        	thisContent.setHasBeenVoted(true);
     	
-		String user = "Craig";
+		String user = Singleton.getInstance().getDeviceId();
 		Integer Id = Integer.valueOf(intId);
 		Integer vote = Integer.valueOf(-1);
 		
