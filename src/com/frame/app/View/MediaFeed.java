@@ -209,6 +209,9 @@ public class MediaFeed extends Fragment
 				if(pics[i] == "null")
 					return;
 				
+				if(dates[i] == "null")
+					continue;
+				
 				if(Singleton.getInstance().containsMediaContentWithId(ids[i]))
 				{
 					MediaContent c = Singleton.getInstance().getMediaContent(ids[i]);
