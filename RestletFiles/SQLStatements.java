@@ -891,10 +891,17 @@ public class SQLStatements {
 		PreparedStatement stmt = null;
 		int ret;
 		
-		String query = "UPDATE Media_Attributes "
-					 + "SET Votes = ? "
-					 + "WHERE ID = ?;";
-		
+		String query;
+		if (vote == 1) {
+			query = "UPDATE Media_Attributes "
+				  + "SET Votes = Votes + 1 "
+				  + "WHERE ID = ?;";
+		}
+		else if (vote == -1) {
+			query = "UPDATE Media_Attributes "
+			 	  + "SET Votes = Votes - 1 "
+				  + "WHERE ID = ?;";
+		}
 		try {
 			stmt = conn.prepareStatement(query);
 			stmt.setInt(1, vote);
