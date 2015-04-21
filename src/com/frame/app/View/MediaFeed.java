@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
@@ -37,8 +38,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.LruCache;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.format.DateFormat;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +64,8 @@ public class MediaFeed extends Fragment
 	private SwipeRefreshLayout swipe = null;
 	private MediaArrayAdapter adapter;
 	View root;
+	
+	private LruCache<String, Bitmap> mMemoryCache;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -98,7 +103,28 @@ public class MediaFeed extends Fragment
 			}
 		});
 		
+		//Setting up the cache.
+		final int maxMemory = (int)(Runtime.getRuntime().maxMemory() / 1024);
+		final int cacheSize = maxMemory / 8;
+		
+		mMemoryCache = new LruCache<String, Bitmap>(cacheSize){
+			protected int sizeOf(String key, Bitmap value)
+			{
+		           return value.getByteCount() /1024;
+			}
+		};
+		
 		return root;
+	}
+	
+	public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+	    if (getBitmapFromMemCache(key) == null) {
+	        mMemoryCache.put(key, bitmap);
+	    }
+	}
+
+	public Bitmap getBitmapFromMemCache(String key) {
+	    return mMemoryCache.get(key);
 	}
 	
 	@Override
@@ -185,7 +211,11 @@ public class MediaFeed extends Fragment
 					return;
 				
 				if(Singleton.getInstance().containsMediaContentWithId(ids[i]))
+				{
+					MediaContent c = Singleton.getInstance().getMediaContent(ids[i]);
+					c.setRating(ratings[i]);
 					continue;
+				}
 				
 				Bitmap b = JSONMessage.decodeBase64(pics[i]);
 				
@@ -202,6 +232,7 @@ public class MediaFeed extends Fragment
 				adapter.insert(newContent, insertIndex++);
 			}
 	    }
+		
 	}
 	
 	private void sendAlertFailure(final String msg)

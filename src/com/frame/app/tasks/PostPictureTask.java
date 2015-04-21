@@ -37,6 +37,7 @@ public class PostPictureTask extends AsyncTask<Object, Void, Bitmap>
 
 		try {
 			res.post(stringRep).write(System.out);
+			picture.recycle();
 			Log.d("POSTPICTURE", "SENT");
 		} catch (Exception e) {
 			e.printStackTrace();

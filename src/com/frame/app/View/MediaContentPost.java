@@ -6,13 +6,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.location.Location;
 import android.location.LocationManager;
@@ -63,6 +66,12 @@ public class MediaContentPost extends ActionBarActivity
 		setContentView(R.layout.activity_camera_preview);
 		
 		camera = getCameraInstance(0);
+		Parameters params = camera.getParameters();
+		List<Camera.Size> sizes = params.getSupportedPictureSizes();
+		int num = sizes.size();
+		if(num > 1)
+			params.setPictureSize(sizes.get(num - 2).width, sizes.get(num - 2).height);
+		camera.setParameters(params);
 		preview = new CameraPreview(this, camera);
 		FrameLayout fPreview = (FrameLayout) findViewById(R.id.camera_preview);
 		fPreview.addView(preview, fPreview.getChildCount() - 1);
@@ -102,7 +111,12 @@ public class MediaContentPost extends ActionBarActivity
 	            FileOutputStream fos = new FileOutputStream(pictureFile);
 	            fos.write(data);
 	            fos.close();
-                picture = BitmapFactory.decodeByteArray(data, 0, data.length);
+	            Bitmap temp = BitmapFactory.decodeByteArray(data, 0, data.length);
+                Matrix m = new Matrix();
+                m.postRotate(90);
+                int widrth = temp.getWidth();
+                picture = Bitmap.createBitmap(temp, 0, 0, temp.getWidth(), temp.getHeight(), m, true);
+                temp.recycle();
 	        } catch (FileNotFoundException e) {
 	            Log.d("File Create", "File not found: " + e.getMessage());
 	        } catch (IOException e) {
@@ -358,7 +372,7 @@ public class MediaContentPost extends ActionBarActivity
 		
 		new PostPictureTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
 				picture, latitude, longitude, Singleton.getInstance().getDeviceId(), tags, false);
-		
+				
 		//Launch the intent to return to the main page
         Intent intent = new Intent(this, MainPage.class);
         this.startActivity(intent);
@@ -375,6 +389,7 @@ public class MediaContentPost extends ActionBarActivity
 	{
 		FrameLayout fPreview = (FrameLayout) findViewById(R.id.camera_preview);
 		fPreview.removeView(preview);
+		picture.recycle();
 		releaseCamera();
 		int camId = (frontFacing) ? 1 : 0;
 		camera = getCameraInstance(camId);

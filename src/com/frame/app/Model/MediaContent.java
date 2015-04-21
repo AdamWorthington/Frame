@@ -83,6 +83,11 @@ public class MediaContent
 		this.rating++;
 	}
 	
+	public void setRating(int value)
+	{
+		this.rating = value;
+	}
+	
 	public void decrementRating()
 	{
 		this.rating--;
