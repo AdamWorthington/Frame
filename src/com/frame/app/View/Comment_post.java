@@ -79,11 +79,17 @@ public class Comment_post extends ActionBarActivity {
     	
         EditText editText = (EditText) findViewById(R.id.editText);
         String message = editText.getText().toString();
-				
-		new PostCommentTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
-				message, id, picId);
+        
+        //if there is no text, don't do a post.
+        if(message.isEmpty())
+        	finish();
+        else
+        {
+    		new PostCommentTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
+    				message, id, picId);
 
-		//Removes the activity from the back-stack.
-		finish();
+    		//Removes the activity from the back-stack.
+    		finish();
+        }
     }
 }

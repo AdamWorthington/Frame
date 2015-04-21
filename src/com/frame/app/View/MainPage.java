@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -132,6 +133,7 @@ public class MainPage extends ActionBarActivity
     {
     	//Disable the button
     	view.setEnabled(false);
+    	((ImageView) view).setImageResource(R.drawable.flagfaded);
     	RelativeLayout rl = (RelativeLayout)view.getParent();
 
        	TextView id = (TextView)rl.findViewById(R.id.nameOfView);
@@ -140,13 +142,15 @@ public class MainPage extends ActionBarActivity
        	MediaContent thisContent = Singleton.getInstance().getMediaContent(intId);
        	thisContent.setHasBeenFlagged(true);
     	
-    	String user = "Craig";
+    	String user = Singleton.getInstance().getDeviceId();
     	Integer Id = Integer.valueOf(intId);
     	
     	Toast.makeText(this, "Content Flagged", Toast.LENGTH_LONG).show();
     	
 		new FlagPostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
 				user, Id);
+		
+		//Singleton.getInstance().addFlaggedPicture(Id);
     }
     
     public void sendUpvote(View view)
@@ -156,6 +160,8 @@ public class MainPage extends ActionBarActivity
     	RelativeLayout rl = (RelativeLayout)view.getParent();
     	ImageButton downvote = (ImageButton)rl.findViewById(R.id.downvote);
        	downvote.setEnabled(false);
+    	((ImageView) view).setImageResource(R.drawable.upvotedfaded);
+    	downvote.setImageResource(R.drawable.downvotefaded);
        	
        	TextView contentRating = (TextView)rl.findViewById(R.id.rating);
        	String val = (String) contentRating.getText();
@@ -173,7 +179,7 @@ public class MainPage extends ActionBarActivity
        	thisContent.incrementRating();
        	thisContent.setHasBeenVoted(true);
        	
-		String user = "Craig";
+		String user = Singleton.getInstance().getDeviceId();
 		Integer Id = Integer.valueOf(intId);
 		Integer vote = Integer.valueOf(1);
 		
@@ -190,6 +196,8 @@ public class MainPage extends ActionBarActivity
     	RelativeLayout rl = (RelativeLayout)view.getParent();
     	ImageButton upvote = (ImageButton)rl.findViewById(R.id.upvote);
     	upvote.setEnabled(false);
+    	((ImageView) view).setImageResource(R.drawable.downvotefaded);
+    	upvote.setImageResource(R.drawable.upvotedfaded);
     	
        	TextView contentRating = (TextView)rl.findViewById(R.id.rating);
        	String val = (String) contentRating.getText();
@@ -207,7 +215,7 @@ public class MainPage extends ActionBarActivity
        	thisContent.decrementRating();
        	thisContent.setHasBeenVoted(true);
     	
-		String user = "Craig";
+		String user = Singleton.getInstance().getDeviceId();
 		Integer Id = Integer.valueOf(intId);
 		Integer vote = Integer.valueOf(-1);
 		

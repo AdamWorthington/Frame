@@ -155,7 +155,6 @@ public class MediaFeed extends Fragment
 				try {
 					o.put("Date", "no date");
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				return o;

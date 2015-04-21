@@ -12,6 +12,7 @@ public class Singleton
 	private static Singleton instance;
 	
 	private ArrayList<MediaContent> mediaFeed = new ArrayList<MediaContent>();
+	private ArrayList<Integer> flaggedPictures = new ArrayList<Integer>();
 	
 	private String deviceId;
 
@@ -33,6 +34,26 @@ public class Singleton
 	
 	 private Singleton()
 	 {
+	 }
+	 
+	 public void addFlaggedPicture(Integer Id)
+	 {
+		 for(int i = 0; i < mediaFeed.size(); i++)
+		 {
+			 if(mediaFeed.get(i).getDbId() == Id.intValue())
+			 {
+				 mediaFeed.remove(i);
+				 flaggedPictures.add(Id);
+			 }
+		 }
+	 }
+	 
+	 public boolean isInFlaggedPictures(Integer Id)
+	 {
+		 if(flaggedPictures.contains(Id))
+			 return true;
+		 else
+			 return false;
 	 }
 	
 	 public ArrayList<MediaContent> getMediaFeed()

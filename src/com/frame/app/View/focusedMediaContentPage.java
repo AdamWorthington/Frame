@@ -92,20 +92,35 @@ public class focusedMediaContentPage extends ActionBarActivity
        	       	
 	    ImageButton upvote = (ImageButton) findViewById(R.id.upvote);
 	    if(thisContent.getHasBeenVoted())
+	    {
 	    	upvote.setEnabled(false);
+	    	upvote.setImageResource(R.drawable.upvotedfaded);
+	    }
 	    
 	    ImageButton downvote = (ImageButton) findViewById(R.id.downvote);
 	    if(thisContent.getHasBeenVoted())
-	    	downvote.setEnabled(false);  
+	    {
+	    	downvote.setEnabled(false); 
+	    	downvote.setImageResource(R.drawable.downvotefaded);
+	    }
 	    
 	    ImageButton flag = (ImageButton) findViewById(R.id.flag);
 	    if(thisContent.getHasBeenFlagged())
+	    {
 	    	flag.setEnabled(false);  
+	    	flag.setImageResource(R.drawable.flagfaded);
+	    }
 		
 	    comments = new ArrayList<String>();
 		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, 
 				comments);
 		listview.setAdapter(adapter);
+	}
+	
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
 		
 		refreshComments();
 	}
@@ -126,8 +141,10 @@ public class focusedMediaContentPage extends ActionBarActivity
     	RelativeLayout rl = (RelativeLayout)view.getParent();
     	ImageButton flag = (ImageButton)rl.findViewById(R.id.flag);
     	flag.setEnabled(false);
+    	((ImageView) view).setImageResource(R.drawable.flagfaded);
+
        	
-    	String user = "Craig";
+    	String user = Singleton.getInstance().getDeviceId();
     	
        	TextView id = (TextView)rl.findViewById(R.id.nameOfView);
        	int intId = Integer.parseInt(id.getText().toString());
@@ -141,6 +158,8 @@ public class focusedMediaContentPage extends ActionBarActivity
     	
 		new FlagPostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
 				user, Id);
+		
+		//Singleton.getInstance().addFlaggedPicture(Id);
     }
     
     public void sendUpvote(View view)
@@ -150,6 +169,8 @@ public class focusedMediaContentPage extends ActionBarActivity
     	RelativeLayout rl = (RelativeLayout)view.getParent();
     	ImageButton downvote = (ImageButton)rl.findViewById(R.id.downvote);
        	downvote.setEnabled(false);
+    	((ImageView) view).setImageResource(R.drawable.upvotedfaded);
+    	downvote.setImageResource(R.drawable.downvotefaded);
        	
        	TextView contentRating = (TextView)rl.findViewById(R.id.rating);
        	String val = (String) contentRating.getText();
@@ -186,6 +207,8 @@ public class focusedMediaContentPage extends ActionBarActivity
     	RelativeLayout rl = (RelativeLayout)view.getParent();
     	ImageButton upvote = (ImageButton)rl.findViewById(R.id.upvote);
     	upvote.setEnabled(false);
+    	((ImageView) view).setImageResource(R.drawable.downvotefaded);
+    	upvote.setImageResource(R.drawable.upvotedfaded);
     	
        	TextView contentRating = (TextView)rl.findViewById(R.id.rating);
        	String val = (String) contentRating.getText();
@@ -215,7 +238,6 @@ public class focusedMediaContentPage extends ActionBarActivity
 				user, Id, vote);
     }
     
-	
 	/* Given a timestamp, will calculate the difference between NOW and the stamp.
 	 * It will round to either the nearest seconds, minutes, or hours.
 	 * For example: If the timestamp difference is less than a minute, the string will be 'x seconds' 
@@ -295,6 +317,8 @@ public class focusedMediaContentPage extends ActionBarActivity
 			
 			//Return the array of string representation pictures
 			String[] jsonComments = JSONMessage.getComments(result);
+			
+			adapter.clear();
 
 			for(int i = 0; i < jsonComments.length; i++)
 			{
