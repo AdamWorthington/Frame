@@ -113,7 +113,11 @@ public class MediaContentPost extends ActionBarActivity
 	            fos.close();
 	            Bitmap temp = BitmapFactory.decodeByteArray(data, 0, data.length);
                 Matrix m = new Matrix();
-                m.postRotate(90);
+                boolean camId = (frontFacing) ? true : false;
+                if(camId)
+                	m.postRotate(-90);
+                else
+                	m.postRotate(90);
                 int widrth = temp.getWidth();
                 picture = Bitmap.createBitmap(temp, 0, 0, temp.getWidth(), temp.getHeight(), m, true);
                 temp.recycle();

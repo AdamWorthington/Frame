@@ -545,6 +545,7 @@ public class JSONMessage {
 		
 		try
 		{
+			jo.put("POST", 1);
 			jo.put("Vote", vote);
 			jo.put("ID", id);
 			jo.put("Prev", prev);
