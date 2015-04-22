@@ -8,7 +8,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -33,6 +35,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -54,6 +57,7 @@ public class MediaContentPost extends ActionBarActivity
 	public static final int MEDIA_TYPE_VIDEO = 2;
 	private boolean frontFacing = false;
 	private boolean isRecording;
+    String[] tags = {""};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -360,8 +364,6 @@ public class MediaContentPost extends ActionBarActivity
 		//Calling this method will release camera and media recorder resources.
 		onPause();
 		
-		String[] tags = {""};
-		
 		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE); 
 		Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		
@@ -402,5 +404,53 @@ public class MediaContentPost extends ActionBarActivity
 		
 		changeModes(false);
 	}
+
+    public void addTags(View view){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("Add Tags");
+        alert.setMessage("You may enter tags for your photo if you wish to!");
+
+        // Set an EditText view to get user input
+        final EditText input = new EditText(this);
+        alert.setView(input);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String value = input.getText().toString();
+                // Do something with value!
+                //System.out.println(value);
+                int numberOfCommas = 0;
+                int lastValue = 0;
+                int newValue = 0;
+                for (int i =0; i<value.length(); i++){
+                    if(value.charAt(i) == ','){
+                        numberOfCommas++;
+                    }
+                }
+                tags = new String[numberOfCommas];
+                int counter = 0;
+
+                for(int i=0;i<value.length(); i++) {
+                    if(value.charAt(i)==','){
+                        tags[counter] = value.substring(lastValue,i);
+                        lastValue = i+2;
+                        counter++;
+                    }
+                }
+                for(int i =0; i<counter; i++){
+                    System.out.println(tags[i]);
+                }
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+
+        alert.show();
+    }
 }
 
