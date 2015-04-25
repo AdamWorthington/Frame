@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -10,15 +9,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_weight="1">
-
-      <Button
-          style="?android:attr/buttonStyleSmall"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="Add Tags"
-          android:id="@+id/button3"
-          android:onClick="addTags"
-          android:layout_gravity="center_horizontal|bottom" />
 
   </FrameLayout>
 	
@@ -58,7 +48,19 @@
         android:src="@android:drawable/ic_menu_send"
         android:text="Send"
         android:visibility="invisible" />
-
+    
+    <ImageButton
+        android:id="@+id/button_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@null"
+        android:onClick="addTags"
+        android:padding="20dp"
+        android:src="@android:drawable/ic_menu_info_details"
+        android:text="Add"
+        android:visibility="invisible" />
 
     <ImageButton
         android:id="@+id/button_cancel"
@@ -67,7 +69,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:background="@null"
-        android:padding="12dp"
+        android:padding="20dp"
         android:onClick="cancelPostPreview"
         android:src="@android:drawable/ic_menu_delete"
         android:text="Cancel"

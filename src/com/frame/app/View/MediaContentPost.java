@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -57,7 +59,7 @@ public class MediaContentPost extends ActionBarActivity
 	public static final int MEDIA_TYPE_VIDEO = 2;
 	private boolean frontFacing = false;
 	private boolean isRecording;
-    String[] tags = {""};
+    ArrayList<String> tags = new ArrayList<String>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
@@ -267,6 +269,9 @@ public class MediaContentPost extends ActionBarActivity
 			button_send.setVisibility(View.VISIBLE);
 			ImageButton button_cancel = (ImageButton) findViewById(R.id.button_cancel);
 			button_cancel.setVisibility(View.VISIBLE);
+			
+			ImageButton button_tags = (ImageButton) findViewById(R.id.button_tag);
+			button_tags.setVisibility(View.VISIBLE);
 		}
 		else
 		{
@@ -281,6 +286,9 @@ public class MediaContentPost extends ActionBarActivity
 			button_changeCam.setVisibility(View.VISIBLE);
 			ImageButton button_capture = (ImageButton) findViewById(R.id.button_capture);
 			button_capture.setVisibility(View.VISIBLE);
+			
+			ImageButton button_tags = (ImageButton) findViewById(R.id.button_tag);
+			button_tags.setVisibility(View.GONE);
 		}
 	}
 	
@@ -375,9 +383,10 @@ public class MediaContentPost extends ActionBarActivity
 		double latitude = location.getLatitude();
 		
 		String id = Singleton.getInstance().getDeviceId();
+		String[] tagsArray = tags.toArray(new String[tags.size()]);
 		
 		new PostPictureTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
-				picture, latitude, longitude, Singleton.getInstance().getDeviceId(), tags, false);
+				picture, latitude, longitude, Singleton.getInstance().getDeviceId(), tagsArray, false);
 				
 		//Launch the intent to return to the main page
         Intent intent = new Intent(this, MainPage.class);
@@ -405,41 +414,31 @@ public class MediaContentPost extends ActionBarActivity
 		changeModes(false);
 	}
 
-    public void addTags(View view){
+    public void addTags(View view)
+    {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
         alert.setTitle("Add Tags");
-        alert.setMessage("You may enter tags for your photo if you wish to!");
+        alert.setMessage("Separate tags by '#'");
 
         // Set an EditText view to get user input
         final EditText input = new EditText(this);
         alert.setView(input);
 
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() 
+        {
+            public void onClick(DialogInterface dialog, int whichButton)
+            {
                 String value = input.getText().toString();
-                // Do something with value!
-                //System.out.println(value);
-                int numberOfCommas = 0;
-                int lastValue = 0;
-                int newValue = 0;
-                for (int i =0; i<value.length(); i++){
-                    if(value.charAt(i) == ','){
-                        numberOfCommas++;
-                    }
-                }
-                tags = new String[numberOfCommas];
-                int counter = 0;
-
-                for(int i=0;i<value.length(); i++) {
-                    if(value.charAt(i)==','){
-                        tags[counter] = value.substring(lastValue,i);
-                        lastValue = i+2;
-                        counter++;
-                    }
-                }
-                for(int i =0; i<counter; i++){
-                    System.out.println(tags[i]);
+                tags = new ArrayList<String>(Arrays.asList(value.split("#")));
+                
+                for(int i = 0; i < tags.size(); i++)
+                {
+                	String cur = tags.get(i);
+                	
+                	//If it's an empty or whitespace tag, remove it. If it's length > 50, remove it
+                	if(cur.length() > 50 || cur.trim().isEmpty())
+                		tags.remove(i);
                 }
             }
         });

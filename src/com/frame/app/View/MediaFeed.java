@@ -11,6 +11,7 @@ import java.util.TimeZone;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
@@ -114,6 +115,8 @@ public class MediaFeed extends Fragment
 			}
 		};
 		
+		new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get");
+		
 		return root;
 	}
 	
@@ -166,6 +169,7 @@ public class MediaFeed extends Fragment
 			
 			JSONObject obj = JSONMessage.getPosts(bottomId, "", Double.valueOf(latitude), Double.valueOf(longitude), 0);
 			StringRepresentation stringRep = new StringRepresentation(obj.toString());
+
 			stringRep.setMediaType(MediaType.APPLICATION_JSON);
 			JSONObject o = null;
 			try {

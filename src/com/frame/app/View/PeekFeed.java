@@ -17,9 +17,9 @@ public class PeekFeed extends Fragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		View root = inflater.inflate(R.layout.fragment_media_feed, container, false);
+		View root = inflater.inflate(R.layout.fragment_other, container, false);
 
-		final ListView listview = (ListView) root.findViewById(R.id.mediaFeedListView);
+		/*final ListView listview = (ListView) root.findViewById(R.id.mediaFeedListView);
 		String[] testVals = new String[] { "Ferrari", "Lamborghini", "Toyota", "Nissan",
 				"Honda", "Ford", "Chevy", "GM", "Fiat", "Bugatti",
 				"Infiniti", "Lexus", "BMW", "Lincoln", "Acura"};
@@ -32,7 +32,8 @@ public class PeekFeed extends Fragment
 
 		final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_list_item_1, list);
 		listview.setAdapter(adapter);
-
+		*/
+		
 		return root;
 	}
 }
