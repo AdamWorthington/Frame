@@ -41,10 +41,14 @@ import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.LruCache;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.SearchView;
 import android.text.format.DateFormat;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -69,8 +73,44 @@ public class MediaFeed extends Fragment
 	private LruCache<String, Bitmap> mMemoryCache;
 	
 	@Override
+	public void onCreate(Bundle savedInstanceState) 
+	{
+	    super.onCreate(savedInstanceState);
+	    setHasOptionsMenu(true);
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	    // TODO Add your menu entries here
+	    super.onCreateOptionsMenu(menu, inflater);
+	    
+	    MenuItem search = menu.findItem(R.id.action_search);
+	    SearchView searchView = (SearchView) search.getActionView();
+	    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener( ) 
+	    {
+		    @Override
+		    public boolean onQueryTextSubmit(String query) 
+		    {
+		    	new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", query);
+		        return true;
+		    }
+
+			@Override
+			public boolean onQueryTextChange(String arg0) 
+			{
+				return false;
+			}
+		});
+	}
+	
+
+	
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{				
+		super.onCreateView(inflater, container, savedInstanceState);
+		
+		setHasOptionsMenu(true);
 		View root = inflater.inflate(R.layout.fragment_media_feed, container, false);
 		this.root = root;
 
@@ -100,7 +140,7 @@ public class MediaFeed extends Fragment
 			@Override
 			public void onRefresh() 
 			{
-				new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get");
+				new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "");
 			}
 		});
 		
@@ -115,11 +155,37 @@ public class MediaFeed extends Fragment
 			}
 		};
 		
-		new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get");
+		//new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "");
 		
 		return root;
 	}
 	
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) 
+	{
+	    menu.findItem(R.id.action_search).setVisible(true);
+	    super.onPrepareOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{
+	    switch (item.getItemId()) 
+	    {
+		    case R.id.action_search:
+		        return true;
+		    default:
+		        break;
+	    }
+
+	    return false;
+	}
+	
+	void handleTagsSearch()
+	{
+		
+	}
+
 	public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
 	    if (getBitmapFromMemCache(key) == null) {
 	        mMemoryCache.put(key, bitmap);
@@ -167,7 +233,9 @@ public class MediaFeed extends Fragment
 			double latitude = location.getLatitude();
 			int bottomId = -1; //Indicates that we want the latest.
 			
-			JSONObject obj = JSONMessage.getPosts(bottomId, "", Double.valueOf(latitude), Double.valueOf(longitude), 0);
+			String filter = (String)params[1];
+			
+			JSONObject obj = JSONMessage.getPosts(bottomId, filter, Double.valueOf(latitude), Double.valueOf(longitude), 0);
 			StringRepresentation stringRep = new StringRepresentation(obj.toString());
 
 			stringRep.setMediaType(MediaType.APPLICATION_JSON);

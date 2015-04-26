@@ -17,14 +17,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -113,9 +117,23 @@ public class MainPage extends ActionBarActivity
 	    // Inflate the menu items for use in the action bar
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.main, menu);
+	   
 	    return super.onCreateOptionsMenu(menu);
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{
+	    switch (item.getItemId()) {
+	    case R.id.action_search:
+	        return false;
+	    default:
+	        break;
+	    }
 
+	    return false;
+	}
+	
     public void changePage(View view){
         Intent intent;
         intent = new Intent(this,Text_post.class);
@@ -223,10 +241,6 @@ public class MainPage extends ActionBarActivity
     	
 		new VotePostTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
 				user, Id, vote);
-    }
-    
-    public void getReturnJSON()
-    {
     }
 
 }
