@@ -98,7 +98,7 @@ public class JSONMessage
 
 	
 	//create json media messages to be sent to client 
- 	public static JSONObject clientPictureToJson(Bitmap pic, Double lat, Double lon, String user, String[] tags, Boolean text)
+ 	public static JSONObject clientPictureToJson(Bitmap pic, Double lat, Double lon, String user, String tags, Boolean text)
  	{ 
  		JSONObject jo = new JSONObject(); 
  		try 

@@ -27,10 +27,11 @@ public class PostPictureTask extends AsyncTask<Object, Void, Bitmap>
 		Double latitude = (Double) params[2];
 		Double longitude = (Double) params[3];
 		String user = (String) params[4];
-		String[] tags = (String[]) params[5];
+		//String[] tags = (String[]) params[5];
+        String tags = (String) params[5];
 
-		
-		JSONObject obj = JSONMessage.clientPictureToJson(picture, latitude.doubleValue(), longitude.doubleValue(), user, tags, false);
+
+        JSONObject obj = JSONMessage.clientPictureToJson(picture, latitude.doubleValue(), longitude.doubleValue(), user, tags, false);
 		StringRepresentation stringRep = new StringRepresentation(
 				obj.toString());
 		stringRep.setMediaType(MediaType.APPLICATION_JSON);

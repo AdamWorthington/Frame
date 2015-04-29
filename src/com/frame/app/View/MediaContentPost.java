@@ -53,7 +53,7 @@ public class MediaContentPost extends ActionBarActivity
 	private Camera camera;
 	private MediaRecorder mediaRecorder;
 	private CameraPreview preview;
-
+    String tags1;
     private Bitmap picture;
 	public static final int MEDIA_TYPE_IMAGE = 1;
 	public static final int MEDIA_TYPE_VIDEO = 2;
@@ -386,7 +386,7 @@ public class MediaContentPost extends ActionBarActivity
 		String[] tagsArray = tags.toArray(new String[tags.size()]);
 		
 		new PostPictureTask().execute("http://1-dot-august-clover-86805.appspot.com/Post", 
-				picture, latitude, longitude, Singleton.getInstance().getDeviceId(), tagsArray, false);
+				picture, latitude, longitude, Singleton.getInstance().getDeviceId(), tags1, false);
 				
 		//Launch the intent to return to the main page
         Intent intent = new Intent(this, MainPage.class);
@@ -430,6 +430,7 @@ public class MediaContentPost extends ActionBarActivity
             public void onClick(DialogInterface dialog, int whichButton)
             {
                 String value = input.getText().toString();
+                tags1 = value;
                 tags = new ArrayList<String>(Arrays.asList(value.split("#")));
                 
                 for(int i = 0; i < tags.size(); i++)
