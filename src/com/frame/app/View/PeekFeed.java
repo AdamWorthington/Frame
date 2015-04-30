@@ -141,7 +141,7 @@ public class PeekFeed extends Fragment
 				
 				JSONObject o = new JSONObject();
 				try {
-					o.put("Date", "no date");
+					o.put("ID", -1);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -184,11 +184,11 @@ public class PeekFeed extends Fragment
 				sendAlertFailure("We were unable to retrieve any data from the server at this time.");
 				return;
 			}
-			
-			if(JSONMessage.clientGetDate(result)[0] == "no date")
+						
+			if(JSONMessage.getID(result) == -1)
 			{
 				//Indicates an error.
-				sendAlertFailure("We couldn't find your location. Perhaps your GPS is turned off?");
+				sendAlertFailure("We couldn't find that location. Did you spell the address correctly?");
 				return;
 			}
 			
