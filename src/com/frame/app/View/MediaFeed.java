@@ -102,7 +102,8 @@ public class MediaFeed extends Fragment
 			}
 		});
 	}
-	
+
+
 
 	
 	@Override
@@ -164,7 +165,10 @@ public class MediaFeed extends Fragment
 	public void onPrepareOptionsMenu(Menu menu) 
 	{
 	    menu.findItem(R.id.action_search).setVisible(true);
-	    super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.action_new).setVisible(true);
+        menu.findItem(R.id.action_top).setVisible(true);
+
+        super.onPrepareOptionsMenu(menu);
 	}
 	
 	@Override
@@ -174,6 +178,14 @@ public class MediaFeed extends Fragment
 	    {
 		    case R.id.action_search:
 		        return true;
+
+            case R.id.action_top:
+                return true;
+
+            case R.id.action_new:
+                return true;
+
+
 		    default:
 		        break;
 	    }

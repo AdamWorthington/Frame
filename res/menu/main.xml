@@ -3,10 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.frame.MainActivity" >
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_new"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
+        android:title="New"
+        android:visible="false"
+        app:showAsAction="ifRoom|collapseActionView"/>
+
+    <item
+        android:id="@+id/action_top"
+        android:orderInCategory="100"
+        android:title="Top Rated"
+        android:visible="false"
+        app:showAsAction="ifRoom|collapseActionView"/>
     
    <item android:id="@+id/action_search"
           android:title="@string/action_search"
