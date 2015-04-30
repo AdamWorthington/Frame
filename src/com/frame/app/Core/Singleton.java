@@ -12,6 +12,7 @@ public class Singleton
 	private static Singleton instance;
 	
 	private ArrayList<MediaContent> mediaFeed = new ArrayList<MediaContent>();
+	private ArrayList<MediaContent> peekmediaFeed = new ArrayList<MediaContent>();
 	private ArrayList<Integer> flaggedPictures = new ArrayList<Integer>();
 	
 	private String deviceId;
@@ -59,6 +60,11 @@ public class Singleton
 	 public ArrayList<MediaContent> getMediaFeed()
 	 {
 		 return mediaFeed;
+	 }
+	 
+	 public ArrayList<MediaContent> getPeekMediaFeed()
+	 {
+		 return peekmediaFeed;
 	 }
 	 
 	 public String getDeviceId()

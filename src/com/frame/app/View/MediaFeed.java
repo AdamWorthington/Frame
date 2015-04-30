@@ -40,6 +40,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.LruCache;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.text.format.DateFormat;
@@ -49,6 +50,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -68,6 +70,8 @@ public class MediaFeed extends Fragment
 	private ListView listview;
 	private SwipeRefreshLayout swipe = null;
 	private MediaArrayAdapter adapter;
+	private MenuItem searchItem;
+	private int sortVal = 0;
 	View root;
 	
 	private LruCache<String, Bitmap> mMemoryCache;
@@ -85,13 +89,16 @@ public class MediaFeed extends Fragment
 	    super.onCreateOptionsMenu(menu, inflater);
 	    
 	    MenuItem search = menu.findItem(R.id.action_search);
+	    searchItem = search;
 	    SearchView searchView = (SearchView) search.getActionView();
 	    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener( ) 
 	    {
 		    @Override
 		    public boolean onQueryTextSubmit(String query) 
 		    {
-		    	new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", query);
+		    	swipe.setRefreshing(true);
+		    	//MenuItemCompat.collapseActionView(searchItem);
+		    	new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", query, sortVal);
 		        return true;
 		    }
 
@@ -101,6 +108,23 @@ public class MediaFeed extends Fragment
 				return false;
 			}
 		});
+
+	    MenuItem sort = menu.findItem(R.id.action_sort);
+	    sort.setOnMenuItemClickListener(new OnMenuItemClickListener(){
+			@Override
+			public boolean onMenuItemClick(MenuItem item) 
+			{
+				if(sortVal == 1)
+					sortVal = 0;
+				else
+					sortVal = 1;
+				
+				new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "", sortVal);
+				
+				return false;
+			}
+	    	
+	    });
 	}
 	
 
@@ -127,6 +151,7 @@ public class MediaFeed extends Fragment
 		        
 		        //Load the data that this page will be displaying
 		        intent.putExtra("Position", position);
+		        intent.putExtra("Interactable", true);
 		        
 		        getActivity().startActivity(intent);
 			}
@@ -140,7 +165,7 @@ public class MediaFeed extends Fragment
 			@Override
 			public void onRefresh() 
 			{
-				new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "");
+				new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "", sortVal);
 			}
 		});
 		
@@ -155,7 +180,7 @@ public class MediaFeed extends Fragment
 			}
 		};
 		
-		//new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "");
+		//new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "", sortVal);
 		
 		return root;
 	}
@@ -164,6 +189,7 @@ public class MediaFeed extends Fragment
 	public void onPrepareOptionsMenu(Menu menu) 
 	{
 	    menu.findItem(R.id.action_search).setVisible(true);
+	    menu.findItem(R.id.action_sort).setVisible(true);
 	    super.onPrepareOptionsMenu(menu);
 	}
 	
@@ -174,6 +200,8 @@ public class MediaFeed extends Fragment
 	    {
 		    case R.id.action_search:
 		        return true;
+		    case R.id.action_sort:
+		    	return true;
 		    default:
 		        break;
 	    }
@@ -234,8 +262,9 @@ public class MediaFeed extends Fragment
 			int bottomId = -1; //Indicates that we want the latest.
 			
 			String filter = (String)params[1];
+			int sort = ((Integer)params[2]).intValue();
 			
-			JSONObject obj = JSONMessage.getPosts(bottomId, filter, Double.valueOf(latitude), Double.valueOf(longitude), 0);
+			JSONObject obj = JSONMessage.getPosts(bottomId, filter, Double.valueOf(latitude), Double.valueOf(longitude), sort);
 			StringRepresentation stringRep = new StringRepresentation(obj.toString());
 
 			stringRep.setMediaType(MediaType.APPLICATION_JSON);
@@ -288,6 +317,7 @@ public class MediaFeed extends Fragment
 				{
 					MediaContent c = Singleton.getInstance().getMediaContent(ids[i]);
 					c.setRating(ratings[i]);
+					adapter.notifyDataSetChanged();
 					continue;
 				}
 				
@@ -304,6 +334,7 @@ public class MediaFeed extends Fragment
 				}
 				MediaContent newContent = new MediaContent(false, ids[i].intValue(), date, b, ratings[i].intValue());
 				adapter.insert(newContent, insertIndex++);
+				adapter.notifyDataSetChanged();
 			}
 	    }
 		

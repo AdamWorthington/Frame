@@ -127,6 +127,8 @@ public class MainPage extends ActionBarActivity
 	    switch (item.getItemId()) {
 	    case R.id.action_search:
 	        return false;
+	    case R.id.action_sort:
+	    	return false;
 	    default:
 	        break;
 	    }

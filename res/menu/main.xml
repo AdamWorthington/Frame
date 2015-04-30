@@ -14,4 +14,10 @@
           android:visible="false"
           app:showAsAction="ifRoom|collapseActionView"
           app:actionViewClass="android.support.v7.widget.SearchView" />
+   
+      <item android:id="@+id/action_sort"
+          android:title="sort"
+          android:icon="@android:drawable/ic_menu_sort_by_size"
+          android:visible="false"
+          app:showAsAction="ifRoom|collapseActionView" />
 </menu>

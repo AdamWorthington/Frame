@@ -66,6 +66,7 @@ public class focusedMediaContentPage extends ActionBarActivity
 		//Get the data passed in from the other activity.
 		Intent intent = getIntent();
 		int pos = intent.getIntExtra("Position", 0);
+		boolean interactable = intent.getBooleanExtra("Interactable", true);
 		
        	MediaContent thisContent = Singleton.getInstance().getMediaContentByPos(pos);
 		
@@ -91,24 +92,31 @@ public class focusedMediaContentPage extends ActionBarActivity
        	id.setText(Integer.toString(thisContent.getDatabaseId()));
        	       	
 	    ImageButton upvote = (ImageButton) findViewById(R.id.upvote);
-	    if(thisContent.getHasBeenVoted())
+	    if(thisContent.getHasBeenVoted() || !interactable)
 	    {
 	    	upvote.setEnabled(false);
 	    	upvote.setImageResource(R.drawable.upvotedfaded);
 	    }
 	    
 	    ImageButton downvote = (ImageButton) findViewById(R.id.downvote);
-	    if(thisContent.getHasBeenVoted())
+	    if(thisContent.getHasBeenVoted()|| !interactable)
 	    {
 	    	downvote.setEnabled(false); 
 	    	downvote.setImageResource(R.drawable.downvotefaded);
 	    }
 	    
 	    ImageButton flag = (ImageButton) findViewById(R.id.flag);
-	    if(thisContent.getHasBeenFlagged())
+	    if(thisContent.getHasBeenFlagged()|| !interactable)
 	    {
 	    	flag.setEnabled(false);  
 	    	flag.setImageResource(R.drawable.flagfaded);
+	    }
+	    
+	    ImageButton comment = (ImageButton) findViewById(R.id.commentButton);
+	    if(!interactable)
+	    {
+	    	comment.setEnabled(false);
+	    	//comment.setImageResource(R.drawable.flagfaded);
 	    }
 		
 	    comments = new ArrayList<String>();
