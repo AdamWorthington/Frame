@@ -180,9 +180,11 @@ public class MediaFeed extends Fragment
 		        return true;
 
             case R.id.action_top:
+                new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "", 1);
                 return true;
 
             case R.id.action_new:
+                new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "");
                 return true;
 
 
@@ -243,7 +245,7 @@ public class MediaFeed extends Fragment
 			
 			double longitude = location.getLongitude();
 			double latitude = location.getLatitude();
-			int bottomId = -1; //Indicates that we want the latest.
+			int bottomId = 10000; //Indicates that we want the latest.
 			
 			String filter = (String)params[1];
 			
