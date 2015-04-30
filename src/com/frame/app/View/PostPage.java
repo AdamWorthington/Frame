@@ -38,6 +38,8 @@ public class PostPage extends Fragment
 	public void onPrepareOptionsMenu(Menu menu) 
 	{
 	    menu.findItem(R.id.action_search).setVisible(false);
+	    menu.findItem(R.id.action_top).setVisible(false);
+	    menu.findItem(R.id.action_new).setVisible(false);
 	    super.onPrepareOptionsMenu(menu);
 	}
     
