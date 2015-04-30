@@ -41,7 +41,7 @@ public class ServerletManager extends ServerResource implements Serializable{
 		}
 		else if(JSONMessage.isDelete(obj)){
 			DeleteManager deleteManager = new DeleteManager(obj);
-			//TODO
+			ret = deleteManager.sqlSelect(obj);
 		}
 		else{
 			System.err.println("Did not recognize Message Type.");
