@@ -222,7 +222,7 @@ public class MediaFeed extends Fragment
 		protected JSONObject doInBackground(Object... params) 
 		{		
 			ClientResource res = new ClientResource(params[0].toString());
-			res.setMethod(Method.GET);
+			res.setMethod(Method.POST);
 			
 			LocationManager lm = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE); 
 			Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);

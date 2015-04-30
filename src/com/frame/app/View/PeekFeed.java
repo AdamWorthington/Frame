@@ -130,7 +130,7 @@ public class PeekFeed extends Fragment
 			Address requestAddress = (Address) params[1];
 			
 			ClientResource res = new ClientResource(params[0].toString());
-			res.setMethod(Method.GET);
+			res.setMethod(Method.POST);
 			
 			double latitude = 0;
 			double longitude = 0;
