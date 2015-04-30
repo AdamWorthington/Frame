@@ -2,12 +2,8 @@ package com.Simple;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,8 +64,8 @@ public class ServerletPost extends ServerResource implements Serializable{
 		}
 		
 		if(JSONMessage.isPic(obj)){
-			PreparedStatement stmt = SQLStatements.sqlPOST(conn, obj);
-			System.err.println(stmt.toString());
+			int stmt = SQLStatements.sqlPOST(conn, obj);
+			System.err.println(stmt);
 			
 			//PreparedStatement stmt = null;
 			

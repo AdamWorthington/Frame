@@ -2,9 +2,11 @@ package com.Simple;
 
 import java.io.IOException;
 import java.io.Serializable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.representation.Representation;
+import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
@@ -12,7 +14,12 @@ import org.restlet.resource.ServerResource;
 public class ServerletManager extends ServerResource implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
-
+	
+	@Delete("json")
+	public JSONObject del(Representation r){
+		return(text(r));
+	}
+	
 	@Get("json")
 	public JSONObject go(Representation r){
 		return(text(r));
@@ -31,6 +38,10 @@ public class ServerletManager extends ServerResource implements Serializable{
 		else if(JSONMessage.isPost(obj)){
 			PostManager postManager = new PostManager(obj);
 			ret = postManager.sqlInsertInto(obj);
+		}
+		else if(JSONMessage.isDelete(obj)){
+			DeleteManager deleteManager = new DeleteManager(obj);
+			//TODO
 		}
 		else{
 			System.err.println("Did not recognize Message Type.");

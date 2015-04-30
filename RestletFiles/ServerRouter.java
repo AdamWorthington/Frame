@@ -18,6 +18,7 @@ public class ServerRouter extends Application {
 
         router.attach("/Get", ServerletManager.class);
         router.attach("/Post", ServerletManager.class);
+        router.attach("/Delete", ServerletManager.class);
 
         return router;
     }

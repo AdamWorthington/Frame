@@ -12,6 +12,50 @@ import org.json.JSONObject;
 
 public class JSONMessage {
 	
+	public static boolean isBan(JSONObject jo) {
+		try
+		{
+			jo.get("Ban");
+			return true;
+		} catch(JSONException e) {
+			return false;
+		}
+	}
+	
+	public static JSONObject clientBanUser(String user) {
+		JSONObject jo = new JSONObject();
+		try {
+			jo.put("DELETE", 1);
+			jo.put("User", user);
+			jo.put("Ban", 1);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return jo;
+	}
+	
+	public static JSONObject clientRemovePost(int Post_ID) {
+		JSONObject jo = new JSONObject();
+		try {
+			jo.put("DELETE", 1);
+			jo.put("ID", Post_ID);
+			jo.put("Remove", 1);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return jo;
+	}
+	
+	public static boolean isRemove(JSONObject jo) {
+		try
+		{
+			jo.get("Remove");
+			return true;
+		} catch(JSONException e) {
+			return false;
+		}
+	}
+	
 	public static JSONObject isSuccess(){
 		JSONObject jo = new JSONObject();
 		try {
@@ -278,10 +322,10 @@ public class JSONMessage {
 		
 		return null;
 	}
-	public static String[] getTags(JSONObject jo)
+	public static String getTags(JSONObject jo)
 	{
 		try {
-			return (String[]) jo.get("Tags");
+			return (String) jo.get("Tags");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -420,7 +464,7 @@ public class JSONMessage {
 	public static String getFilter(JSONObject jo)
 	{
 		try {
-			return (String) jo.get("Fliter");
+			return (String) jo.get("Filter");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -538,6 +582,16 @@ public class JSONMessage {
 			return false;
 		}
 	}
+	public static boolean isDelete(JSONObject jo)
+	{
+		try
+		{
+			jo.get("DELETE");
+			return true;
+		} catch(JSONException e) {
+			return false;
+		}
+	}
 	//voting messages and flags
 	public static JSONObject vote(String User, int id, int prev, int vote)
 	{
@@ -585,6 +639,7 @@ public class JSONMessage {
 		
 		try
 		{
+			jo.put("POST", 1);
 			jo.put("Flag", "");
 			jo.put("ID", id);
 			jo.put("User", User);
@@ -649,4 +704,5 @@ public class JSONMessage {
 		}
 		return 0;
 	}
+	
 }
