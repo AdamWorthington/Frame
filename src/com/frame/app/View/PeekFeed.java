@@ -1,9 +1,13 @@
 package com.frame.app.View;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.json.JSONException;
@@ -26,6 +30,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -40,6 +46,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -51,6 +58,7 @@ public class PeekFeed extends Fragment
 	private MediaArrayAdapter adapter;
 	private MenuItem searchItem;
 	private int sortVal = 0;
+	private Address address;
 	View root;
 	
 	@Override
@@ -94,9 +102,11 @@ public class PeekFeed extends Fragment
 			@Override
 			public void onRefresh() 
 			{
-				new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "", sortVal);
+				new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", address, sortVal);
 			}
 		});
+		
+		promptForLocation();
 		
 		//new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "", sortVal);
 		
@@ -117,14 +127,16 @@ public class PeekFeed extends Fragment
 		@Override
 		protected JSONObject doInBackground(Object... params) 
 		{		
+			Address requestAddress = (Address) params[1];
+			
 			ClientResource res = new ClientResource(params[0].toString());
 			res.setMethod(Method.GET);
 			
-			LocationManager lm = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE); 
-			Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			double latitude = 0;
+			double longitude = 0;
 			
 			//Location returns null if no position is currently available. In this case, cancel the request.
-			if(location == null)
+			if(requestAddress == null)
 			{
 				
 				JSONObject o = new JSONObject();
@@ -135,15 +147,18 @@ public class PeekFeed extends Fragment
 				}
 				return o;
 			}
+			else
+			{
+				latitude = requestAddress.getLatitude();
+				longitude = requestAddress.getLongitude();
+			}
 			
-			double longitude = location.getLongitude();
-			double latitude = location.getLatitude();
+
 			int bottomId = -1; //Indicates that we want the latest.
 			
-			String filter = (String)params[1];
 			int sort = ((Integer)params[2]).intValue();
 			
-			JSONObject obj = JSONMessage.getPosts(bottomId, filter, Double.valueOf(latitude), Double.valueOf(longitude), sort);
+			JSONObject obj = JSONMessage.getPosts(bottomId, "", Double.valueOf(latitude), Double.valueOf(longitude), sort);
 			StringRepresentation stringRep = new StringRepresentation(obj.toString());
 
 			stringRep.setMediaType(MediaType.APPLICATION_JSON);
@@ -250,6 +265,53 @@ public class PeekFeed extends Fragment
 			}
 		
 		});
+	}
+	
+	private void promptForLocation()
+	{
+		final Context c = this.getActivity();
+        AlertDialog.Builder alert = new AlertDialog.Builder(c);
+
+        alert.setTitle("Peek!");
+        alert.setMessage("Enter a location and we'll grab the latest frames for you.");
+
+        // Set an EditText view to get user input
+        final EditText input = new EditText(this.getActivity());
+        alert.setView(input);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() 
+        {
+            public void onClick(DialogInterface dialog, int whichButton)
+            {
+                String value = input.getText().toString();
+                
+    			Geocoder geocoder = new Geocoder(c, Locale.US);
+    		    List<Address> listOfAddress;
+    		    
+    		    try {
+    		        listOfAddress = geocoder.getFromLocationName(value, 1);
+    		        if(listOfAddress != null && !listOfAddress.isEmpty())
+    		        {
+	    		        address = listOfAddress.get(0);
+	
+	    		        String country = address.getCountryCode();
+	    		        String adminArea= address.getAdminArea();
+	    		        String locality= address.getLocality();
+
+    		        }
+    		    } catch (IOException e) {
+    		        e.printStackTrace();
+    		    }
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // Canceled.
+            }
+        });
+
+        alert.show();
 	}
 }
 
