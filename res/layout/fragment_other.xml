@@ -40,13 +40,6 @@
             android:layout_gravity="center_horizontal"
             android:layout_weight="0.03" />
 
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Switch on for Top Rated View"
-            android:id="@+id/switch1"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="0.05" />
 
     </LinearLayout>
 
