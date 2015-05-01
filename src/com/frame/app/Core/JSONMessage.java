@@ -97,11 +97,11 @@ public class JSONMessage
  	} 
 
 	//Create a json packet for banning users
-	public static JSONObject clientBanUser(String user) {
+	public static JSONObject clientBanUser(int postID) {
 		JSONObject jo = new JSONObject();
 		try {
 			jo.put("DELETE", 1);
-			jo.put("User", user);
+			jo.put("ID", postID);
 			jo.put("Ban", 1);
 		} catch (JSONException e) {
 			e.printStackTrace();

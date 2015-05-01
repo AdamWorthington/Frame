@@ -117,9 +117,11 @@ public class SQLStatements {
 			String tag = JSONMessage.getFilter(jo);
 			
 			if (tag == null || tag.trim().isEmpty()) {
+				System.err.println("NO TAGS");
 				query = getPosts(conn, lastPost, lat, lon, sort);
 			}
 			else {
+				System.err.println("HAS TAGS " + tag);
 				query = getPostsByTag(conn, lastPost, lat, lon, tag, sort);
 			}
 		}
@@ -1335,7 +1337,7 @@ public class SQLStatements {
 				ret = stmt.executeUpdate();
 			}
 			catch (SQLException e) {
-				System.err.println("Error creating PreparedStatement in setVote");
+				System.err.println("Error creating PreparedStatement in sqlDelete(removal)");
 				return null;
 			}
 			
@@ -1390,7 +1392,7 @@ public class SQLStatements {
 				conn4 = DriverManager.getConnection(url);
 			}
 			catch (Exception e) {
-				System.err.println("Error generating connection 2 in postPicture");
+				System.err.println("Error generating connection 4 in postPicture");
 				return null;
 			}
 			
@@ -1401,7 +1403,7 @@ public class SQLStatements {
 				ret = stmt4.executeUpdate();
 			}
 			catch (SQLException e) {
-				System.err.println("Error creating PreparedStatement in setVote");
+				System.err.println("Error creating PreparedStatement 4 in setVote");
 				return null;
 			}
 		}
