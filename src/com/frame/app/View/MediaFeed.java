@@ -95,6 +95,8 @@ public class MediaFeed extends Fragment
 		    @Override
 		    public boolean onQueryTextSubmit(String query) 
 		    {
+		    	Singleton.getInstance().clearAllContent();
+            	adapter.notifyDataSetChanged();
 		    	new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", query);
 		        return true;
 		    }
@@ -145,6 +147,8 @@ public class MediaFeed extends Fragment
 			@Override
 			public void onRefresh() 
 			{
+				Singleton.getInstance().clearAllContent();
+            	adapter.notifyDataSetChanged();
 				new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "");
 			}
 		});

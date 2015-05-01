@@ -419,7 +419,7 @@ public class MediaContentPost extends ActionBarActivity
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
         alert.setTitle("Add Tags");
-        alert.setMessage("Separate tags by '#'");
+        alert.setMessage("Separate tags by ','. This will allow your post to be searched later for these particular tags.");
 
         // Set an EditText view to get user input
         final EditText input = new EditText(this);
