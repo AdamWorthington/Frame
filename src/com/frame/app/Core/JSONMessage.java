@@ -96,6 +96,31 @@ public class JSONMessage
  	    return toReturn; 
  	} 
 
+	//Create a json packet for banning users
+	public static JSONObject clientBanUser(String user) {
+		JSONObject jo = new JSONObject();
+		try {
+			jo.put("DELETE", 1);
+			jo.put("User", user);
+			jo.put("Ban", 1);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return jo;
+	}
+	
+	//create a json packet for removing a post
+	public static JSONObject clientRemovePost(int Post_ID) {
+		JSONObject jo = new JSONObject();
+		try {
+			jo.put("DELETE", 1);
+			jo.put("ID", Post_ID);
+			jo.put("Remove", 1);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return jo;
+	}
 	
 	//create json media messages to be sent to client 
  	public static JSONObject clientPictureToJson(Bitmap pic, Double lat, Double lon, String user, String tags, Boolean text)
