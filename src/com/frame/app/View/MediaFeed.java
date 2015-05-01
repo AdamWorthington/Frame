@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -69,6 +70,9 @@ public class MediaFeed extends Fragment
 	private SwipeRefreshLayout swipe = null;
 	private MediaArrayAdapter adapter;
 	View root;
+	
+	boolean sort_top;
+	boolean sort_latest;
 	
 	private LruCache<String, Bitmap> mMemoryCache;
 	
@@ -171,6 +175,7 @@ public class MediaFeed extends Fragment
         super.onPrepareOptionsMenu(menu);
 	}
 	
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) 
 	{
@@ -180,11 +185,17 @@ public class MediaFeed extends Fragment
 		        return true;
 
             case R.id.action_top:
+            	Singleton.getInstance().clearAllContent();
+            	adapter.notifyDataSetChanged();
                 new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "", 1);
+                sort_top = true;
                 return true;
 
             case R.id.action_new:
+            	Singleton.getInstance().clearAllContent();
+            	adapter.notifyDataSetChanged();
                 new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "");
+                sort_latest = true;
                 return true;
 
 
@@ -320,6 +331,38 @@ public class MediaFeed extends Fragment
 				}
 				MediaContent newContent = new MediaContent(false, ids[i].intValue(), date, b, ratings[i].intValue());
 				adapter.insert(newContent, insertIndex++);
+			}
+			
+			if(sort_top)
+			{
+            	adapter.sort(new Comparator<MediaContent>()
+            			{
+							@Override
+							public int compare(MediaContent lhs,
+									MediaContent rhs) 
+							{
+								return rhs.getRating() - lhs.getRating();
+							}
+            		
+            			});
+            	
+            	sort_top = false;
+			}
+			
+			if(sort_latest)
+			{
+            	adapter.sort(new Comparator<MediaContent>()
+            			{
+							@Override
+							public int compare(MediaContent lhs,
+									MediaContent rhs) 
+							{
+								return rhs.getTimestamp().compareTo(lhs.getTimestamp());
+							}
+            		
+            			});
+            	
+            	sort_latest = false;
 			}
 	    }
 		

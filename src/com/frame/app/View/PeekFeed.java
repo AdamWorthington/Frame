@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -61,6 +62,9 @@ public class PeekFeed extends Fragment
 	private Address address;
 	View root;
 	
+	boolean sort_top;
+	boolean sort_latest;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -102,6 +106,8 @@ public class PeekFeed extends Fragment
 			@Override
 			public void onRefresh() 
 			{
+				Singleton.getInstance().clearAllPeekContent();
+            	adapter.notifyDataSetChanged();
 				new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", address, sortVal);
 			}
 		});
@@ -120,6 +126,36 @@ public class PeekFeed extends Fragment
 	    menu.findItem(R.id.action_top).setVisible(true);
 	    menu.findItem(R.id.action_new).setVisible(true);
 	    super.onPrepareOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{
+	    switch (item.getItemId()) 
+	    {
+		    case R.id.action_search:
+		        return true;
+
+            case R.id.action_top:
+            	Singleton.getInstance().clearAllPeekContent();
+            	adapter.notifyDataSetChanged();
+                new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "", 1);
+                sort_top = true;
+                return true;
+
+            case R.id.action_new:
+            	Singleton.getInstance().clearAllPeekContent();
+            	adapter.notifyDataSetChanged();
+                new GetTask().execute("http://1-dot-august-clover-86805.appspot.com/Get", "");
+                sort_latest = true;
+                return true;
+
+
+		    default:
+		        break;
+	    }
+
+	    return false;
 	}
 	
 	private class GetTask extends AsyncTask<Object, Void, JSONObject> 
@@ -229,6 +265,38 @@ public class PeekFeed extends Fragment
 				MediaContent newContent = new MediaContent(false, ids[i].intValue(), date, b, ratings[i].intValue());
 				adapter.insert(newContent, insertIndex++);
 				adapter.notifyDataSetChanged();
+			}
+			
+			if(sort_top)
+			{
+            	adapter.sort(new Comparator<MediaContent>()
+            			{
+							@Override
+							public int compare(MediaContent lhs,
+									MediaContent rhs) 
+							{
+								return rhs.getRating() - lhs.getRating();
+							}
+            		
+            			});
+            	
+            	sort_top = false;
+			}
+			
+			if(sort_latest)
+			{
+            	adapter.sort(new Comparator<MediaContent>()
+            			{
+							@Override
+							public int compare(MediaContent lhs,
+									MediaContent rhs) 
+							{
+								return rhs.getTimestamp().compareTo(lhs.getTimestamp());
+							}
+            		
+            			});
+            	
+            	sort_latest = false;
 			}
 	    }
 		

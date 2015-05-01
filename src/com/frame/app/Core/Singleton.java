@@ -27,6 +27,16 @@ public class Singleton
 		}
 	}
 	
+	public void clearAllContent()
+	{
+		mediaFeed.clear();
+	}
+	
+	public void clearAllPeekContent()
+	{
+		peekmediaFeed.clear();
+	}
+	
 	public static Singleton getInstance()
 	{
 		 // Return the instance
