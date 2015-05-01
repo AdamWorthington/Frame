@@ -86,7 +86,7 @@ public class Text_post extends ActionBarActivity {
         Bitmap b = ImageConverter.textToImage(message);
 
 
-        String[] tags = {""};
+        String tags = "";
 
         LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         Location location = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);

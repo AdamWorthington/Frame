@@ -190,7 +190,7 @@ public class PeekFeed extends Fragment
 			}
 			
 
-			int bottomId = -1; //Indicates that we want the latest.
+			int bottomId = 10000; //Indicates that we want the latest.
 			
 			int sort = ((Integer)params[2]).intValue();
 			
