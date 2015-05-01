@@ -243,7 +243,7 @@ public class MediaFeed extends Fragment
 			
 			double longitude = location.getLongitude();
 			double latitude = location.getLatitude();
-			int bottomId = -1; //Indicates that we want the latest.
+			int bottomId = Singleton.getInstance().getLastContentId();
 			
 			String filter = (String)params[1];
 			

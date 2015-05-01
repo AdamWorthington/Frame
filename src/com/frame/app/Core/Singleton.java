@@ -90,6 +90,16 @@ public class Singleton
 		return mediaFeed.get(pos); 
 	 }
 	 
+	 public int getLastContentId()
+	 {
+		 int size = mediaFeed.size();
+		
+		 if(size == 0)
+			 return Integer.MAX_VALUE;
+		 else
+			 return mediaFeed.get(size - 1).getDbId();
+	 }
+	 
 	 public boolean containsMediaContentWithId(int id)
 	 {
 		 for(int i = 0; i < mediaFeed.size(); i++)
@@ -100,5 +110,10 @@ public class Singleton
 		 
 		 return false;
 	 }
+
+	public MediaContent getMediaContentPeekByPos(int pos) 
+	{
+		return peekmediaFeed.get(pos); 
+	}
  }
 
