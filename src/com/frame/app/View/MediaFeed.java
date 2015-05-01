@@ -120,7 +120,7 @@ public class MediaFeed extends Fragment
 		this.root = root;
 
 		listview = (ListView) root.findViewById(R.id.mediaFeedListView);
-		adapter = new MediaArrayAdapter(this.getActivity(), android.R.layout.simple_list_item_1, Singleton.getInstance().getMediaFeed());
+		adapter = new MediaArrayAdapter(this.getActivity(), android.R.layout.simple_list_item_1, Singleton.getInstance().getMediaFeed(), false);
 		listview.setAdapter(adapter);
 		OnItemClickListener clickListener = new AdapterView.OnItemClickListener() 
 		{

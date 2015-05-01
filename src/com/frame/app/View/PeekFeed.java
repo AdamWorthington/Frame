@@ -80,7 +80,7 @@ public class PeekFeed extends Fragment
 		this.root = root;
 
 		listview = (ListView) root.findViewById(R.id.peekMediaFeedListView);
-		adapter = new MediaArrayAdapter(this.getActivity(), android.R.layout.simple_list_item_1, Singleton.getInstance().getPeekMediaFeed());
+		adapter = new MediaArrayAdapter(this.getActivity(), android.R.layout.simple_list_item_1, Singleton.getInstance().getPeekMediaFeed(), true);
 		listview.setAdapter(adapter);
 		OnItemClickListener clickListener = new AdapterView.OnItemClickListener() 
 		{

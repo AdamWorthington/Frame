@@ -23,15 +23,16 @@ public class MediaArrayAdapter extends ArrayAdapter<MediaContent>
 {
 	private final Context context;
 	private final ArrayList<MediaContent> values;
+	private boolean peekonly = false;
 	
-	
-	public MediaArrayAdapter(Context context, int resource, ArrayList<MediaContent> objects) 
+	public MediaArrayAdapter(Context context, int resource, ArrayList<MediaContent> objects, boolean peekonly) 
 	{
 		super(context, resource, objects);
 		
 		values = objects;
 		
 		this.context = context;
+		this.peekonly = peekonly;
 	}
 	
 	
@@ -58,26 +59,25 @@ public class MediaArrayAdapter extends ArrayAdapter<MediaContent>
 	    ratingView.setText(String.valueOf(rating));
 	    
 	    ImageButton upvote = (ImageButton) rowView.findViewById(R.id.upvote);
-	    if(thisContent.getHasBeenVoted())
+	    if(thisContent.getHasBeenVoted() || peekonly)
 	    {
 	    	upvote.setEnabled(false);
 	    	upvote.setImageResource(R.drawable.upvotedfaded);
 	    }
 	    
 	    ImageButton downvote = (ImageButton) rowView.findViewById(R.id.downvote);
-	    if(thisContent.getHasBeenVoted())
+	    if(thisContent.getHasBeenVoted() || peekonly)
 	    {
 	    	downvote.setEnabled(false);  
 	    	downvote.setImageResource(R.drawable.upvotedfaded);
 	    }
 	    
 	    ImageButton flag = (ImageButton) rowView.findViewById(R.id.flag);
-	    if(thisContent.getHasBeenFlagged())
+	    if(thisContent.getHasBeenFlagged() || peekonly)
 	    {
 	    	flag.setEnabled(false);  
 	    	flag.setImageResource(R.drawable.flagfaded);
 	    }
-	    
 	    
        	if(rating > 0)
        		ratingView.setTextColor(Color.GREEN);

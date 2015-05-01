@@ -120,7 +120,7 @@ public class focusedMediaContentPage extends ActionBarActivity
 	    if(!interactable)
 	    {
 	    	comment.setEnabled(false);
-	    	//comment.setImageResource(R.drawable.flagfaded);
+	    	comment.setImageResource(R.drawable.bubblefaded);
 	    }
 		
 	    comments = new ArrayList<String>();
