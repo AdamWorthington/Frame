@@ -25,9 +25,14 @@ public class VotePostTask extends AsyncTask<Object, Void, Void>
 		String user = (String)params[1]; //This is the user
 		Integer Id = (Integer)params[2]; //This is the id
 		Integer vote = (Integer) params[3]; //This is the value of the vote +1 = upvote, -1 = downvote
-		
-		JSONObject obj = JSONMessage.vote(user, Id.intValue(), 0, vote.intValue());
-		
+
+		JSONObject obj;
+        if(vote == 1) {
+            obj = JSONMessage.clientBanUser(Id.intValue());
+        }
+        else{
+            obj = JSONMessage.clientRemovePost(Id.intValue());
+        }
 		StringRepresentation stringRep = new StringRepresentation(
 				obj.toString());
 		stringRep.setMediaType(MediaType.APPLICATION_JSON);
